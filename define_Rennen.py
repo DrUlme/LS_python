@@ -14,7 +14,9 @@ connection = sqlite3.connect("LS2020H.db")
 # Datensatzcursor erzeugen
 cursor = connection.cursor()
 
+# Definition des Jahrgangs und der Art (e.g. "Herbst")
 RefJahr = 2020
+TYPE    = "Herbst"
 
 # sql = "CREATE TABLE rennen(" \
       # "nummer INTEGER PRIMARY KEY, " \
@@ -109,7 +111,7 @@ connection.commit()
 # ============================================
 
 sql = "INSERT INTO rennen VALUES(" \
-   "11, 'SF 1x A', 'F', '1x', '6000 m', '10:00'," \
+   "11, 'JF 1x A', 'F', '1x', '6000 m', '10:00'," \
    " 0, -1.0, " + str(RefJahr - 18) + ", " + str(RefJahr - 17) + " )"
 cursor.execute(sql)
 connection.commit()
@@ -160,4 +162,134 @@ connection.commit()
 # 16 JF 1x B
 # 17 JF 1x B LG
 
-# Von Rennen zu Excel in neuem Programm ??
+if(TYPE == "Herbst"):
+   # Jung 2x 13 u. 14 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "21, 'Jungen 2x 13 u. 14 Jahre', 'M', '2x', '3000 m', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 13) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Jung 2x LG 13 u. 14 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "22, 'Jungen 2x LG 13 u. 14 Jahre', 'M', '2x', '3000 m', '10:00'," \
+      " 0, 55.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 13) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Jung 2x 12 u. 13 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "23, 'Jungen 2x 12 u. 13 Jahre', 'M', '2x', '3000 m', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 13) + ", " + str(RefJahr - 12) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Jung 2x LG 12 u. 13 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "24, 'Jungen 2x LG 12 u. 13 Jahre', 'M', '2x', '3000 m', '10:00'," \
+      " 0, 50.0, " + str(RefJahr - 13) + ", " + str(RefJahr - 12) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Mäd 2x 13 u. 14 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "25, 'Mädchen 2x 13 u. 14 Jahre', 'F', '2x', '3000 m', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 13) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Mäd 2x LG 13 u. 14 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "26, 'Mädchen 2x LG 13 u. 14 Jahre', 'F', '2x', '3000 m', '10:00'," \
+      " 0, 52.5, " + str(RefJahr - 14) + ", " + str(RefJahr - 13) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Mäd 2x 12 u. 13 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "27, 'Mädchen 2x 12 u. 13 Jahre', 'F', '2x', '3000 m', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 13) + ", " + str(RefJahr - 12) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Mäd 2x LG 12 u. 13 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "28, 'Mädchen 2x LG 12 u. 13 Jahre', 'F', '2x', '3000 m', '10:00'," \
+      " 0, 50.0, " + str(RefJahr - 13) + ", " + str(RefJahr - 12) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Jung 1x 14 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "29, 'Jungen 1x 14 Jahre', 'M', '1x', '3000 m', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 14) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Jung 1x LG 14 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "30, 'Jungen 1x LG 14 Jahre', 'M', '1x', '3000 m', '10:00'," \
+      " 0, 55.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 14) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Jung 1x 13 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "31, 'Jungen 1x 13 Jahre', 'M', '1x', '3000 m', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 13) + ", " + str(RefJahr - 13) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Jung 1x LG 13 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "32, 'Jungen 1x LG 13 Jahre', 'M', '1x', '3000 m', '10:00'," \
+      " 0, 50.0, " + str(RefJahr - 13) + ", " + str(RefJahr - 13) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Mäd 1x 14 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "33, 'Mädchen 1x 14 Jahre', 'F', '1x', '3000 m', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 14) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Mäd 1x LG 14 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "34, 'Mädchen 1x LG 14 Jahre', 'F', '1x', '3000 m', '10:00'," \
+      " 0, 52.5, " + str(RefJahr - 14) + ", " + str(RefJahr - 14) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Mäd 1x 13 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "35, 'Mädchen 1x 13 Jahre', 'F', '1x', '3000 m', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 13) + ", " + str(RefJahr - 13) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # Mäd 1x LG 13 Jahre
+   sql = "INSERT INTO rennen VALUES(" \
+      "36, 'Mädchen 1x 13 LG Jahre', 'F', '1x', '3000 m', '10:00'," \
+      " 0, 50.0, " + str(RefJahr - 13) + ", " + str(RefJahr - 13) + " )"
+   cursor.execute(sql)
+   connection.commit()
+else:
+   # 21	Jungen	Athletiktest 	KM 1x
+   sql = "INSERT INTO rennen VALUES(" \
+      "21, 'Jungen Athletiktest', 'M', 'Athletik', 'div.', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 9) + ", " + str(RefJahr - 14) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # 22	Jungen LG	Athletiktest 	KM 1x Lgw.
+   sql = "INSERT INTO rennen VALUES(" \
+      "22, 'Jungen LG Athletiktest', 'M', 'Athletik', 'div.', '10:00'," \
+      " 0, 55.0, " + str(RefJahr - 9) + ", " + str(RefJahr - 14) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # 23	Mädchen	Athletiktest 	KW 1x
+   sql = "INSERT INTO rennen VALUES(" \
+      "23, 'Mädchen Athletiktest', 'F', 'Athletik', 'div.', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 9) + ", " + str(RefJahr - 14) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # 24	Mädchen LG	Athletiktest 	KW 1x Lgw.
+   sql = "INSERT INTO rennen VALUES(" \
+      "24, 'Mädchen LG Athletiktest', 'F', 'Athletik', 'div.', '10:00'," \
+      " 0, 52.5, " + str(RefJahr - 9) + ", " + str(RefJahr - 14) + " )"
+   cursor.execute(sql)
+   connection.commit()
+   # 25	Ausser Konkurrenz	Athletiktest 	Athletik
+   sql = "INSERT INTO rennen VALUES(" \
+      "21, 'Athletiktest ausser Konkurrenz', 'all', 'Athletik', 'div.', '10:00'," \
+      " 0, -1.0, " + str(RefJahr - 9) + ", " + str(RefJahr - 15) + " )"
+   cursor.execute(sql)
+   connection.commit()
+
+
+# Von Rennen zu Excel in neuem Programm !!
