@@ -26,8 +26,8 @@ sql = "CREATE TABLE rennen(" \
 cursor.execute(sql)
 
 sql = "CREATE TABLE ruderer(" \
-      "name TEXT, " \
       "vorname TEXT, " \
+      "name TEXT, " \
       "geschlecht TEXT, " \
       "nummer INTEGER PRIMARY KEY, " \
       "leichtgewicht INTEGER, " \
