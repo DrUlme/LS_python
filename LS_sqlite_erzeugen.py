@@ -29,14 +29,15 @@ sql = "CREATE TABLE ruderer(" \
       "vorname TEXT, " \
       "name TEXT, " \
       "geschlecht TEXT, " \
-      "nummer INTEGER PRIMARY KEY, " \
-      "leichtgewicht INTEGER, " \
       "jahrgang INTEGER, " \
+      "leichtgewicht INTEGER, " \
       "gewicht REAL, " \
-      "verein TEXT)"
+      "verein TEXT, " \
+      "nummer INTEGER PRIMARY KEY, " \
+      "boot INTEGER)"
 cursor.execute(sql)
 
-sql = "CREATE TABLE boot(" \
+sql = "CREATE TABLE boote(" \
       "nummer INTEGER PRIMARY KEY, " \
       "startnummer INTEGER, " \
       "rennen INTEGER, " \
