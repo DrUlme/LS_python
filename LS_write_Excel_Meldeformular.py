@@ -168,6 +168,9 @@ ws['D10'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 ws['E10'] = "Jahrgang"
 ws['E10'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
+ws['F10'] = "Rgm."
+ws['F10'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
+
 ws['G10'] = "Rennen"
 ws['G10'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 ws['H9'] = "Boots"
@@ -189,17 +192,21 @@ ws['B11'] = 4
 # 
 for ROW in range(11,54):
    ws.merge_cells('I'+ str(ROW) + ':J' + str(ROW))
-   ws.merge_cells('F'+ str(ROW) + ':G' + str(ROW))
-   ws['F'+ str(ROW)].alignment = Alignment(horizontal="right", shrinkToFit=True)
-   ws['F' + str(ROW)] = "=IF(ISNUMBER($B" + str(ROW) + "),INDIRECT(\"Rennen!$B\"&($B" + str(ROW) + ")),\"\")"
+   # ws.merge_cells('F'+ str(ROW) + ':G' + str(ROW))
+   ws['G'+ str(ROW)].alignment = Alignment(horizontal="right", shrinkToFit=True)
+   ws['G' + str(ROW)] = "=IF(ISNUMBER($B" + str(ROW) + "),INDIRECT(\"Rennen!$B\"&($B" + str(ROW) + ")),\"\")"
    ws['H' + str(ROW)] = '=IF(ISNUMBER($B' + str(ROW) + '),INDIRECT("Rennen!$D"&($B' + str(ROW) + ')),"")'
    dv.add(ws["H"+str(ROW)])
    ws.conditional_formatting.add('H' + str(ROW),FormulaRule(formula=['$H' + str(ROW) + '="-"' ], stopIfTrue=True, fill=greenFill))
+   # B & I gleiche Formatierung:
    ws.conditional_formatting.add('B' + str(ROW),FormulaRule(formula=['ROUND($A' + str(ROW) + ')=$A' +str(ROW)], stopIfTrue=True, fill=greenFill))
+   ws.conditional_formatting.add('I' + str(ROW),FormulaRule(formula=['ROUND($A' + str(ROW) + ')=$A' +str(ROW)], stopIfTrue=True, fill=greenFill))
    myRange = 'C' + str(ROW) + ':D' + str(ROW)
    myForml = '$A' + str(ROW) + '>0'
    ws.conditional_formatting.add(myRange,FormulaRule(formula=['ISNUMBER($A' + str(ROW) + ')' ], stopIfTrue=True, fill=greenFill))
    ws.conditional_formatting.add(myRange,FormulaRule(formula=['$A' + str(ROW) + '="-"' ], stopIfTrue=True, fill=greenFill))
+   ws.conditional_formatting.add('F' + str(ROW),FormulaRule(formula=['ISNUMBER($A' + str(ROW) + ')' ], stopIfTrue=True, fill=greenFill))
+   ws.conditional_formatting.add('F' + str(ROW),FormulaRule(formula=['$A' + str(ROW) + '="-"' ], stopIfTrue=True, fill=greenFill))
    #
    # ======================================================================  Check Jahrgang:
    # Hilfe für Rennen
@@ -208,7 +215,7 @@ for ROW in range(11,54):
    # Check des Alters
    ws['Q' + str(ROW)] = '=IF(ISBLANK($A' + str(ROW) + '),0,IF($R' + str(ROW) + '<1,0,IF($E' + str(ROW) + '<1,1,IF($E' + str(ROW) + \
    '<INDIRECT("Rennen!$G"&($R' + str(ROW) + ')),2,IF($E' + str(ROW) + '>INDIRECT("Rennen!$H"&($R' + str(ROW) + ')),2,1)))))'
-   ws.conditional_formatting.add('I' + str(ROW) ,FormulaRule(formula=['$B' + str(ROW) + '>0'], stopIfTrue=True, fill=greenFill))
+   # ws.conditional_formatting.add('I' + str(ROW) ,FormulaRule(formula=['$B' + str(ROW) + '>0'], stopIfTrue=True, fill=greenFill))
    # Anpassen der Farbe für Jahrgang analog des Check-Ergebnisses
    ws.conditional_formatting.add('E' + str(ROW) ,FormulaRule(formula=['$Q' + str(ROW) + '=2'], stopIfTrue=True, fill=redFill))
    ws.conditional_formatting.add('E' + str(ROW) ,FormulaRule(formula=['$Q' + str(ROW) + '=1'], stopIfTrue=True, fill=greenFill))
@@ -226,11 +233,11 @@ ws.column_dimensions['A'].width = "6"
 ws.column_dimensions['B'].width = "8"
 ws.column_dimensions['C'].width = "16"
 ws.column_dimensions['D'].width = "16"
-ws.column_dimensions['E'].width = "12"
-ws.column_dimensions['F'].width = "10"
-ws.column_dimensions['G'].width = "10"
-ws.column_dimensions['H'].width = "10"
-ws.column_dimensions['I'].width = "10"
+ws.column_dimensions['E'].width = "10"
+ws.column_dimensions['F'].width = "8"
+ws.column_dimensions['G'].width = "14"
+ws.column_dimensions['H'].width = "8"
+ws.column_dimensions['I'].width = "12"
 ws.column_dimensions['J'].width = "10"
 ws.column_dimensions['K'].width = "5"
 ws.column_dimensions['L'].width = "20"
