@@ -15,7 +15,7 @@ connection = sqlite3.connect("LS2020H.db")
 cursor = connection.cursor()
 
 # Definition des Jahrgangs und der Art (e.g. "Herbst")
-RefJahr = 2020
+RefJahr = 2021
 TYPE    = "Herbst"
 
 # sql = "CREATE TABLE rennen(" \

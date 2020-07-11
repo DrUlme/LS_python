@@ -240,4 +240,7 @@ ws.column_dimensions["N"].alignment = Alignment(horizontal='center')
 ws.column_dimensions["O"].alignment = Alignment(horizontal='center')
 ws.column_dimensions["P"].alignment = Alignment(horizontal='center')
 
+# fixiere Tabelle:
+ws.freeze_panes = ws['C11']
+
 wb.save('Meldebogen_H2020.xlsx')
