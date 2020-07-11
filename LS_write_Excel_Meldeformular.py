@@ -24,6 +24,12 @@ wb = Workbook()
 ws = wb.active
 ws.title = "Meldebogen"
 
+ws.column_dimensions["K"].alignment = Alignment(horizontal='center')
+ws.column_dimensions["M"].alignment = Alignment(horizontal='center')
+ws.column_dimensions["N"].alignment = Alignment(horizontal='center')
+ws.column_dimensions["O"].alignment = Alignment(horizontal='center')
+ws.column_dimensions["P"].alignment = Alignment(horizontal='center')
+
 ws2 = wb.create_sheet("Rennen") # insert at first position
 ws2.sheet_properties.tabColor = "1072BA"
 
@@ -62,6 +68,11 @@ for dsatz in cursor:
    ws['N' + str(Rennen + 1)].font = Font(name='arial', sz=10, b=False, i=False, color='4444dd')
    ws['O' + str(Rennen + 1)].font = Font(name='arial', sz=10, b=False, i=False, color='4444dd')
    ws['P' + str(Rennen + 1)].font = Font(name='arial', sz=10, b=False, i=False, color='4444dd')
+   ws['K' + str(Rennen + 1)].alignment = Alignment(horizontal="center")
+   ws['M' + str(Rennen + 1)].alignment = Alignment(horizontal="center")
+   ws['N' + str(Rennen + 1)].alignment = Alignment(horizontal="center")
+   ws['O' + str(Rennen + 1)].alignment = Alignment(horizontal="center")
+   ws['P' + str(Rennen + 1)].alignment = Alignment(horizontal="center")
 
 # =================================== Data validation für Bootsklasse
 dv = DataValidation(type="list", formula1='"-","1x","2-","2x","4x","4x+"', allow_blank=True)
@@ -178,7 +189,9 @@ ws['B11'] = 4
 # 
 for ROW in range(11,54):
    ws.merge_cells('I'+ str(ROW) + ':J' + str(ROW))
-   ws['G' + str(ROW)] = "=IF(ISNUMBER($B" + str(ROW) + "),INDIRECT(\"Rennen!$B\"&($B" + str(ROW) + ")),\"\")"
+   ws.merge_cells('F'+ str(ROW) + ':G' + str(ROW))
+   ws['F'+ str(ROW)].alignment = Alignment(horizontal="right", shrinkToFit=True)
+   ws['F' + str(ROW)] = "=IF(ISNUMBER($B" + str(ROW) + "),INDIRECT(\"Rennen!$B\"&($B" + str(ROW) + ")),\"\")"
    ws['H' + str(ROW)] = '=IF(ISNUMBER($B' + str(ROW) + '),INDIRECT("Rennen!$D"&($B' + str(ROW) + ')),"")'
    dv.add(ws["H"+str(ROW)])
    ws.conditional_formatting.add('H' + str(ROW),FormulaRule(formula=['$H' + str(ROW) + '="-"' ], stopIfTrue=True, fill=greenFill))
@@ -187,31 +200,26 @@ for ROW in range(11,54):
    myForml = '$A' + str(ROW) + '>0'
    ws.conditional_formatting.add(myRange,FormulaRule(formula=['ISNUMBER($A' + str(ROW) + ')' ], stopIfTrue=True, fill=greenFill))
    ws.conditional_formatting.add(myRange,FormulaRule(formula=['$A' + str(ROW) + '="-"' ], stopIfTrue=True, fill=greenFill))
-   # Hilfe für Rennen und Check, dann die Farbwahl
+   #
+   # ======================================================================  Check Jahrgang:
+   # Hilfe für Rennen
    ws['R' + str(ROW)] = '=IF(ISBLANK($A' + str(ROW) + '),0,IF(ISNUMBER($B' + str(ROW) + '),$B' + str(ROW) + ',IF($A' + str(ROW) + '="-",IF(ISNUMBER($B' + str(ROW-1) + '),$B' + str(ROW-1) \
    + ',IF(ISNUMBER($B' + str(ROW-2) + '),$B' + str(ROW-2) + ',IF(ISNUMBER($B' + str(ROW-3) + '),$B' + str(ROW-3) + ', 0))))))'
-   # ws['Q' + str(ROW)] = '=IF(ISBLANK($A11),0,IF($E11<1,1,IF($E11<INDIRECT("Rennen!$G"&($R11)),2,IF($E11>INDIRECT("Rennen!$H"&($R11)),2,1))))'
+   # Check des Alters
    ws['Q' + str(ROW)] = '=IF(ISBLANK($A' + str(ROW) + '),0,IF($R' + str(ROW) + '<1,0,IF($E' + str(ROW) + '<1,1,IF($E' + str(ROW) + \
    '<INDIRECT("Rennen!$G"&($R' + str(ROW) + ')),2,IF($E' + str(ROW) + '>INDIRECT("Rennen!$H"&($R' + str(ROW) + ')),2,1)))))'
    ws.conditional_formatting.add('I' + str(ROW) ,FormulaRule(formula=['$B' + str(ROW) + '>0'], stopIfTrue=True, fill=greenFill))
-   
+   # Anpassen der Farbe für Jahrgang analog des Check-Ergebnisses
+   ws.conditional_formatting.add('E' + str(ROW) ,FormulaRule(formula=['$Q' + str(ROW) + '=2'], stopIfTrue=True, fill=redFill))
+   ws.conditional_formatting.add('E' + str(ROW) ,FormulaRule(formula=['$Q' + str(ROW) + '=1'], stopIfTrue=True, fill=greenFill))
+   #
+   #___________________________ interne Nummer - oder Meldung - Spalte A
    if(ROW > 11):
       ws['A' + str(ROW)] = '= IF(H' + str(ROW-1) + '="1x",A' + str(ROW-1) + '+1,IF(H' + str(ROW-2) + '="2-",A' + str(ROW-2) \
       + '+1,IF(H' + str(ROW-2) + '="2x",A' + str(ROW-2) + '+1,IF(H' + str(ROW-4) + '="4x",A' + str(ROW-4) + '+1,IF(H' + str(ROW-4) \
       + '="4x+","Stm.",IF(H' + str(ROW-5) + '="4x+",A' + str(ROW-5) + '+1,IF(H' + str(ROW-1) + '="2-","-","")))))))'
 
-#ws.conditional_formatting.add('B11:B14',FormulaRule(formula=['ROUND($A11)=$A11'], stopIfTrue=True, fill=greenFill))
-#ws.conditional_formatting.add('B11:B21',FormulaRule(formula=['$A11>0'], stopIfTrue=True, fill=greenFill))
-# ws.merge_cells('I11:J11')
 
-# ======================================================================  Check Jahrgang:
-## Hilfe für Rennen und Check, dann die Farbwahl
-#ws['R11'] = '=IF(ISBLANK($A11),0,IF(ISNUMBER($B11),$B11,IF(ISNUMBER($B10),$B10,IF(ISNUMBER($B9),$B9,IF(ISNUMBER($B8),$B8, 0)))))'
-#ws['Q11'] = '=IF(ISBLANK($A11),0,IF($E11<1,1,IF($E11<INDIRECT("Rennen!$G"&($R11)),2,IF($E11>INDIRECT("Rennen!$H"&($R11)),2,1))))'
-ws.conditional_formatting.add('E11:E21',FormulaRule(formula=['$Q11=2'], stopIfTrue=True, fill=redFill))
-ws.conditional_formatting.add('E11:E21',FormulaRule(formula=['$Q11=1'], stopIfTrue=True, fill=greenFill))
-
-###
 
 # ====================================================================== adapt column with
 ws.column_dimensions['A'].width = "6"
@@ -233,14 +241,18 @@ ws.column_dimensions['P'].width = "7"
 # base alignment
 ws.column_dimensions["A"].alignment = Alignment(horizontal='left')
 ws.column_dimensions["B"].alignment = Alignment(horizontal='center')
+ws.column_dimensions["E"].alignment = Alignment(horizontal='center')
 ws.column_dimensions["H"].alignment = Alignment(horizontal='center')
-ws.column_dimensions['K'].alignment = Alignment(horizontal='center')
-ws.column_dimensions["M"].alignment = Alignment(horizontal='center')
-ws.column_dimensions["N"].alignment = Alignment(horizontal='center')
-ws.column_dimensions["O"].alignment = Alignment(horizontal='center')
-ws.column_dimensions["P"].alignment = Alignment(horizontal='center')
+# ws.column_dimensions["K"].alignment = Alignment(horizontal='center')
+# ws.column_dimensions["M"].alignment = Alignment(horizontal='center')
+# ws.column_dimensions["N"].alignment = Alignment(horizontal='center')
+# ws.column_dimensions["O"].alignment = Alignment(horizontal='center')
+# ws.column_dimensions["P"].alignment = Alignment(horizontal='center')
 
 # fixiere Tabelle:
 ws.freeze_panes = ws['C11']
+
+# setze Ausrichtung für Telefon-Nummer auf links zurück
+ws['E8'].alignment = Alignment(horizontal="left")
 
 wb.save('Meldebogen_H2020.xlsx')

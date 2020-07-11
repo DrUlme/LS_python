@@ -57,6 +57,7 @@ sql = "CREATE TABLE verein(" \
       "name TEXT, " \
       "kurz TEXT, " \
       "anschrift TEXT, " \
+      "anschrift2 TEXT, " \
       "rechnung REAL)"
 cursor.execute(sql)
 
@@ -69,31 +70,7 @@ sql = "CREATE TABLE betreuer(" \
 cursor.execute(sql)
 
 
-
-# connection.commit()
-
-# Datensatz erzeugen
-sql = "INSERT INTO verein VALUES(" \
-      "'Ruderverein Erlangen e.V.', " \
-      "'RVE', " \
-      "'Habichtstrasse 11; 91072 Erlangen', " \
-      "0.0)"
-cursor.execute(sql)
 connection.commit()
-
-
-sql = "INSERT INTO betreuer VALUES(" \
-      "'Ingo', " \
-      "'Euler', " \
-      "'RVE', " \
-      "'unbekannt', " \
-      "'ingo.euler@gmx.de')"
-
-cursor.execute(sql)
-connection.commit()
-
-
-
 
 # Verbindung beenden
 connection.close()
