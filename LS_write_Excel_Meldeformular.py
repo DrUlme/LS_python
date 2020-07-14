@@ -9,7 +9,8 @@ from openpyxl.styles.borders import Border, Side, BORDER_THIN
 from openpyxl.styles import Color, PatternFill, Font, Border
 from openpyxl.formatting.rule import ColorScaleRule, CellIsRule, FormulaRule, Rule
 from openpyxl.worksheet.datavalidation import DataValidation
-
+# image - using pillow?
+from openpyxl.drawing.image import Image
 #========================================================================
 
 
@@ -178,6 +179,11 @@ ws['H9'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 ws['H10'] = "Klasse"
 ws['H10'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
+ws.merge_cells('I1:J5')
+ws['I1'] = "Langstrecke H 2020"
+ws['I1'].alignment = Alignment(horizontal="center", vertical="bottom")
+
+
 ws.merge_cells('I10:J10')
 ws['I10'] = "Kommentare"
 ws['I10'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
@@ -196,6 +202,7 @@ for ROW in range(11,54):
    ws['G'+ str(ROW)].alignment = Alignment(horizontal="right", shrinkToFit=True)
    ws['G' + str(ROW)] = "=IF(ISNUMBER($B" + str(ROW) + "),INDIRECT(\"Rennen!$B\"&($B" + str(ROW) + ")),\"\")"
    ws['H' + str(ROW)] = '=IF(ISNUMBER($B' + str(ROW) + '),INDIRECT("Rennen!$D"&($B' + str(ROW) + ')),"")'
+
    dv.add(ws["H"+str(ROW)])
    ws.conditional_formatting.add('H' + str(ROW),FormulaRule(formula=['$H' + str(ROW) + '="-"' ], stopIfTrue=True, fill=greenFill))
    # B & I gleiche Formatierung:
@@ -215,6 +222,11 @@ for ROW in range(11,54):
    # Check des Alters
    ws['Q' + str(ROW)] = '=IF(ISBLANK($A' + str(ROW) + '),0,IF($R' + str(ROW) + '<1,0,IF($E' + str(ROW) + '<1,1,IF($E' + str(ROW) + \
    '<INDIRECT("Rennen!$G"&($R' + str(ROW) + ')),2,IF($E' + str(ROW) + '>INDIRECT("Rennen!$H"&($R' + str(ROW) + ')),2,1)))))'
+   # hide Q & R column:
+   # ws['Q' + str(ROW)].font = Font(name='arial', sz=8, b=False, i=False, color='BBBBBB')
+   # ws['R' + str(ROW)].font = Font(name='arial', sz=8, b=False, i=False, color='BBBBBB')
+   ws['Q' + str(ROW)].font = Font(name='arial', sz=8, b=False, i=False, color='FFFFFF')
+   ws['R' + str(ROW)].font = Font(name='arial', sz=8, b=False, i=False, color='FFFFFF')
    # ws.conditional_formatting.add('I' + str(ROW) ,FormulaRule(formula=['$B' + str(ROW) + '>0'], stopIfTrue=True, fill=greenFill))
    # Anpassen der Farbe für Jahrgang analog des Check-Ergebnisses
    ws.conditional_formatting.add('E' + str(ROW) ,FormulaRule(formula=['$Q' + str(ROW) + '=2'], stopIfTrue=True, fill=redFill))
@@ -257,9 +269,18 @@ ws.column_dimensions["H"].alignment = Alignment(horizontal='center')
 # ws.column_dimensions["P"].alignment = Alignment(horizontal='center')
 
 # fixiere Tabelle:
-ws.freeze_panes = ws['C11']
+# ws.freeze_panes = ws['C11']
+ws.freeze_panes = ws['A11']
 
 # setze Ausrichtung für Telefon-Nummer auf links zurück
 ws['E8'].alignment = Alignment(horizontal="left")
+
+logo = Image("RVE_BRV_Flag.png")
+
+# A bit of resizing to not fill the whole spreadsheet with the logo
+logo.height = 77
+logo.width = 210
+
+ws.add_image(logo, "I1")
 
 wb.save('Meldebogen_H2020.xlsx')
