@@ -246,6 +246,10 @@ for dsatz in cursor_R:
    ws[indBot + str(zeile)].fill = (grayFill)
    ws[indBot + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='666666')
    
+   ws[indNam + str(zeile)].fill = (grayFill)
+   ws[indJah + str(zeile)].fill = (grayFill)
+   ws[indCom + str(zeile)].fill = (grayFill)
+   
    # indRe  = 'A' - indPos = 'B' - indSNr = 'C' - indStT = 'D' - indVor = 'E' - indNam = 'F' - indJah = 'G' - indEV  = 'H'- indCom = 'I'- indBot = 'J'
 
    for ds in cursor:
@@ -255,13 +259,6 @@ for dsatz in cursor_R:
       Ruderer = Names.split(',')
       nPers   = len(Ruderer) - 2
       
-      if(nPers > 10):
-         ws.merge_cells(indRe + str(zeile) + ':' + indRe + str(zeile - 1 + nPers))
-         ws.merge_cells(indPos + str(zeile) + ':' + indPos + str(zeile - 1 + nPers))
-         ws.merge_cells(indSNr + str(zeile) + ':' + indSNr + str(zeile - 1 + nPers))
-         ws.merge_cells(indStT + str(zeile) + ':' + indStT + str(zeile - 1 + nPers))
-         ws.merge_cells(indCom + str(zeile) + ':' + indCom + str(zeile - 1 + nPers))
-         ws.merge_cells(indBot + str(zeile) + ':' + indBot + str(zeile - 1 + nPers))
       ws[indRe + str(zeile)] = Rennen
       ws[indRe + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
       ws[indRe + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
@@ -274,7 +271,7 @@ for dsatz in cursor_R:
       ws[indStT + str(zeile)] = "=INDIRECT(\"Zeit_\"& $A" + str(zeile) + ") + ($B" + str(zeile) + " - 1)*Abstand"
       ws[indStT + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #Bemerkung
-      ws[indCom + str(zeile)] = str( len(Ruderer) - 2)
+      ws[indCom + str(zeile)] = ds[13]
       ws[indCom + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
       
       # 
@@ -315,7 +312,9 @@ for dsatz in cursor_R:
       ws[indJah + str(zeile)] = Jahrgang
       # Verein
       ws[indEV + str(zeile)] = Verein
-      zeile = zeile + iP
+      #
+      if(nPers > 1):
+         ws.row_dimensions[ zeile ].height = 18*nPers
 
 
 
@@ -344,7 +343,6 @@ ws.merge_cells('D3:E3')
 ws['D3'].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
 
 
-ws['F4'] = "eins \n zwei"
 # ====================================================================== adapt column with
 # indRe  = 'A' - indPos = 'B' - indSNr = 'C' - indStT = 'D' - indVor = 'E' - indNam = 'F' - indJah = 'G' - indEV  = 'H'- indCom = 'I'- indBot = 'J'
 
@@ -365,8 +363,7 @@ ws.freeze_panes = ws['A7']
 # erstelle Filter
 # maxCols = str( zeile + 10 ) auf 256 gesetzt
 ws.auto_filter.ref = "A6:J256"
-# ws.auto_filter.ref = "G6:G256"
-# ws.auto_filter.ref = "A6:H256"
+
 
 # ______________________________________ set Logo
 logo = Image("RVE_BRV_Flag.png")

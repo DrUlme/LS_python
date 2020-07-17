@@ -262,7 +262,7 @@ while Position > 7:
           nBoote = nBoote + 1
           sql = "INSERT INTO boote VALUES( " \
             + str(nBoote) + ", 0, " + str(Rennen) + ", '" + Verein + "', '" + Names + "', " \
-            + "0,   0, 0, 0,   0, 0,   0,  0 )"
+            + "0,   0, 0, 0,   0, 0,   0,   0, '" + Comment + "')"
           cursor.execute(sql)
           connection.commit()
           #  nummer, startnummer, rennen, vereine(TEXT), ruderer(TEXT-index), " \

@@ -50,7 +50,8 @@ sql = "CREATE TABLE boote(" \
       "zeit3000 INTEGER, " \
       "zeit6000 INTEGER, " \
       "zeit INTEGER, " \
-      "abgemeldet INTEGER)"
+      "abgemeldet INTEGER, " \
+      "kommentar TEXT )"
 cursor.execute(sql)
 
 sql = "CREATE TABLE verein(" \
