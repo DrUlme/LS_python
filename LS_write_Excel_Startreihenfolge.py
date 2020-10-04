@@ -278,6 +278,9 @@ for dsatz in cursor_R:
       ws[indPos + str(zeile)] = "1"
       ws[indPos + str(zeile)].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
       ws[indPos + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
+      # 
+      ws[indBot + str(zeile)] = ds[0]
+      ws[indBot + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
       
       for iP in range(nPers):  
          # SQL-Abfrage

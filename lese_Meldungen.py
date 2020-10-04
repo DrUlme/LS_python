@@ -6,22 +6,14 @@
 # has issues with SoftMaker Office !!! 
 # XML support:
 # from lxml import etree
-import sqlite3
-
+import os, sys, sqlite3
 
 # Excel
 #========================================================================
-# open existent workbook:
 from openpyxl import load_workbook
 
-# filename = 'Meldungen/01_RVE_Thea.xlsx'
-filename = '01_RVE.xlsx'
-wb = load_workbook(filename)
-# wb = load_workbook(filename = '../F2020/Meldungen/01__RVE_Thea.xlsx')
-# create a new Workbook:
-# from openpyxl import Workbook
-print(wb.sheetnames)
-ws = wb.active
+Pfad_LS        = os.getcwd()
+print("Starte aus Pfad '" + Pfad_LS + "'")
 
 #========================================================================
 # Verbindung zur Datenbank erzeugen
@@ -29,6 +21,30 @@ connection = sqlite3.connect("LS2020H.db")
 
 # Datensatzcursor erzeugen
 cursor = connection.cursor()
+
+print("__________________________________________________________\n")
+Pfad_Meldungen = Pfad_LS + "/Meldungen/"
+print("Suche Files in Pfad '" + Pfad_Meldungen + "'")
+
+#os.chdir( Pfad_Meldungen )
+#FILES=os.listdir( '.' )
+FILES=os.listdir( Pfad_Meldungen )
+for FILE in FILES:
+   print(FILE)
+print("__________________________________________________________\n")
+
+# os.chdir( Pfad_LS )
+# filename = 'Meldungen/01_RVE_Thea.xlsx'
+# open existent workbook:
+filename = '01_RVE.xlsx'
+print("_________________________________________________________ " + filename )
+wb = load_workbook(Pfad_Meldungen + "/" + filename)
+# wb = load_workbook(filename = '../F2020/Meldungen/01__RVE_Thea.xlsx')
+# create a new Workbook:
+# from openpyxl import Workbook
+print(wb.sheetnames)
+ws = wb.active
+
 
 #========================================================================
 Vereinsname = ws['A3'].value
@@ -114,6 +130,8 @@ while Position > 7:
    BootNr = -1
    # ____________________________________________ Rennen und Bootsgattung
    Rennen   = ws['B' + str(Position)].value
+   if(Rennen == None):
+      Rennen = 0;
    print("Starte mit Eintrag für Rennen " + str(Rennen) + " ..." )
    if Rennen > 0:
       Comment  = ws['I' + str(Position)].value
