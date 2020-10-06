@@ -29,7 +29,8 @@ ws = wb["Meldungen"]
 connection = sqlite3.connect( LSglobal.SQLiteFile )
 #
 # Datensatzcursor erzeugen
-cursor = connection.cursor()
+cursor  = connection.cursor()
+cursorR = connection.cursor()
 #
 #========================================================================
 #
@@ -65,8 +66,69 @@ while zeile > 6:
       #
       Vereine  = ws['H' + str(zeile)].value
       Verein   = Vereine.split("\n")
-      
+      #
       print("Rennen " + str(Rennen) + "." + str(Positi) + "= #" + str(StNr) + " (" + str(Boot) + ") :  " + str(mySec))
+      #
+      # SQL-Abfrage
+      sql = "SELECT * FROM boote WHERE nummer = " + str(Boot)
+      #
+      # Empfang des Ergebnisses
+      cursor.execute(sql)
+      # _______________________________________________________________________ korrekte Ruderer ?
+      # for dsatz in cursor:
+      dsatz = cursor.fetchone()
+      # print(dsatz)
+      # print("Rennen " + str(Rennen) + " = " + str(dsatz[2]) )
+      # print("Verein " + Verein[0] + " = " + dsatz[3])
+      ruderer = dsatz[4].split(',')
+      for iR in range(0, (len(ruderer) - 3)):
+         #
+         sql = "SELECT * FROM ruderer WHERE nummer = " + str(ruderer[iR + 1])
+         # Empfang des Ergebnisses
+         cursorR.execute(sql)
+         Rd = cursorR.fetchone()
+         # Vorname
+         sqlVorname = Rd[0]
+         # Nachname
+         sqlName = Rd[1]
+         # Jahrgang
+         sqlJahrgang = str( Rd[3] )
+         if( Vorname[iR] != sqlVorname or Name[iR] != sqlName ):
+            print(Vorname[iR] + " " + Name[iR] + " != " + sqlVorname + " " + sqlName)
+            # x = raw_input("Ändern? [Y/n]")
+            x = input("Ändern? [Y/n] > ")
+            if(x == "Y" or x== "y" or x == "j" or x == "J"):
+               sql = "UPDATE ruderer SET vorname = " + Vorname[iR] + ", name = " + Name[iR] + " WHERE nummer = " + str(ruderer[iR + 1])
+               # print( sql )
+               cursor.execute(sql)
+               connection.commit()
+                     print("Würde jetzt ändern!")
+         if( Jahre[iR] != sqlJahrgang ):
+            print(Jahre[iR] + " != " + sqlJahrgang + "  (" + sqlVorname + " " + sqlName + ")")
+            x = input("Ändern? [Y/n] > ")
+            if(x == "Y" or x== "y" or x == "j" or x == "J"):
+               print("Würde jetzt ändern!")
+            # ToDo: Abfrage oder Änderung?
+      # ______________________________________________________________________________________
+      #
+      if( Rennen != dsatz[2] ):
+            print( "Boot " + str(Boot) + " mit Startnr " + str(StNr) + " von Rennen " + dsatz[2] + " nach " + str(Rennen) + " ?!" )
+            # x = raw_input("Ändern? [Y/n]")
+            x = input("Ändern? [Y/n] > ")
+            if(x == "Y" or x== "y" or x == "j" or x == "J"):
+               sql = "UPDATE boote SET rennen = " + str(Rennen) + " WHERE nummer = " + str(Boot)
+               # print( sql )
+               cursor.execute(sql)
+               connection.commit()
+               print("... geändert !")
+         
+      # ______________________________________________________________________________________
+      #
+      sql = "UPDATE boote SET startnummer = " + str(StNr) + ", planstart = " + str(mySec) + " WHERE nummer = " + str(Boot)
+      # print( sql )
+      cursor.execute(sql)
+      connection.commit()
+         # dto. mit StNr
    #
    zeile = zeile + 1
    if(bZeit == None):
