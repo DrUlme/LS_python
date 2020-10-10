@@ -102,7 +102,7 @@ while zeile > 6:
                # print( sql )
                cursor.execute(sql)
                connection.commit()
-                     print("Würde jetzt ändern!")
+               print("Würde jetzt ändern!")
          if( Jahre[iR] != sqlJahrgang ):
             print(Jahre[iR] + " != " + sqlJahrgang + "  (" + sqlVorname + " " + sqlName + ")")
             x = input("Ändern? [Y/n] > ")
