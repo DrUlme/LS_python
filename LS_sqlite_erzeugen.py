@@ -34,7 +34,8 @@ sql = "CREATE TABLE ruderer(" \
       "gewicht REAL, " \
       "verein TEXT, " \
       "nummer INTEGER PRIMARY KEY, " \
-      "boot INTEGER)"
+      "boot INTEGER, " \
+      "form INTEGER)"
 cursor.execute(sql)
 
 sql = "CREATE TABLE boote(" \

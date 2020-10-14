@@ -31,3 +31,18 @@ TrzDBpos  = [ 6,    7,   8]
 Trz_dSec  = [ 20, 0, 0]
 Trz_m     = [ 0, 3000, 6000]
 
+"""
+========================================================================
+rennen.status = [6]
+0: niemand gemeldet
+1: gemeldet, aber ohne Startnummer & Zeit
+2: Startnummern und Zeiten vorhanden
+3: Aktiv
+4: (End-) Ergebnis
+
+
+
+
+
+========================================================================
+"""

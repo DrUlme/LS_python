@@ -12,18 +12,21 @@ import os, sys, sqlite3
 #========================================================================
 from openpyxl import load_workbook
 
+# globale Parameter
+import LSglobal
+
 Pfad_LS        = os.getcwd()
 print("Starte aus Pfad '" + Pfad_LS + "'")
 
 #========================================================================
 # Verbindung zur Datenbank erzeugen
-connection = sqlite3.connect("LS2020H.db")
+connection = sqlite3.connect( LSglobal.SQLiteFile )
 
 # Datensatzcursor erzeugen
 cursor = connection.cursor()
 
 print("__________________________________________________________\n")
-Pfad_Meldungen = Pfad_LS + "/Meldungen/"
+Pfad_Meldungen = Pfad_LS + '/' + LSglobal.MeldeDir
 print("Suche Files in Pfad '" + Pfad_Meldungen + "'")
 
 #os.chdir( Pfad_Meldungen )
@@ -90,8 +93,13 @@ for filename in FILES:
       # print( cursor.fetchone())
       
       #
+      if(Name == None):
+         Hname = Vorname.split()
+         Hlen = len(Hname)
+         Vorname = Hname[0]
+         Name = Hname[Hlen-1]
+         
       sql = "SELECT EXISTS(SELECT 1 FROM betreuer WHERE verein='" + Verein + "' and name='" + Name + "' LIMIT 1)"
-      # print(sql)
       cursor.execute(sql)
       record = cursor.fetchone()
       
@@ -177,7 +185,12 @@ for filename in FILES:
             
             #Gender   = ws['E' + str(Position + iP)].value
             #LGW      = ws['D' + str(Position + iP)].value
-      
+            
+            if(record[6] == 0):
+               sql = "UPDATE rennen SET status = 1 WHERE nummer='" + str(Rennen) + "' "
+               cursor.execute(sql)
+               connection.commit()
+            #
             for iP in range(NR):
               Vorname  = ws['C' + str(Position + iP)].value
               Name     = ws['D' + str(Position + iP)].value
@@ -229,6 +242,7 @@ for filename in FILES:
                 if(tupleNr[0] > 0):
                    BootNr = tupleNr[0]
                    print("Ruderer ist auch in Boot " + str(BootNr) + " gemeldet")
+                   # ToDo: Check ob Rennen gleich ist!
                 
                 sql = "SELECT nummer FROM ruderer WHERE verein='" + Verein2 + "' and name='" + Name + \
                      "' and vorname='" + Vorname + "' "
@@ -246,13 +260,13 @@ for filename in FILES:
                 
                 sql = "INSERT INTO ruderer VALUES( " \
                    + "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " \
-                  + str(LGWi) + ", -1.0, '" + Verein2 + "', " + str(nRuderer) + ", -1 )"
+                  + str(LGWi) + ", -1.0, '" + Verein2 + "', " + str(nRuderer) + ", -1, 0 )"
                 print(sql)
                 #  "( vorname , name , geschlecht, jahrgang, leichtgewicht, gewicht, verein, nummer, boot )"
                 #+ "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " 
                 cursor.execute(sql)
                 connection.commit()
-            
+               
             # print("Boot: '" + Boot + "': " + Names + " (" + str(JahrBoot) + ") in Rennen " + str(Rennen))
             
          if(NR > 0):
