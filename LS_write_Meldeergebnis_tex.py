@@ -60,85 +60,88 @@ for Rsatz in Rcursor:
       StNr   = Bsatz[1]
       VBoot  = Bsatz[3]
       RudInd = Bsatz[4].split(',')
-      #
-      if(NoBoote == 0):
-         TXT = TXT + "\n% ============================= Rennen:  " + str(Rennen) + " __________ Start\n\\noindent\n"
-         TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{5.5cm}|C{2.0cm}|}\n\
-         \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{130mm}{\
-         \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} } } \\\\\n"
-         print("Rennen " + str(Rennen) + " : " + RennenString)
-      #
-      NoBoote = NoBoote + 1
-      #--------------------------------------------------------------------- Ruderer -
-      Vorname = ['-']
-      Name    = ['-']
-      JGNGstr = ['-']
-      
-      nPers   = 0
-      for iR in range(0, (len(RudInd) - 2)):         
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
-         Pcursor.execute(sql)
-         Rd = Pcursor.fetchone()
-         nPers = nPers + 1
-         Vorname.insert(iR, Rd[0])
-         Name.insert(iR,  Rd[1])
-         JGNGstr.insert(iR, str(Rd[3]))
-         if( iR == 0):
-            Verein = "{" + Rd[6] +"}"
-            VStr   = Rd[6]
-         elif(iR>0 and VStr != Rd[6]):
-            Verein =  Verein + "\\\\{" + Rd[6] + "}"
+      Abmeldung = Bsatz[12]
+      if(Abmeldung == 0):
+         # _______________________________________________________________________________________________________________
+         if(NoBoote == 0):
+            TXT = TXT + "\n% ============================= Rennen:  " + str(Rennen) + " __________ Start\n\\noindent\n"
+            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.0cm}|C{2.0cm}|}\n\
+            \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
+            \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} } } \\\\\n"
+            print("Rennen " + str(Rennen) + " : " + RennenString)
          #
+         NoBoote = NoBoote + 1
+         #--------------------------------------------------------------------- Ruderer -
+         Vorname = ['-']
+         Name    = ['-']
+         JGNGstr = ['-']
+         
+         nPers   = 0
+         for iR in range(0, (len(RudInd) - 2)):         
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
+            Pcursor.execute(sql)
+            Rd = Pcursor.fetchone()
+            nPers = nPers + 1
+            Vorname.insert(iR, Rd[0])
+            Name.insert(iR,  Rd[1])
+            JGNGstr.insert(iR, str(Rd[3]))
+            if( iR == 0):
+               Verein = "{" + Rd[6] +"}"
+               VStr   = Rd[6]
+            elif(iR>0 and VStr != Rd[6]):
+               Verein =  Verein + "\\\\{" + Rd[6] + "}"
+            #
+            #
+            if(Rsatz[7] < 1 and Rd[4] == 1):
+               # JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{\\textrm{Lgw}}$"))
+               JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{{Lgw}}$"))
+            else:
+               JGNGstr.insert(iR, str(Rd[3]))      
+            # print(Name[0] + ", '" + Name[1] + "' =>" + Rd[2] )
+         #---------------------------------------------------------------------
+         Btime = Bsatz[5]
+         # print(Name[0] + " - " + str(len(RudInd)))
          #
-         if(Rsatz[7] < 1 and Rd[4] == 1):
-            # JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{\\textrm{Lgw}}$"))
-            JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{{Lgw}}$"))
+         if(Btime == 0):
+            StrStNr = "tbd."
+            StrZeit = "tbd."
          else:
-            JGNGstr.insert(iR, str(Rd[3]))      
-         # print(Name[0] + ", '" + Name[1] + "' =>" + Rd[2] )
-      #---------------------------------------------------------------------
-      Btime = Bsatz[5]
-      # print(Name[0] + " - " + str(len(RudInd)))
-      #
-      if(Btime == 0):
-         StrStNr = "tbd."
-         StrZeit = "tbd."
-      else:
-         StrStNr = str(StNr)
-         if(isinstance(Btime, str)):
-            StrZeit = Btime
+            StrStNr = str(StNr)
+            if(isinstance(Btime, str)):
+               StrZeit = Btime
+            else:
+               BtimH = math.floor(Btime/3600)
+               BtimM = math.floor(Btime/60 - BtimH*60 )
+               StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
+         #
+         if(Ngray == 1):
+            TXT = TXT + "\\rowcolor[gray]{.9}"
+            Ngray = 0
          else:
-            BtimH = math.floor(Btime/3600)
-            BtimM = math.floor(Btime/60 - BtimH*60 )
-            StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
-      #
-      if(Ngray == 1):
-         TXT = TXT + "\\rowcolor[gray]{.9}"
-         Ngray = 0
-      else:
-         Ngray = 1
-      #
-      TXT = TXT + "\\parbox[1cm][" + str(nPers+1) + "em][c]{10mm}{\\textbf{" + StrStNr + "}} & \
-      \\parbox[1cm][" + str(nPers+1) + "em][c]{55mm}{"
-      #
-      for iR in range(0, nPers):
-         # Ruderer
-         TXT = TXT + "\\textbf{" + Vorname[iR] + " " + Name[iR] + "} {\\small(" + JGNGstr[iR] + ")} "
-         if(nPers > 1 and iR < (nPers - 1)):
-            # wenn mehrere:
-            TXT = TXT + "\\\\"
-      #
-      # Verein
-      TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{55mm}{ \\small "
-      TXT = TXT + Verein
-      #for iR in range(0, nPers):
-      #   TXT = TXT + "Ruder-Club Aschaffenburg v. 1898 e.V."
-      #   # wenn mehrere und ungleich:
-      #   if(nPers > (iR + 1)):
-      #      TXT = TXT + "\\\\"
-      #
-      TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{20mm}{ " + StrZeit + " }\\\\\myMidrule\n"
-      #__________________________________________________________________________________________________________
+            Ngray = 1
+         #
+         TXT = TXT + "\\parbox[1cm][" + str(nPers+1) + "em][c]{10mm}{\\textbf{" + StrStNr + "}} & \
+         \\parbox[1cm][" + str(nPers+1) + "em][c]{55mm}{"
+         #
+         for iR in range(0, nPers):
+            # Ruderer
+            TXT = TXT + "\\textbf{" + Vorname[iR] + " " + Name[iR] + "} {\\small(" + JGNGstr[iR] + ")} "
+            if(nPers > 1 and iR < (nPers - 1)):
+               # wenn mehrere:
+               TXT = TXT + "\\\\"
+         #
+         # Verein
+         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{60mm}{ \\small "
+         TXT = TXT + Verein
+         #for iR in range(0, nPers):
+         #   TXT = TXT + "Ruder-Club Aschaffenburg v. 1898 e.V."
+         #   # wenn mehrere und ungleich:
+         #   if(nPers > (iR + 1)):
+         #      TXT = TXT + "\\\\"
+         #
+         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{20mm}{ " + StrZeit + " }\\\\\myMidrule\n"
+      # _______________________________________________________________________________________________________________
+   #__________________________________________________________________________________________________________
    if(NoBoote > 0):
       TXT = TXT + "%\n\\end{tabular}\\\\[\\bigskipamount]\n%\n"
    #else:
@@ -175,41 +178,45 @@ for Vsatz in Vcursor:
          StNr   = Bsatz[1]
          Verein = Bsatz[3]
          RudInd = Bsatz[4].split(',')
-         #
-         nPers   = 0
-         for iR in range(0, (len(RudInd) - 2)):         
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
-            Pcursor.execute(sql)
-            Rd = Pcursor.fetchone()
-            if(Rd[6] == Vsatz[1]):
-               nPers = 1
-            if(iR == 0):
-               Name = "\\textbf{" + Rd[0] + " } " + Rd[1]
-            else:
-               Name = Name + ", \\textbf{ " + Rd[0] + " } " + Rd[1]
-            #
-         #
-         if(nPers > 0):
-            if(Vrennen == 0):
-               Vrennen = 1
-               TXT = TXT + "\n{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + "\\\\\n%"
-               TXT = TXT + "\n\\begin{tabular}{m{1.0cm}m{8cm}m{2.0cm}}\n"
-            #_______________________________________________________________________________________
-            Btime = Bsatz[5]
-            #
-            if(Btime == 0):
-               StrStNr = "tbd."
-               StrZeit = "tbd."
-            else:
-               StrStNr = str(StNr)
-               if(isinstance(Btime, str)):
-                  StrZeit = Btime
+         Abmeldung = Bsatz[12]
+         if(Abmeldung == 0):
+            # ===========================================================================================
+            nPers   = 0
+            for iR in range(0, (len(RudInd) - 2)):         
+               sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
+               Pcursor.execute(sql)
+               Rd = Pcursor.fetchone()
+               if(Rd[6] == Vsatz[1]):
+                  nPers = 1
+               if(iR == 0):
+                  Name = "\\textbf{" + Rd[0] + " } " + Rd[1]
                else:
-                  BtimH = math.floor(Btime/3600)
-                  BtimM = math.floor(Btime/60 - BtimH*60 )
-                  StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
-
-            TXT = TXT + " " + StrStNr + " & " + Name + " & " + StrZeit + " \\\\\n"
+                  Name = Name + ", \\textbf{ " + Rd[0] + " } " + Rd[1]
+               #
+            #
+            if(nPers > 0):
+               if(Vrennen == 0):
+                  Vrennen = 1
+                  TXT = TXT + "\n{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + "\\\\\n%"
+                  TXT = TXT + "\n\\begin{tabular}{m{1.0cm}m{8cm}m{2.0cm}}\n"
+               #_______________________________________________________________________________________
+               Btime = Bsatz[5]
+               #
+               if(Btime == 0):
+                  StrStNr = "tbd."
+                  StrZeit = "tbd."
+               else:
+                  StrStNr = str(StNr)
+                  if(isinstance(Btime, str)):
+                     StrZeit = Btime
+                  else:
+                     BtimH = math.floor(Btime/3600)
+                     BtimM = math.floor(Btime/60 - BtimH*60 )
+                     StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
+               #
+               TXT = TXT + " " + StrStNr + " & " + Name + " & " + StrZeit + " \\\\\n"
+            # ===========================================================================================
+         # elif(Abmeldung > 1):  # verspätet abgemeldet
          #_______________________________________________________________________________________
          #
       #_______________________________________________________________________________________

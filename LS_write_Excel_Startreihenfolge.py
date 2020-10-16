@@ -19,14 +19,19 @@ from openpyxl.drawing.image import Image
 #========================================================================
 # classopenpyxl.workbook.protection.FileSharing
 
+
+import LSglobal
+
+#========================================================================
 # Verbindung zur Datenbank erzeugen
-connection = sqlite3.connect("LS2020H.db")
+connection = sqlite3.connect( LSglobal.SQLiteFile )
 
 # Datensatzcursor erzeugen
 cursor_R = connection.cursor()
 cursor   = connection.cursor()
 cursor_N = connection.cursor()
 
+#======================================================================================
 FillCol = "44ff44"
 grayFill = PatternFill(start_color='666666',end_color='666666',fill_type='solid')
 greenFill = PatternFill(start_color='44ff44',end_color='44ff44',fill_type='solid')
@@ -378,4 +383,4 @@ logo.width = 210
 ws.add_image(logo, "H1")
 
 # ______________________________________ save
-wb.save('Startreihenfolge_H2020.xlsx')
+wb.save('Startreihenfolge_H2020_test.xlsx')

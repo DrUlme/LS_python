@@ -69,7 +69,7 @@ for filename in FILES:
             "'" + Vereinsname + "', '" + Verein + "', '" \
             + Adresse_1 + "', '" + Adresse_2 + "', " \
             "0.0)"
-         print(sql)
+         # print(sql)
          cursor.execute(sql)
       
       sqlite_select_query = """SELECT count(*) from verein"""
@@ -151,7 +151,7 @@ for filename in FILES:
             record = cursor.fetchone()
             # ToDo: check für 3 Rennen ohne Zuordnung
             Gender = record[2]
-            print(record[7])
+            # print(record[7])
             if(record[7] > 0):
                LGWi = 1
                Gewicht = -1.0;
@@ -159,7 +159,7 @@ for filename in FILES:
                LGWi = 0
                Gewicht = 0.0;
                anz = Comment.find('LGW') + Comment.find('Lgw')
-               print(anz)
+               # print(anz)
             #
             if(record[3] == 'All'):
                print("Undefiniertes Rennen, muß Comment auswerten!")
@@ -253,7 +253,7 @@ for filename in FILES:
                 Names = Names.replace("(", "")
                 Names = Names.replace(")", "")
                 # 
-                print( Names )
+                # print( Names )
               else:
                 nRuderer = nRuderer + 1
                 Names = Names + str(nRuderer) + ","
