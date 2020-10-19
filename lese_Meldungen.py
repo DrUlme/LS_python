@@ -317,7 +317,7 @@ for filename in FILES:
             #print(ws[cellA].value + ' ' + ws['F' + str(Position)].value + ' ' + ws['G' + str(Position)].value + ' (' \
             #+ ws['E' + str(Position)].value + ') ' + str(ws['H' + str(Position)].value) )
          print(' --- ')
-         if Position > 30:
+         if Position > 50:
             Position = 0
          elif NR == 0:
             Position = 0

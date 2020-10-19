@@ -112,7 +112,8 @@ for Rsatz in Rcursor:
             else:
                BtimH = math.floor(Btime/3600)
                BtimM = math.floor(Btime/60 - BtimH*60 )
-               StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
+               #StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
+               StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "$:\\small{\\textcolor{gray}{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}}"
          #
          if(Ngray == 1):
             TXT = TXT + "\\rowcolor[gray]{.9}"
@@ -192,6 +193,9 @@ for Vsatz in Vcursor:
                   Name = "\\textbf{" + Rd[0] + " } " + Rd[1]
                else:
                   Name = Name + ", \\textbf{ " + Rd[0] + " } " + Rd[1]
+               #               
+               if(Vsatz[1] != Rd[6]):
+                  Name = Name + " \\textcolor{gray}{\\small (" + Rd[6] + ")}"
                #
             #
             if(nPers > 0):
@@ -212,7 +216,8 @@ for Vsatz in Vcursor:
                   else:
                      BtimH = math.floor(Btime/3600)
                      BtimM = math.floor(Btime/60 - BtimH*60 )
-                     StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
+                     StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "$:\\small{\\textcolor{gray}{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}}"
+                     # "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
                #
                TXT = TXT + " " + StrStNr + " & " + Name + " & " + StrZeit + " \\\\\n"
             # ===========================================================================================

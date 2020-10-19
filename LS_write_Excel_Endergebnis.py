@@ -31,7 +31,7 @@ cursor_R = connection.cursor()
 cursor   = connection.cursor()
 cursor_N = connection.cursor()
 
-#======================================================================================
+#====================================================================================== Farben definieren
 FillCol = "44ff44"
 grayFill = PatternFill(start_color='666666',end_color='666666',fill_type='solid')
 greenFill = PatternFill(start_color='44ff44',end_color='44ff44',fill_type='solid')
@@ -41,101 +41,23 @@ noFill = PatternFill(start_color='ffffff',end_color='ffffff',fill_type='solid')
 wb = Workbook()
 # wb = openpyxl.Workbook()
 ws = wb.active
-ws.title = "Meldungen"
+ws.title = "Endergebnis"
 
-ws2 = wb.create_sheet("Rennen") # insert at first position
-ws2.sheet_properties.tabColor = "1072BA"
+#ws2 = wb.create_sheet("Rennen") # insert at first position
+#ws2.sheet_properties.tabColor = "1072BA"
 
 # define Startzeit
 
 book = Workbook()
 sheet = book.active
 
-sheet['A1'] = 56
-sheet['A2'] = 43
-
-# now = time.strftime("%b %d %Y %H:%M:%S", time.localtime(t))
-ws['A3'].number_format = numbers.FORMAT_DATE_TIME4
-ws['D3'].number_format = numbers.FORMAT_DATE_TIME4
-
-#now = time.strftime(" %H:%M:%S", time.localtime(36000))
-ws['A3'] = strftime("%H:%M:%S", gmtime(60*60*10))
-# ws['A3']  = "10:00"
-new_range = openpyxl.workbook.defined_name.DefinedName('Startzeit', attr_text='Meldungen!$A$3')
-wb.defined_names.append(new_range)   
-
-#now = time.strftime(" %H:%M:%S", time.localtime(60))
-ws['D3']  = strftime("%H:%M:%S", gmtime(60))
-new_range = openpyxl.workbook.defined_name.DefinedName('Abstand', attr_text='Meldungen!$D$3')
-wb.defined_names.append(new_range)   
-
-# ============================================================================================================
-# SQL-Abfrage
-sql = "SELECT * FROM rennen WHERE nummer < 114"
-ws2['A1'] = "Nr."
-ws2['B1'] = "Bezeichnung"
-ws2['C1'] = "Boote"
-ws2['D1'] = "frei"
-
-ws2['E1'] = "1. Nummer"
-ws2['F1'] = "1. Zeit"
-
-
-# Empfang des Ergebnisses
-cursor_R.execute(sql)
-zeile = 1
-StartNr = 0
-for dsatz in cursor_R:
-   Rennen = dsatz[0]
-   ReStr  = str(Rennen)
-   zeile = zeile + 1
-   ws2['A' + str(zeile)] = ReStr
-   ws2['B' + str(zeile)] = dsatz[1]
-   #   
-   new_range = openpyxl.workbook.defined_name.DefinedName('Boote_' + ReStr, attr_text='Rennen!$C$' + str(zeile))
-   wb.defined_names.append(new_range)
-   
-   # Summe der Meldungen pro Rennen (ändert sich mit Änderung auf der Hauptseite
-   ws2['C' + str(zeile)] = "=(SUMIF('Meldungen'!$A$7:$A$256,$A" + str(zeile) + " ) - $A"  + str(zeile) + ") / $A"  + str(zeile)
-   
-   # zusätzlich 2 Boote pro Rennen - wählbar
-   ws2['D' + str(zeile)] = 2
-   ws2['D' + str(zeile)].fill = (greenFill)
-   #
-   ws2['F' + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-   
-   if(zeile < 3):
-      ws2['E' + str(zeile)] = "1"
-      ws2['F' + str(zeile)] = "=Startzeit"
-   else:
-      ws2['E' + str(zeile)] = "=$E" + str(zeile-1) + " + $C" + str(zeile-1) + " + $D" + str(zeile-1)
-      ws2['F' + str(zeile)] = "=$F" + str(zeile-1) + " + ($C" + str(zeile-1) + " + $D" + str(zeile-1) + ")*Abstand"
-   new_range = openpyxl.workbook.defined_name.DefinedName('StartNr_' + ReStr, attr_text='Rennen!$E$' + str(zeile))
-   wb.defined_names.append(new_range)
-   
-   new_range = openpyxl.workbook.defined_name.DefinedName('Zeit_' + ReStr, attr_text='Rennen!$F$' + str(zeile))
-   wb.defined_names.append(new_range)   
-# -----------------------------------------
-ws2.column_dimensions['A'].width = "5"
-ws2.column_dimensions['B'].width = "30"
-ws2.column_dimensions['C'].width = "6"
-ws2.column_dimensions['D'].width = "6"
-ws2.column_dimensions['E'].width = "8"
-ws2.column_dimensions['F'].width = "10"
-ws2.column_dimensions["A"].alignment = Alignment(horizontal='center')
-ws2.column_dimensions["C"].alignment = Alignment(horizontal='center')
-ws2.column_dimensions["D"].alignment = Alignment(horizontal='center')
-ws2.column_dimensions["E"].alignment = Alignment(horizontal='center')
-ws2.column_dimensions["F"].alignment = Alignment(horizontal='center')
-
-
 # ==============================================================================================================
-ws.merge_cells('H1:J5')
-ws['H1'] = "Langstrecke H 2020"
+#ws.merge_cells('H1:J5')
+#ws['H1'] = LSglobal.Name
+#
+#ws['H1'].alignment = Alignment(horizontal="center", vertical="bottom")
 
-ws['H1'].alignment = Alignment(horizontal="center", vertical="bottom")
-
-zeile = 6
+zeile = 1
 
 indRe  = 'A'
 indPos = 'B'
@@ -145,8 +67,14 @@ indVor = 'E'
 indNam = 'F'
 indJah = 'G'
 indEV  = 'H'
-indCom = 'I'
-indBot = 'J'
+indGew = 'I'
+
+indEZt = 'J'
+indZ03 = 'K'
+indZ36 = 'L'
+
+indCom = 'M'
+indBot = 'N'
 
 ws[indRe + str(zeile)] = "Rennen"
 ws[indRe + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
@@ -172,8 +100,18 @@ ws[indJah + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color=
 ws[indEV + str(zeile)] = "Verein"
 ws[indEV + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
-ws[indCom + str(zeile)] = "Bemerkung"
+ws[indGew + str(zeile)] = "[kg]"
+ws[indGew + str(zeile)].font = Font(name='arial', sz=12, b=False, i=True, color='4444dd')
+
+ws[indCom + str(zeile)] = "Kommentar"
 ws[indCom + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
+
+ws[indEZt + str(zeile)] = "Endzeit"
+ws[indEZt + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
+ws[indZ03 + str(zeile)] = "0-3000 m"
+ws[indZ03 + str(zeile)].font = Font(name='arial', sz=12, b=False, i=False, color='4444dd')
+ws[indZ36 + str(zeile)] = "3-6000 m"
+ws[indZ36 + str(zeile)].font = Font(name='arial', sz=12, b=False, i=False, color='4444dd')
 
 ws[indBot + str(zeile)] = "int.Bootnr."
 ws[indBot + str(zeile)].font = Font(name='arial', sz=6, b=False, i=False, color='ddddff')
@@ -199,7 +137,7 @@ StNr = 1
 # Ausgabe des Ergebnisses
 # ============================================================================================================
 # SQL-Abfrage
-sql = "SELECT * FROM rennen WHERE nummer < 114"
+sql = "SELECT * FROM rennen WHERE status >= 1"
 
 # Empfang des Ergebnisses
 cursor_R.execute(sql)
@@ -209,7 +147,7 @@ for dsatz in cursor_R:
    zeile = zeile + 1
    
    # SQL-Abfrage
-   sql = "SELECT * FROM boote WHERE rennen = " + ReStr
+   sql = "SELECT * FROM boote WHERE rennen = " + ReStr + " and abgemeldet = 0  ORDER BY zeit, zeit3000, secstart, planstart "
    # Empfang des Ergebnisses
    cursor.execute(sql)
    
@@ -229,11 +167,20 @@ for dsatz in cursor_R:
    ws[indSNr  + str(zeile)].fill = (grayFill)
    
    # 1. Startzeit
-   ws[indStT + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-   ws[indStT + str(zeile)] = "=Zeit_" + ReStr 
-   ws[indStT + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='ffffff')
+   #   ws[indStT + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
+   #   ws[indStT + str(zeile)] = "=Zeit_" + ReStr 
+   #   ws[indStT + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='ffffff')
    ws[indStT + str(zeile)].fill = (grayFill)
-   ws[indStT + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
+   #   ws[indStT + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
+   if(dsatz[7] > 0):
+      ws[indGew + str(zeile)] = str(dsatz[7])
+      ws[indGew + str(zeile)].font = Font(name='arial', sz=10, b=False, i=True, color='ffffff')
+      ws[indGew + str(zeile)].alignment = Alignment(horizontal='center' vertical='center')
+
+   ws[indGew + str(zeile)].fill = (grayFill)
+   ws[indEZt + str(zeile)].fill = (grayFill)
+   ws[indZ03 + str(zeile)].fill = (grayFill)
+   ws[indZ36 + str(zeile)].fill = (grayFill)
    
    # Renn-Bezeichnung
    #ws.merge_cells(indVor + str(zeile) + ':' + indJah + str(zeile))
@@ -244,19 +191,21 @@ for dsatz in cursor_R:
    # Streckenlänge
    #ws.merge_cells(indEV + str(zeile) + ':' + indCom + str(zeile))
    ws[indEV + str(zeile)] = dsatz[4]
-   ws[indEV + str(zeile)].fill = (grayFill)
    ws[indEV + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
    
    ws[indBot + str(zeile)] = 0
    ws[indBot + str(zeile)].fill = (grayFill)
-   ws[indBot + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='666666')
+   ws[indBot + str(zeile)].font = Font(name='arial', sz=6, b=False, i=False, color='666666')
    
+   ws[indEV  + str(zeile)].fill = (grayFill)
    ws[indNam + str(zeile)].fill = (grayFill)
    ws[indJah + str(zeile)].fill = (grayFill)
    ws[indCom + str(zeile)].fill = (grayFill)
    
    # indRe  = 'A' - indPos = 'B' - indSNr = 'C' - indStT = 'D' - indVor = 'E' - indNam = 'F' - indJah = 'G' - indEV  = 'H'- indCom = 'I'- indBot = 'J'
-
+   Platz = 0
+   Anz   = 0
+   Last  = 0
    for ds in cursor:
       zeile = zeile + 1
       #______________________________ Anzahl der Ruderer und ihre Nummern in der Datenbank
@@ -265,24 +214,47 @@ for dsatz in cursor_R:
       nPers   = len(Ruderer) - 2
       
       ws[indRe + str(zeile)] = Rennen
-      ws[indRe + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
+      ws[indRe + str(zeile)].font = Font(name='arial', sz=8, b=False, i=False, color='0000ff')
       ws[indRe + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
-      # =INDIRECT("StartNr_"&($I26)) + $J26
-      ws[indSNr + str(zeile)] = "=INDIRECT(\"StartNr_\"& $A" + str(zeile) + ") - 1 + $B" + str(zeile)
-      ws[indSNr + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
+      # StartNr
+      ws[indSNr + str(zeile)] = ds[1]
+      ws[indSNr + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='222222')
       ws[indSNr + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
-      
+      #_______________________________________________________________________________________________________ Zeiten
       ws[indStT + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indStT + str(zeile)] = "=INDIRECT(\"Zeit_\"& $A" + str(zeile) + ") + ($B" + str(zeile) + " - 1)*Abstand"
+      ws[indStT + str(zeile)] = strftime("%H:%M:%S", gmtime(ds[6]))
       ws[indStT + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
+      #
+      ws[indEZt + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
+      ws[indEZt + str(zeile)] = strftime("%M:%S", gmtime(ds[11]))
+      ws[indEZt + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
+      ws[indEZt + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
+      #
+      ws[indZ03 + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
+      ws[indZ03 + str(zeile)] = strftime("%M:%S", gmtime(ds[9]))
+      ws[indZ03 + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
+      #
+      ws[indZ36 + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
+      ws[indZ36 + str(zeile)] = strftime("%M:%S", gmtime(ds[10]))
+      ws[indZ36 + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
+      #
+      if(ds[11] == Last):
+         Anz = Anz + 1
+      else:
+         Anz = Anz + 1
+         Platz = Anz
+         Last  = ds[11]
+      # 
+      ws[indPos + str(zeile)] = Platz
+      # ws[indPos + str(zeile)].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
+      ws[indPos + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
+      ws[indPos + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
+      #
+      
       #Bemerkung
       ws[indCom + str(zeile)] = ds[13]
       ws[indCom + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
       
-      # 
-      ws[indPos + str(zeile)] = "1"
-      ws[indPos + str(zeile)].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
-      ws[indPos + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       # 
       ws[indBot + str(zeile)] = ds[0]
       ws[indBot + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
@@ -303,6 +275,11 @@ for dsatz in cursor_R:
             Jahrgang = str( Rd[3] )
             # Verein
             Verein = Rd[6]
+            # Gewicht
+            if(Rd[5] <= 0):
+               Gewicht = '-'
+            else:
+               Gewicht = str(Rd[5])
          else:
             # Vorname
             Vorname = Vorname + "\n" + Rd[0]
@@ -312,6 +289,11 @@ for dsatz in cursor_R:
             Jahrgang = Jahrgang + "\n" + str(Rd[3])
             # Verein
             Verein = Verein + "\n" + Rd[6]
+            #Gewicht
+            if(Rd[5] > 0):
+               Gewicht = Gewicht + "\n" + str(Rd[5])
+            elif(Gewicht != "-"):
+               Gewicht = Gewicht + "\n-"
       # Vorname
       ws[indVor + str(zeile)] = Vorname
       # Nachname
@@ -319,8 +301,10 @@ for dsatz in cursor_R:
       # Jahrgang
       ws[indJah + str(zeile)] = Jahrgang
       # Verein
-      ws[indEV + str(zeile)] = Verein
-      #
+      ws[indEV  + str(zeile)] = Verein
+      # Gewicht
+      ws[indGew + str(zeile)] = Gewicht
+     #
       if(nPers > 1):
          ws.row_dimensions[ zeile ].height = 18*nPers
 
@@ -330,8 +314,6 @@ for dsatz in cursor_R:
 connection.close()
 
 #========================================================================
-ws['A1'] = "Bitte nur die grünen Zellen bearbeiten"
-ws['A1'].font = Font(name='arial', sz=12, b=True, i=True, color='4444dd')
 
 # Ruderverein
 FillCol = "44ff44"
@@ -339,16 +321,6 @@ redFill = PatternFill(start_color='EE1111',end_color='EE1111',fill_type='solid')
 greenFill = PatternFill(start_color='44ff44',end_color='44ff44',fill_type='solid')
 noFill = PatternFill(start_color='ffffff',end_color='ffffff',fill_type='solid')
 # 11EE11 oder 44ff44
-
-ws['A2'] = "Erste Startzeit"
-ws['A2'].font = Font(name='arial', sz=8, b=True, i=False, color='4444dd')
-ws.merge_cells('A3:B3')
-ws['A3'].fill = PatternFill(start_color=FillCol, end_color="4444dd",  fill_type = "solid")
-
-ws['D2'] = "Startabstand"
-ws['D2'].font = Font(name='arial', sz=8, b=True, i=False, color='4444dd')
-ws.merge_cells('D3:E3')
-ws['D3'].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
 
 
 # ====================================================================== adapt column with
@@ -361,26 +333,36 @@ ws.column_dimensions[indStT].width = "11"
 ws.column_dimensions[indVor].width = "14"
 ws.column_dimensions[indNam].width = "14"
 ws.column_dimensions[indJah].width = "10"
-ws.column_dimensions[indEV].width  = "8"
+ws.column_dimensions[indEV].width  = "8"    # Verein
+ws.column_dimensions[indGew].width = "5" 
+
+ws.column_dimensions[indEZt].width = "10" 
+ws.column_dimensions[indZ03].width = "8" 
+ws.column_dimensions[indZ36].width = "8" 
+
 ws.column_dimensions[indCom].width = "26"
-ws.column_dimensions[indBot].width = "4"
+ws.column_dimensions[indBot].width = "2"
 
 # fixiere Tabelle:
-ws.freeze_panes = ws['A7']
+ws.freeze_panes = ws['A2']
 
 # erstelle Filter
 # maxCols = str( zeile + 10 ) auf 256 gesetzt
-ws.auto_filter.ref = "A6:J256"
+ws.auto_filter.ref = "A1:J256"
 
 
 # ______________________________________ set Logo
 logo = Image("RVE_BRV_Flag.png")
 
 # A bit of resizing 
-logo.height = 77
-logo.width = 210
-
-ws.add_image(logo, "H1")
-
+#logo.height = 77
+#logo.width = 210
+logo.height = 108
+logo.width = 294
+ws.merge_cells('O2:R7')
+ws.add_image(logo, "O2")
+ws.merge_cells('O1:R1')
+ws['O1'].alignment = Alignment(horizontal="center",vertical="center")
+ws['O1'] = LSglobal.Name
 # ______________________________________ save
-wb.save('Startreihenfolge_H2020.xlsx')
+wb.save('Endergebnis_H2020_test.xlsx')

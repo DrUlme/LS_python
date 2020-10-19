@@ -11,9 +11,9 @@ import LSglobal
 # open existent workbook:
 from openpyxl import load_workbook
 
-# filename = 'Meldungen/01_RVE_Thea.xlsx'
+filename = 'Startreihenfolge_offiziell.xlsx'
 # filename = 'Startreihenfolge_H2020.xlsx'
-filename = LSglobal.StartXLS
+# filename = LSglobal.StartXLS
 
 # read the last used value (not the formula)
 wb = load_workbook(filename, data_only=True)
@@ -67,7 +67,12 @@ while zeile > 6:
       Vereine  = ws['H' + str(zeile)].value
       Verein   = Vereine.split("\n")
       #
-      print("Rennen " + str(Rennen) + "." + str(Positi) + "= #" + str(StNr) + " (" + str(Boot) + ") :  " + str(mySec))
+      print("Rennen " + str(Rennen) + "." + str(Positi) + "= #" + str(StNr) + " (" + str(Boot) + ") :  " + str(mySec))      
+      sql = "UPDATE rennen SET status = 2  WHERE nummer = " + str(Rennen)
+      # print( sql )
+      cursor.execute(sql)
+      connection.commit()
+
       #
       # SQL-Abfrage
       sql = "SELECT * FROM boote WHERE nummer = " + str(Boot)
@@ -112,7 +117,7 @@ while zeile > 6:
       # ______________________________________________________________________________________
       #
       if( Rennen != dsatz[2] ):
-            print( "Boot " + str(Boot) + " mit Startnr " + str(StNr) + " von Rennen " + dsatz[2] + " nach " + str(Rennen) + " ?!" )
+            print( "Boot " + str(Boot) + " mit Startnr " + str(StNr) + " von Rennen " + str(dsatz[2]) + " nach " + str(Rennen) + " ?!" )
             # x = raw_input("Ändern? [Y/n]")
             x = input("Ändern? [Y/n] > ")
             if(x == "Y" or x== "y" or x == "j" or x == "J"):

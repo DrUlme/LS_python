@@ -100,15 +100,15 @@ for Rsatz in Rcursor:
       sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " ORDER BY vereine, nummer "
    elif(Status == 2):
       TXT = TXT + "- <iH> Melde-Ergebnis</iH>"
-      Bemerkung = "noch keine Zeitplanung"
+      Bemerkung = "Startzeit"
       sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0 ORDER BY startnummer, planstart "
    elif(Status == 5):
       TXT = TXT + "- <iH> Endergebnis </iH>"
-      Bemerkung = "noch keine Zeitplanung"
+      Bemerkung = "Endergebnis"
       sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0  ORDER BY zeit"   
    else:
       TXT = TXT + "- <iH> vorl&auml;ufiges Ergebnis</iH>"
-      Bemerkung = "noch keine Zeitplanung"
+      Bemerkung = "vorläufig"
       sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0  ORDER BY zeit, zeit3000, secstart, planstart " 
    #
    TXT = TXT + "</th>\n  </tr>\n </thead>\n <tbody>\n"
@@ -147,6 +147,26 @@ for Rsatz in Rcursor:
             ZeitStr = "-"
          else:
             NrStr = str(StNr)
+            #
+            if(Bsatz[11] > 0):
+               Btime = Bsatz[11]
+               ZeitStr =  str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "$:\\small{\\textcolor{gray}{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}}"
+               zBemerkung = "Endzeit"
+            elif(Bsatz[9] > 0):
+               Btime = Bsatz[9]
+               zBemerkung = "3000 m"
+            elif(Bsatz[6] > 0):
+               Btime = Bsatz[6]
+               zBemerkung = "gestartet"
+            else:
+               Btime = Bsatz[5]
+               zBemerkung = "Plan"
+               
+                              
+         BtimH   = math.floor(Btime/3600)
+         BtimM   = math.floor(Btime/60 - BtimH*60 )
+         ZeitStr =  str(BtimH) + ":" + str(BtimM).rjust(2, '0') + ":" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + " "
+                  
          #
          TXT = TXT + " <tr>\n   <td><b>" + NrStr + "</b></td>\n   <td>"
          # <b> Ben Kentersack </b>(2002<sup><nolgw>Lgw.</nolgw></sup>)
@@ -155,7 +175,7 @@ for Rsatz in Rcursor:
          if(Status == 1):
             TXT = TXT + "<td> <zeitbemerkung>" + Bemerkung +"</zeitbemerkung></td>\n"
          else:
-            TXT = TXT + "   <td><b>" + ZeitStr + " </b><br><zeitbemerkung>" + Bemerkung +"</zeitbemerkung></td>\n"
+            TXT = TXT + "   <td><b>" + ZeitStr + " </b><br><zeitbemerkung>" + zBemerkung +"</zeitbemerkung></td>\n"
          TXT = TXT + "  </tr>\n\n"
 
    # comment
