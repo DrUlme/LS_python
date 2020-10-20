@@ -28,8 +28,9 @@ TrzFiles  = ["Start.trz", "3000.trz", "Ziel.trz"]
 
 TrzDBname = ["secstart",  "sec3000",  "sec6000"]
 TrzDBpos  = [ 6,    7,   8]
-Trz_dSec  = [ 20, 0, 0]
 Trz_m     = [ 0, 3000, 6000]
+# Zeit-Versatz in TRZ-Dateien ausgleichen:
+Trz_dSec  = [ 0, 0, 0]
 
 """
 ========================================================================

@@ -131,8 +131,8 @@ for Rsatz in Rcursor:
             sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
-            if(Rd[6] == Vsatz[1]):
-               nPers = 1
+            # if(Rd[6] == Verein):
+            #   nPers = 1
             if(iR == 0):
                Name   = "<b>" + Rd[0] + " " + Rd[1] + " </b> ( " + str(Rd[3]) + ") "
                Verein = "<i>" + Rd[6] + "</i>"
