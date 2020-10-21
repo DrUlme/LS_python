@@ -58,7 +58,8 @@ HTXT = HTXT + "<font size=\"4\"><a href=\"Meldungen.pdf\" >aktuelles Melde-PDF</
 HTXT = HTXT + "<div>\n <input type=\"radio\" name=\"biframe\" value=\"aktuell.html\" onclick=\"document.querySelector('iframe.reload').setAttribute('src', this.value);\" checked=\"checked\">Aktuell<br>\n"
 HTXT = HTXT + " <input type=\"radio\" name=\"biframe\" value=\"aktuell.html\" onclick=\"window.location = 'aktuell.html';\" >Mobile Version<br>\n <br>\n"
 
-
+Count_Boote   = 0
+Count_Ruderer = 0
 
 sql = "SELECT * FROM rennen WHERE status > 0"
 Rcursor.execute(sql)
@@ -125,14 +126,16 @@ for Rsatz in Rcursor:
       Abmeldung = Bsatz[12]
       if(Abmeldung == 0):
          # _______________________________________________________________________________________________________________
-        #
-         nPers   = 0
+         #
+         Count_Boote = Count_Boote + 1
+         #
          for iR in range(0, (len(RudInd) - 2)):         
             sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
-            # if(Rd[6] == Verein):
-            #   nPers = 1
+            # 
+            Count_Ruderer = Count_Ruderer + 1
+            #
             if(iR == 0):
                Name   = "<b>" + Rd[0] + " " + Rd[1] + " </b> ( " + str(Rd[3]) + ") "
                Verein = "<i>" + Rd[6] + "</i>"
@@ -221,3 +224,5 @@ for filename in FILES:
       fp = open("HTML/" + filename,"a")
       fp.write(HTMSel)
       fp.close()
+
+print("__________________________________________________________________\n\nEs starten <b>" + str(Count_Ruderer) + "</b> Ruderer in <b>" + str(Count_Boote) + "</b> Booten ")

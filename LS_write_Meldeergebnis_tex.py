@@ -155,11 +155,13 @@ sql = "SELECT * FROM verein "
 Vcursor.execute(sql)
 for Vsatz in Vcursor:
    # ------------------------------------- Kurzform mit Langform ersetzen
+   Anzahl_Rennen = 0
    VereinStr = "{" + Vsatz[1] +"}"
    TXT = TXT.replace(VereinStr, Vsatz[0])
-   TXT = TXT + "\n%================================\n\\newpage\n{\\huge "
-   TXT = TXT + Vsatz[0]
-   TXT = TXT + " }\\\\\n"
+   
+   VTXT = "\n%================================\n\\newpage\n{\\huge "
+   VTXT = VTXT + Vsatz[0]
+   VTXT = VTXT + " }\\\\\n"
    #___________________________ durchsuche Rennen
    sql = "SELECT * FROM rennen "
    Rcursor.execute(sql)
@@ -199,6 +201,10 @@ for Vsatz in Vcursor:
                #
             #
             if(nPers > 0):
+               if(Anzahl_Rennen == 0):
+                  TXT = TXT + VTXT
+                  Anzahl_Rennen = Anzahl_Rennen + 1
+               #
                if(Vrennen == 0):
                   Vrennen = 1
                   TXT = TXT + "\n{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + "\\\\\n%"
@@ -237,6 +243,8 @@ for Vsatz in Vcursor:
 # #TXT = TXT + "{\\bf " + str(StNo) + " : " + Vorname[0] + " } " + Name[0] + "\\\\\n" 
 
 ##############################################################################################################
+# Korrektur des 'ß' - sz:
+TXT = TXT.replace('ß', '{\ss}')
 
 TXT = TXT + "\n%======================\n\\end{document}\n"
 fp = open("LaTeX/Meldungen.tex","w")
