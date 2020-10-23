@@ -29,8 +29,8 @@ RennenMax = cursor.fetchone()
 # for iR in range(0, (len(RudInd) - 2)): 
 seconds = StartSec    
 for Rennen in range(StartRennen, (RennenMax[0]+1) ):
-    if(Rennen == 95):
-       seconds = 3600*11  + 60*35 + 0
+    if(Rennen == 5):
+       seconds = 3600*11  + 60*41 + 0
        SecDif  = 60
     #----------------------------------------------
     sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer "

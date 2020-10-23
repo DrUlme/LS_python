@@ -66,7 +66,7 @@ for Rsatz in Rcursor:
       # _______________________________________________________________________________________________________________
       if(NoBoote == 0):
          TXT = TXT + "\n% ============================= Rennen:  " + str(Rennen) + " __________ Start\n\\noindent\n"
-         TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.0cm}|C{2.0cm}|}\n\
+         TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{1.0cm}|m{5.5cm}m{6.0cm}|C{2.0cm}|}\n\
          \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
          \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} } } \\\\\n"
          print("Rennen " + str(Rennen) + " : " + RennenString)
