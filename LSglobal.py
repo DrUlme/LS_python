@@ -19,8 +19,8 @@ SQLiteFile = "LS2020H.db"
 # _________________________________________________ Herbst 2019
 # TrzDir    = "../H2019/Zeiten"
 # 
-# _________________________________________________ Herbst 2019
-TrzDir    = "../Backup/LS2018F"
+# _________________________________________________ Herbst 2020
+TrzDir    = "./Zeiten"
 
 TrzFiles  = ["Start.trz", "3000.trz", "Ziel.trz"]
 # TrzFiles  = ["Start.trz_gelesen", "3000.trz_gelesen", "Ziel.trz_gelesen"]
@@ -29,6 +29,7 @@ TrzFiles  = ["Start.trz", "3000.trz", "Ziel.trz"]
 TrzDBname = ["secstart",  "sec3000",  "sec6000"]
 TrzDBpos  = [ 6,    7,   8]
 Trz_m     = [ 0, 3000, 6000]
+
 # Zeit-Versatz in TRZ-Dateien ausgleichen:
 Trz_dSec  = [ 0, 0, 0]
 
