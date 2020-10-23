@@ -22,16 +22,24 @@ Pcursor  = connection.cursor()
 Vcursor  = connection.cursor()
 #
 
-
 t1 = time.localtime()
 
+Meter = 6000
+
+if(Meter == 0):
+   POSITION = "S T A R T"
+elif(Meter == 3000):
+   POSITION = "3000 m"
+elif(Meter == 6000):
+   POSITION = " Z I E L "
+   
 TXT = "\\documentclass[a4paper]{article}\n\\usepackage[ngerman]{babel}\n\\usepackage{colortbl,array,booktabs}\n\
 \\usepackage[table]{xcolor}\n\\usepackage{tabularx}\n\\usepackage{fancyhdr}\n\\usepackage{graphicx}\n\
 \\usepackage{multirow}\n\\usepackage[left=2.5cm, right=2.5cm, top=2.25cm, bottom=2.5cm]{geometry}\n\
 % ___________________________________________________ Colors \n\
 \\definecolor{cLightGray}{rgb}{.90,.90,.90}\n\\definecolor{cMidGray}{rgb}{.50,.50,.50}\n\n\
 % ___________________________________________________ Header\n\\setlength{\\headsep}{30pt}\n\
-\\fancyhead[L]{\\textbf{" +  LSglobal.Name + "}\\\\ Meldeergebnis - Status " + str(t1.tm_hour) + ":" + str(t1.tm_min).rjust(2, '0') + "{\\small Uhr } - " \
+\\fancyhead[L]{\\textbf{" +  LSglobal.Name + " - - - - - - - - " + POSITION + "}\\\\ Meldeergebnis - Status " + str(t1.tm_hour) + ":" + str(t1.tm_min).rjust(2, '0') + "{\\small Uhr } - " \
    + str(t1.tm_mday) + "." + str(t1.tm_mon) + "." + str(t1.tm_year) + " }\n" + \
 "\\fancyhead[R]{\\includegraphics[height=1.3cm]{RVE-Flag.png} }\n\\renewcommand{\\headrulewidth}{0pt}\n\n\
 % ___________________________________________________ other definitions\n\
@@ -45,7 +53,12 @@ TXT = "\\documentclass[a4paper]{article}\n\\usepackage[ngerman]{babel}\n\\usepac
 #print(TXT)
 TXT = TXT + "\n"
 
-sql = "SELECT * FROM rennen "
+if(Meter == 6000):
+   sql = "SELECT * FROM rennen WHERE strecke = " + str(Meter) + " "
+else:
+   sql = "SELECT * FROM rennen "
+print(sql)
+   
 Rcursor.execute(sql)
 for Rsatz in Rcursor:
    Rennen       = Rsatz[0]
@@ -65,9 +78,10 @@ for Rsatz in Rcursor:
          # _______________________________________________________________________________________________________________
          if(NoBoote == 0):
             TXT = TXT + "\n% ============================= Rennen:  " + str(Rennen) + " __________ Start\n\\noindent\n"
-            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.0cm}|C{2.0cm}|}\n\
-            \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
-            \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} } } \\\\\n"
+            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{2.0cm}|C{2.0cm}|C{4.0cm}|}\n\
+            \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{95mm}{\
+            \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} } } & \
+            \\parbox[1cm][2em][c]{40mm}{\\color{white}\\textbf{\\Large " + POSITION + "}} \\\\\n"
             print("Rennen " + str(Rennen) + " : " + RennenString)
          #
          NoBoote = NoBoote + 1
@@ -132,7 +146,7 @@ for Rsatz in Rcursor:
                TXT = TXT + "\\\\"
          #
          # Verein
-         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{60mm}{ \\small "
+         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{20mm}{ \\small "
          TXT = TXT + Verein
          #for iR in range(0, nPers):
          #   TXT = TXT + "Ruder-Club Aschaffenburg v. 1898 e.V."
@@ -140,7 +154,7 @@ for Rsatz in Rcursor:
          #   if(nPers > (iR + 1)):
          #      TXT = TXT + "\\\\"
          #
-         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{20mm}{ " + StrZeit + " }\\\\\myMidrule\n"
+         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{20mm}{ " + StrZeit + " } & \\\\\myMidrule\n"
       # _______________________________________________________________________________________________________________
    #__________________________________________________________________________________________________________
    if(NoBoote > 0):
@@ -148,111 +162,13 @@ for Rsatz in Rcursor:
    #else:
    #   print("# " + str(Rennen) )
 
-##############################################################################################################
-# Vereine
-#
-# Count_Boote   = 0
-# Count_Ruderer = 0
-Count_Verein  = 0
-
-sql = "SELECT * FROM verein "
-Vcursor.execute(sql)
-for Vsatz in Vcursor:
-   # ------------------------------------- Kurzform mit Langform ersetzen
-   Anzahl_Rennen = 0
-   VereinStr = "{" + Vsatz[1] +"}"
-   TXT = TXT.replace(VereinStr, Vsatz[0])
-   
-   VTXT = "\n%================================\n\\newpage\n{\\huge "
-   VTXT = VTXT + Vsatz[0]
-   VTXT = VTXT + " }\\\\\n"
-   #___________________________ durchsuche Rennen
-   sql = "SELECT * FROM rennen "
-   Rcursor.execute(sql)
-   for Rsatz in Rcursor:
-      Rennen       = Rsatz[0]
-      RennenString = Rsatz[1]
-      #
-      # print("checke Rennen " + str(Rennen) + " nach '" + Vsatz[1] + "'")
-      #
-      NoBoote = 0
-      Ngray = 0
-      Vrennen = 0
-      sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer, vereine "
-      Bcursor.execute(sql)
-      for Bsatz in Bcursor:
-         Boot   = Bsatz[0]
-         StNr   = Bsatz[1]
-         Verein = Bsatz[3]
-         RudInd = Bsatz[4].split(',')
-         Abmeldung = Bsatz[12]
-         if(Abmeldung == 0):
-            # ===========================================================================================
-            nPers   = 0
-            for iR in range(0, (len(RudInd) - 2)):         
-               sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
-               Pcursor.execute(sql)
-               Rd = Pcursor.fetchone()
-               if(Rd[6] == Vsatz[1]):
-                  nPers = 1
-               if(iR == 0):
-                  Name = "\\textbf{" + Rd[0] + " } " + Rd[1]
-               else:
-                  Name = Name + ", \\textbf{ " + Rd[0] + " } " + Rd[1]
-               #               
-               if(Vsatz[1] != Rd[6]):
-                  Name = Name + " \\textcolor{gray}{\\small (" + Rd[6] + ")}"
-               #
-            #
-            if(nPers > 0):
-               if(Anzahl_Rennen == 0):
-                  TXT = TXT + VTXT
-                  Anzahl_Rennen = Anzahl_Rennen + 1
-                  Count_Verein  = Count_Verein  + 1
-               #
-               if(Vrennen == 0):
-                  Vrennen = 1
-                  TXT = TXT + "\n{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + "\\\\\n%"
-                  TXT = TXT + "\n\\begin{tabular}{m{1.0cm}m{8cm}m{2.0cm}}\n"
-               #_______________________________________________________________________________________
-               Btime = Bsatz[5]
-               #
-               if(Btime == 0):
-                  StrStNr = "tbd."
-                  StrZeit = "tbd."
-               else:
-                  StrStNr = str(StNr)
-                  if(isinstance(Btime, str)):
-                     StrZeit = Btime
-                  else:
-                     BtimH = math.floor(Btime/3600)
-                     BtimM = math.floor(Btime/60 - BtimH*60 )
-                     StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "$:\\small{\\textcolor{gray}{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}}"
-                     # "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
-               #
-               TXT = TXT + " " + StrStNr + " & " + Name + " & " + StrZeit + " \\\\\n"
-            # ===========================================================================================
-         # elif(Abmeldung > 1):  # verspätet abgemeldet
-         #_______________________________________________________________________________________
-         #
-      #_______________________________________________________________________________________
-
-      if(Vrennen > 0):
-         TXT = TXT + "%\n\\end{tabular}\\\\\n%\n%\n"
- 
-
-#TXT = TXT + "\\\\{\\bf\\large Rennen " + str(Rennen) + ": " +  RennenString + " } \\\\\n"
-# # \null\hfill{\bf Startzeit 11:02\\}
-# Vorname = ['Vor', 'und', 'zu']
-# Name    = ['Name', 'ist', 'unwichtig']
-# #TXT = TXT + "{\\bf " + str(StNo) + " : " + Vorname[0] + " } " + Name[0] + "\\\\\n" 
 
 ##############################################################################################################
 # Korrektur des 'ß' - sz:
 TXT = TXT.replace('ß', '{\ss}')
 
 TXT = TXT + "\n%======================\n\\end{document}\n"
-fp = open("LaTeX/Meldungen.tex","w")
+fp = open("LaTeX/Zeitprotokoll.tex","w")
 fp.write(TXT)
 fp.close()
 

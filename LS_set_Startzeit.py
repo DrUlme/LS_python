@@ -18,10 +18,10 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 cursor  = connection.cursor()
 Bcursor = connection.cursor()
 #
-StartRennen = 3
-StartSec    = 3600*11  + 60*1 + 0
+StartRennen = 2
+StartSec    = 3600*11  + 60*0 + 0
 
-SecDif = 50
+SecDif = 60
 
 cursor.execute( "SELECT MAX(nummer) FROM rennen " )
 RennenMax = cursor.fetchone()
@@ -29,7 +29,7 @@ RennenMax = cursor.fetchone()
 # for iR in range(0, (len(RudInd) - 2)): 
 seconds = StartSec    
 for Rennen in range(StartRennen, (RennenMax[0]+1) ):
-    if(Rennen == 5):
+    if(Rennen == 95):
        seconds = 3600*11  + 60*35 + 0
        SecDif  = 60
     #----------------------------------------------

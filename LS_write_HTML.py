@@ -61,6 +61,7 @@ HTXT = HTXT + " <input type=\"radio\" name=\"biframe\" value=\"aktuell.html\" on
 Count_Boote   = 0
 Count_Ruderer = 0
 
+
 sql = "SELECT * FROM rennen WHERE status > 0"
 Rcursor.execute(sql)
 for Rsatz in Rcursor:
