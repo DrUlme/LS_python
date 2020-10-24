@@ -27,7 +27,7 @@ sql = "SELECT * FROM rennen "
 cursor.execute(sql)
 for dsatz in cursor:
    Rennen = dsatz[0]
-   if( dsatz[4] == "3000 m" ):
+   if( dsatz[4] == "3000" ):
       is3000.insert(Rennen, 1)
    else:
       is3000.insert(Rennen, 0)
@@ -56,7 +56,8 @@ for iFile in range(0, len(LSglobal.TrzFiles) ):
          # print("# " + str(PARTS[0]) + " ist NICHT in Datenbank !")         
       else:
          print("# " + str(PARTS[0]) + ": " + LSglobal.TrzFiles[ iFile ] + ": " + str(Bt[LSglobal.TrzDBpos[ iFile ]]) + "(" + str(Bt[LSglobal.TrzDBpos[ iFile ]-1]) + ")... in DB" )
-         if(Bt[LSglobal.TrzDBpos[ iFile ]] <= 0):
+         # failback nehme nur kleinste Zahl
+         if( (Bt[LSglobal.TrzDBpos[ iFile ]] <= 0 ) or ( Bt[LSglobal.TrzDBpos[ iFile ]] > seconds) ):
             if(Bt[LSglobal.TrzDBpos[ iFile ]-1] <= 0):
                print("->" +  str(seconds) + " sec - dürfte aber noch nicht hier sein!" ) 
             else:

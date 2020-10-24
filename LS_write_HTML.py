@@ -103,7 +103,7 @@ for Rsatz in Rcursor:
    elif(Status == 2):
       TXT = TXT + "- <iH> Melde-Ergebnis</iH>"
       Bemerkung = "Startzeit"
-      sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0 ORDER BY startnummer, planstart "
+      sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0 ORDER BY zeit, zeit3000, startnummer, planstart "
    elif(Status == 5):
       TXT = TXT + "- <iH> Endergebnis </iH>"
       Bemerkung = "Endergebnis"
@@ -154,8 +154,15 @@ for Rsatz in Rcursor:
             #
             if(Bsatz[11] > 0):
                Btime = Bsatz[11]
-               ZeitStr =  str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "$:\\small{\\textcolor{gray}{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}}"
-               zBemerkung = "Endzeit"
+               if(Bsatz[10] > 0):
+                  Bt3_s =  Bsatz[9]
+                  Bt3_M =  math.floor(Bt3_s/60)
+                  Bt6_s =  Bsatz[10]
+                  Bt6_M =  math.floor(Bt6_s/60)
+                  
+                  zBemerkung = "<small>&#8614; " + str(Bt3_M) + ":" +  str(Bt3_s - 60*Bt3_M).rjust(2, '0') + " &#8614; "   + str(Bt6_M) + ":" +  str(Bt6_s - 60*Bt6_M).rjust(2, '0') + " &#8677;</small>"                
+               else:
+                  zBemerkung = "Endzeit"
             elif(Bsatz[9] > 0):
                Btime = Bsatz[9]
                zBemerkung = "3000 m"
