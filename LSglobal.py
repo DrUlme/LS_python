@@ -26,7 +26,7 @@ TrzFiles  = ["Start.trz", "3000.trz", "Ziel.trz"]
 # TrzFiles  = ["Start.trz_gelesen", "3000.trz_gelesen", "Ziel.trz_gelesen"]
 
 
-TrzDBname = ["secstart",  "sec3000",  "sec6000"]
+TrzDBname = ["secstart",  "sec3000",  "sec6000", "zeit3000", "zeit6000", "zeit"]
 TrzDBpos  = [ 6,    7,   8]
 Trz_m     = [ 0, 3000, 6000]
 
