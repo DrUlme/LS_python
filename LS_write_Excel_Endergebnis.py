@@ -175,7 +175,7 @@ for dsatz in cursor_R:
    if(dsatz[7] > 0):
       ws[indGew + str(zeile)] = str(dsatz[7])
       ws[indGew + str(zeile)].font = Font(name='arial', sz=10, b=False, i=True, color='ffffff')
-      ws[indGew + str(zeile)].alignment = Alignment(horizontal='center' vertical='center')
+      ws[indGew + str(zeile)].alignment = Alignment(horizontal='center', vertical='center')
 
    ws[indGew + str(zeile)].fill = (grayFill)
    ws[indEZt + str(zeile)].fill = (grayFill)

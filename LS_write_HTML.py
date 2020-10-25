@@ -159,8 +159,8 @@ for Rsatz in Rcursor:
                   Bt3_M =  math.floor(Bt3_s/60)
                   Bt6_s =  Bsatz[10]
                   Bt6_M =  math.floor(Bt6_s/60)
-                  
-                  zBemerkung = "<small>&#8614; " + str(Bt3_M) + ":" +  str(Bt3_s - 60*Bt3_M).rjust(2, '0') + " &#8614; "   + str(Bt6_M) + ":" +  str(Bt6_s - 60*Bt6_M).rjust(2, '0') + " &#8677;</small>"                
+                  # Pfeil Mitte &#8614; oder &#8696;
+                  zBemerkung = "<small>&#8614; " + str(Bt3_M) + ":" +  str(Bt3_s - 60*Bt3_M).rjust(2, '0') + " &#8696; "   + str(Bt6_M) + ":" +  str(Bt6_s - 60*Bt6_M).rjust(2, '0') + " &#8677;</small>"                
                else:
                   zBemerkung = "Endzeit"
             elif(Bsatz[9] > 0):
