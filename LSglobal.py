@@ -11,6 +11,8 @@ DBName = "LS2020H.db"
 
 Jahr = 2020
 
+Datum = "24.10."
+
 MeldeDir   = "Meldungen"
 StartXLS   = 'Startreihenfolge_H2020.xlsx'
 
