@@ -32,21 +32,25 @@ TXT_1 = "\\documentclass[DIN,\n	fromalign=right,\n	fromurl=on,\n	fromemail=on,\n
 \\usepackage[right]{eurosym}\n\\usepackage[ngerman]{babel}\n\n% Handle graphics and tables\n\
 \\usepackage{graphicx}\n\\usepackage{booktabs}\n\\usepackage{multirow}\n%\n% Handle hyperlinks\n\
 \\usepackage[hidelinks]{hyperref}\n%\n% Use gray text for contact data\n\\usepackage{color}\n%\n"
-
+#
+# mehr Platz nach unten:
+TXT_1 = TXT_1 + "%\n%\n\\setlength{\\textheight}{26cm}\n\\setlength{\\footskip}{0mm}\n\\setlength{\\footheight}{0mm}\n%\n"
+#
 # \\setkomavar{fromname}{RVE $\\cdot $ Habichtstra{\\ss}e 12 $\\cdot $ }\n\
+#
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #   RVE-Flag.png: 692 x 252 pixel
 TXT_2 = "% Begin KOMA variables - make changes here\n\
 \\newkomavar{gigdate}\n\
 \\setkomavar{gigdate}{24. Oktober 2020}\n\
 \\newkomavar{ausrichter}\n\
-\\setkomavar{ausrichter}{Ruderverein Erlangen 1922 e.V.}\n\
+\\setkomavar{ausrichter}{Ruderverein Erlangen e.V.}\n\
 \\setkomavar{fromname}{\\textbf{RVE}}\n\
-\\setkomavar{fromaddress}{Habichtstra{\\ss}e 12\\\\91072 Erlangen}\n\
+\\setkomavar{fromaddress}{Habichtstra{\\ss}e 12\\\\91056 Erlangen}\n\
 \\setkomavar{subject}{Rechnung:	Meldegebühr für die Herbst-Langstrecke }\n\
-\\setkomavar{fromurl}{\\url{http://www.ruderverein-erlangen.de/}}\n\
+\\setkomavar{fromurl}{\\url{http://www.ruderverein-erlangen.de}}\n\
 \\setkomavar{fromemail}{\\href{mailto:langstrecke@ruderverein-erlangen.de}{langstrecke@ruderverein-erlangen.de}}\n\
-\\setkomavar{fromlogo}{\\includegraphics[height=1.5cm,width=4.12cm]{RVE-Flag.png}}\n\
+\\setkomavar{fromlogo}{\\includegraphics[height=1.76cm,width=2cm]{RVE-Flag.png}}\n\
 \\setkomavar{yourref}[Ihre Teilnahme an der Langstrecke am ]{\\usekomavar{gigdate}}\n\
 \n\
 % Invoice data\n\
@@ -55,20 +59,24 @@ TXT_2 = "% Begin KOMA variables - make changes here\n\
 \\newkomavar{invoicedate}\n\
 \\setkomavar{invoicedate}{FÄLLIGKEITSDATUM}\n\
 \\newkomavar{iban}\n\
-\\setkomavar{iban}{DE00000000000000000000}\n\
+\\setkomavar{iban}{DE68 7635 0000 0000 0076 01}\n\
 \\newkomavar{bic}\n\
-\\setkomavar{bic}{ABCADEXY000}\n\n"
+\\setkomavar{bic}{BYLADEM1ERH}\n\n"
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# \\footnotesize => \\scriptsize
 TXT_3 = "% Begin header\n\
 \\firsthead{\\null\\hfill \n\
  \\parbox[t][\\headheight][t]{10cm}{%\n\
   \\flushright\n\
   {\\small\\textsf{\n\
   \\color[gray]{.5}%\n\
-  \\usekomavar{fromlogo}\\\\\n\
-  \\textbf{\\usekomavar{ausrichter}}\\\\\n\
-  \\usekomavar{fromaddress}\\\\\n\
+  \\begin{tabular}[t]{r l}\n\
+	\\textbf{\\usekomavar{ausrichter}} & \\multirow{5}{*}{\\usekomavar{fromlogo}} \\\\\n\
+	Dr. Ulf Meerwald & \\\\\n\
+	2.Vorsitzender &\\\\\n\
+  \\usekomavar{fromaddress} & \\\\\n\
+  \\end{tabular}\n\
   \\footnotesize{\\usekomavar{fromemail}}\\\\\n\
   \\footnotesize{\\usekomavar{fromurl}}\\\\\n\
   [\\baselineskip]\n\
@@ -77,13 +85,13 @@ TXT_3 = "% Begin header\n\
 % Begin footer\n\
 \\firstfoot{\n\
 \\parbox[t]{\\textwidth}{\n\
-	\\footnotesize\n\
+	\\scriptsize\n\
 	\\color[gray]{.5}%\n\
 	\\begin{tabular}[t]{l | r l | r l}\n\
 		\\textbf{\\usekomavar{ausrichter}} &\n\
 		\\multicolumn{2}{l|}{\\textbf{Kontakt}} &\n\
 		\\multicolumn{2}{l}{\\textbf{Bankverbindung}}\\\\\n"
-#		\\multirow{2}{*}{\\usekomavar{fromaddress}} &\n\
+
 TXT_3 = TXT_3 + "		Habichtstra{\\ss}e 12 & \n\
 		Web: & \\usekomavar{fromurl} &\n\
 		IBAN: & \\usekomavar{iban}\\\\\n\
@@ -103,15 +111,12 @@ TXT_4 = "% Begin main part - make changes here\n\
 Für die Teilnahme an der Langstrecke vom Bayrischen Ruderverband und dem \\usekomavar{ausrichter} am \n\
 \\usekomavar{gigdate} dürfen wir Ihnen folgendes berechnen:\n\n\\vspace{10pt}\n\n\
 \\begin{tabular}{p{0.8\\textwidth} r}\n\
-	\\toprule\n\
-	\\textbf{Bezeichnung} & \\textbf{Betrag} \\\\\n\
-	\\midrule\n%\n"
+\\toprule\n\
+\\textbf{Bezeichnung} & \\textbf{Betrag} \\\\\n\
+\\midrule\n%\n"
 
-# \n\n\\closing{Mit rudersportlichen Grüßen,}\n\n\n\
 
-# \\\\fancyhead[L]{\\\\textbf{" +  LSglobal.Name + "}\\\\\\\\ Meldeergebnis - Status " + str(t1.tm_hour) + ":" + str(t1.tm_min).rjust(2, '0') + "{\\\\small Uhr } - " \\
-
-##############################################################################################################
+####################################################################################################
 # Vereine
 #
 Count_Boote   = 0
@@ -123,6 +128,7 @@ sql = "SELECT * FROM verein WHERE kurz != 'RVE' "
 
 Meldegeld = 15
 Bugnummer = 10
+Deckelung = 250
 
 fehlende_Bugnummern = [ 63, 101]
 
@@ -130,6 +136,7 @@ Vcursor.execute(sql)
 for Vsatz in Vcursor:
    # ------------------------------------- Kurzform mit Langform ersetzen
    Anzahl_Rennen = 0
+   NoBoote = 0
    # ____________ Meldegeld
    EURO = 0
    # ____________ verspätete Abmeldung
@@ -141,17 +148,18 @@ for Vsatz in Vcursor:
    TXT = TXT +  "% Begin main part - make changes here\n\\begin{document}\n\\begin{letter}{"
    TXT = TXT +  Vsatz[0] + "\\\\\n"
    TXT = TXT +  Vsatz[2] + "\\\\\n"
-   TXT = TXT +  Vsatz[3] + "}\n\n"
+   TXT = TXT +  Vsatz[3] + "}\n%\n"
    TXT = TXT +  "\\opening{Sehr geehrte Damen und Herren,}\n\n"
    TXT = TXT +  "Für die Teilnahme an der Langstrecke vom Bayrischen Ruderverband und dem \\usekomavar{ausrichter} am \n"
    TXT = TXT +  "\\usekomavar{gigdate} dürfen wir Ihnen folgendes berechnen:\n\n\\vspace{10pt}\n\n"
-   TXT = TXT +  "\\begin{tabular}{p{0.8\\textwidth} r}\n	\\toprule\n	\\textbf{Bezeichnung} & \\textbf{Betrag} \\\\\n"
+   TXT = TXT +  "\\begin{tabular}{p{0.8\\textwidth} r}\n\\toprule\n\\textbf{Bezeichnung} & \\textbf{Betrag} \\\\\n"
    TXT = TXT +  "\\midrule\n%\n"
    #
    TXTA = "Verspätete Abmeldungen:\\small{"
    #
    TXTB = "Verlorene Bugnummern: \\newline\\small{"
    #
+   TXTM = "Meldegeld für folgende Mannschaften: \\newline\n\\small{\n%"
    #
    #___________________________ durchsuche Rennen
    sql = "SELECT * FROM rennen "
@@ -162,7 +170,6 @@ for Vsatz in Vcursor:
       #
       # print("checke Rennen " + str(Rennen) + " nach '" + Vsatz[1] + "'")
       #
-      NoBoote = 0
       Ngray = 0
       Vrennen = 0
       sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer, vereine "
@@ -186,28 +193,29 @@ for Vsatz in Vcursor:
                Name = "\\textsf{" + Rd[0] + "} " + Rd[1]
             else:
                # Name = Name + ", \\textbf{ " + Rd[0] + " } " + Rd[1]
-               Name = Name + ", \\textsf{" + Rd[0] + "} " + Rd[1]
+               Name = "(" + Name + ", \\textsf{" + Rd[0] + "} " + Rd[1] + ")"
             #               
             if(Vsatz[1] != Rd[6]):
                Name = Name + " \\textcolor{gray}{\\footnotesize (" + Rd[6] + ")}"
             #
          #
          if(nPers > 0):
+            #
             if(Abmeldung == 0):
+               NoBoote = NoBoote + 1
                if(Boot == 2 and nPers == 1):
                   EURO = EURO + Meldegeld/2
                else:
                   EURO = EURO + Meldegeld
-               TXT = TXT + VTXT
+               # TXT = TXT + VTXT
                Anzahl_Rennen = Anzahl_Rennen + 1
                #
                if(Vrennen == 0):
                   Vrennen = 1
-                  TXT = TXT +  "Meldegeld für folgende Mannschaften: \\newline\n	\\small\\textsf{\n"
-                  TXT = TXT + "\n\\newline{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + ": "
-                  TXT = TXT + Name + " "
+                  TXTM = TXTM + "\n\\newline{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + ": \\footnotesize "
+                  TXTM = TXTM + Name + " "
                else:
-                  TXT = TXT + ", " + Name + " "
+                  TXTM = TXTM + ", " + Name + " "
             # ===========================================================================================
             elif(Abmeldung > 1):  # verspätet abgemeldet
                if(Vrennen == 0):
@@ -233,9 +241,17 @@ for Vsatz in Vcursor:
    #if(Vrennen > 0):
    #   TXT = TXT + "%\\n\\\\end{tabular}\\\\\\\\\\n%\\n%\\n"
    # Korrektur des 'ß' - sz:
+ 
    if(EURO > 0):
       euronen = "%6.2f"% (EURO)
-      TXT = TXT + "\n\\newline}	& " + euronen + " \\\\\n"
+      TXT = TXT + TXTM + "\n\\newline}	& " + euronen + " \\\\\n"
+      TXT = TXT + "%\n% ... Meldegeld für " + str(NoBoote) + " Boote (genauer auf nächster Seite) ...\n%\n%\n"
+      if(EURO > Deckelung):
+         euronen = "%6.2f"% (EURO - Deckelung)
+         TXT = TXT + "%\nDeckelung der Meldegebühren auf EUR " + str(Deckelung) + ": \\newline"
+         TXT = TXT + " & \color{red}{-" + euronen + "} \\\\\n%\n"
+         EURO = Deckelung
+         
    if(EURA > 0):
       euronen = "%6.2f"% (EURA)
       TXT = TXT + TXTA +  "\\newline}	& " + euronen + " \\\\\n"
@@ -261,12 +277,12 @@ for Vsatz in Vcursor:
    euronen = "%6.2f"% (EURO + EURA + EURB)
    TXT = TXT + "\\textbf{Gesamtbetrag (brutto):} & " + euronen + " \\\\\n"
    TXT = TXT + "\\bottomrule\n\\end{tabular}\n%\n\\vspace{10pt}\\\\\n%\n"
-   TXT = TXT + "\\small{ Bitte beachten Sie, dass der \\usekomavar{ausrichter} nicht umsatzsteuerpflichtig\n" + \
-         "ist. Daher ist im ausgewiesenen Betrag gemä{\\ss} \\textsection 19 UStG keine Umsatzsteuer enthalten. \\\\}\n"
-   TXT = TXT + "Mit rudersportlichen Grüßen,\\\\\n\n\n"
-   TXT = TXT + "Dr. Ulf Meerwald, 2. Vorsitzender \n"
+   TXT = TXT + "\\small{ Die Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer nach §19 UStG.\\vspace{5pt}\\\\}\n"
+   TXT = TXT + "Bitte benutzen Sie das Kennwort: '\\textbf{Meldegebühr Langstreckentest " + Vsatz[1] + "'} bei der Überweisung, Danke!\\\\\n"
+   TXT = TXT + "\\vspace{5pt}\\\\\nMit rudersportlichen Grü{\ss}en,\\vspace{-10pt}\\\\\n\\includegraphics[height=1.71cm,width=4.13cm]{UlfMeerwald.png}"
+   TXT = TXT + "\\vspace{-19pt}\\\\\nDr. Ulf Meerwald, 2. Vorsitzender \n\n"
    TXT = TXT + "\\end{letter}\n\\end{document}\n"
-
+   #
    TXT = TXT.replace('ß', '{\\ss}')
    fp = open("LaTeX/Rechnung_" + Vsatz[1] + ".tex","w")
    fp.write(TXT)
