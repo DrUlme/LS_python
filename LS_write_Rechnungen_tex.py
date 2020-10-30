@@ -155,11 +155,12 @@ for Vsatz in Vcursor:
    TXT = TXT +  "\\begin{tabular}{p{0.8\\textwidth} r}\n\\toprule\n\\textbf{Bezeichnung} & \\textbf{Betrag} \\\\\n"
    TXT = TXT +  "\\midrule\n%\n"
    #
-   TXTA = "Verspätete Abmeldungen:\\small{"
+   TXT_Fontsize = "\\footnotesize"
+   TXTA = "Verspätete Abmeldungen: " +TXT_Fontsize + "{"
    #
-   TXTB = "Verlorene Bugnummern: \\newline\\small{"
+   TXTB = "Verlorene Bugnummern: \\newline" +TXT_Fontsize + "{"
    #
-   TXTM = "Meldegeld für folgende Mannschaften: \\newline\n\\small{\n%"
+   TXTM = "Meldegeld für folgende Mannschaften: " +TXT_Fontsize + "{\\newline\n%"
    #
    #___________________________ durchsuche Rennen
    sql = "SELECT * FROM rennen "
@@ -190,13 +191,14 @@ for Vsatz in Vcursor:
                nPers = nPers + 1
             if(iR == 0):
                # Name = "\\textbf{" + Rd[0] + " } " + Rd[1]
-               Name = "\\textsf{" + Rd[0] + "} " + Rd[1]
+               Name =  Rd[0] + " " + Rd[1]
             else:
                # Name = Name + ", \\textbf{ " + Rd[0] + " } " + Rd[1]
-               Name = "(" + Name + ", \\textsf{" + Rd[0] + "} " + Rd[1] + ")"
+               Name = "(" + Name + ", " + Rd[0] + " " + Rd[1] + ")"
             #               
             if(Vsatz[1] != Rd[6]):
-               Name = Name + " \\textcolor{gray}{\\footnotesize (" + Rd[6] + ")}"
+               # Name = Name + " \\textcolor{gray}{\\scriptsize (" + Rd[6] + ")}"
+               Name = Name + "$ ^{(" + Rd[6] + ")}$"
             #
          #
          if(nPers > 0):
@@ -212,7 +214,7 @@ for Vsatz in Vcursor:
                #
                if(Vrennen == 0):
                   Vrennen = 1
-                  TXTM = TXTM + "\n\\newline{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + ": \\footnotesize "
+                  TXTM = TXTM + "\n\\newline\\textbf{ Rennen " + str(Rennen) + ": " + RennenString + ":} "
                   TXTM = TXTM + Name + " "
                else:
                   TXTM = TXTM + ", " + Name + " "
@@ -220,10 +222,10 @@ for Vsatz in Vcursor:
             elif(Abmeldung > 1):  # verspätet abgemeldet
                if(Vrennen == 0):
                   Vrennen = 1
-                  TXTA = TXTA + "\n\\newline{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + ": "
-                  TXTA = TXTA + "\\textcolor{red}{\\footnotesize " + Name + "}"
+                  TXTA = TXTA + "\n\\newline\\textbf{Rennen " + str(Rennen) + ": " + RennenString + ": } "
+                  TXTA = TXTA + "\\textcolor{red}{ " + Name + "}"
                else:
-                  TXTA = TXTA + ", \\textcolor{red}{\\footnotesize" + Name + "}"
+                  TXTA = TXTA + ", \\textcolor{red}{ " + Name + "}"
                #
                if(Boot == 2 and nPers == 1):
                   EURA = EURA + Meldegeld/2
@@ -277,11 +279,13 @@ for Vsatz in Vcursor:
    euronen = "%6.2f"% (EURO + EURA + EURB)
    TXT = TXT + "\\textbf{Gesamtbetrag (brutto):} & " + euronen + " \\\\\n"
    TXT = TXT + "\\bottomrule\n\\end{tabular}\n%\n\\vspace{10pt}\\\\\n%\n"
-   TXT = TXT + "\\small{ Die Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer nach §19 UStG.\\vspace{5pt}\\\\}\n"
-   TXT = TXT + "Bitte benutzen Sie das Kennwort: '\\textbf{Meldegebühr Langstreckentest " + Vsatz[1] + "'} bei der Überweisung, Danke!\\\\\n"
-   TXT = TXT + "\\vspace{5pt}\\\\\nMit rudersportlichen Grü{\ss}en,\\vspace{-10pt}\\\\\n\\includegraphics[height=1.71cm,width=4.13cm]{UlfMeerwald.png}"
-   TXT = TXT + "\\vspace{-19pt}\\\\\nDr. Ulf Meerwald, 2. Vorsitzender \n\n"
-   TXT = TXT + "\\end{letter}\n\\end{document}\n"
+   TXT = TXT + "{\\scriptsize Die Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer nach \\textsection19 UStG.\\vspace{5pt}\\\\}\n"
+   TXT = TXT + "Bitte benutzen Sie bei der Überweisung das Kennwort:\n\\\\ '\\textbf{Meldegebühr Langstreckentest " + Vsatz[1] + "'} \\vspace{1.2cm}\\\\\n"
+   #TXT = TXT + "\\vspace{5pt}\\\\\nMit rudersportlichen Grü{\ss}en,\\vspace{-10pt}\\\\\n\\includegraphics[height=1.71cm,width=4.13cm]{UlfMeerwald.png}"
+   TXT = TXT + "Vielen Dank im voraus, \\\\mit rudersportlichen Grü{\ss}en \\vspace{-2.1cm}\\\\ \\color{white}{.}\\hspace{7cm}\\color{white}{.}\n"
+   TXT = TXT + "\\includegraphics[height=2.55cm,width=6.2cm]{UlfMeerwald.png}\n"
+   #Vielen Dank im voraus, \vspace{0.2cm}\\mit rudersportlichen Grü{\ss}en \vspace{-2.1cm}\\ \color{white}{.}\hspace{7cm}\color{white}{.}
+   TXT = TXT + "\n\\end{letter}\n\\end{document}\n"
    #
    TXT = TXT.replace('ß', '{\\ss}')
    fp = open("LaTeX/Rechnung_" + Vsatz[1] + ".tex","w")
