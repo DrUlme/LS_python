@@ -9,9 +9,13 @@ Created on Mon Oct  5 14:57:53 2020
 Name   = "Erlanger Herbst-Langstrecke 2020"
 DBName = "LS2020H.db"
 
-Jahr = 2020
+Datum   = "24.10."
+Jahr    = 2020
 
-Datum = "24.10."
+# Referenz für diese Langstrecke
+# Die Herbst-LS zählt bereits als Vorbereitung auf das folgende Jahr
+RefJahr = 2021
+
 
 MeldeDir   = "Meldungen"
 StartXLS   = 'Startreihenfolge_H2020.xlsx'
