@@ -12,10 +12,13 @@ from openpyxl.worksheet.datavalidation import DataValidation
 # image - using pillow?
 from openpyxl.drawing.image import Image
 #========================================================================
+# globale Parameter
+import LSglobal
 
-
+#========================================================================
 # Verbindung zur Datenbank erzeugen
-connection = sqlite3.connect("LS2020H.db")
+connection = sqlite3.connect( LSglobal.SQLiteFile )
+
 
 # Datensatzcursor erzeugen
 cursor = connection.cursor()

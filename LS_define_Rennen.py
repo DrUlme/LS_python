@@ -2,20 +2,26 @@
 
 import os, sys, sqlite3
 
+# lade globale Parameter
+import LSglobal
+
+#========================================================================
+
 # Existenz feststellen
-if os.path.exists("LS2020H.db"):
+if os.path.exists( LSglobal.SQLiteFile ):
    print("Datei bereits vorhanden")
 else:
    sys.exit(0)
 
 # Verbindung zur Datenbank erzeugen
-connection = sqlite3.connect("LS2020H.db")
+connection = sqlite3.connect( LSglobal.SQLiteFile )
+
 
 # Datensatzcursor erzeugen
 cursor = connection.cursor()
 
 # Definition des Jahrgangs und der Art (e.g. "Herbst")
-RefJahr = 2021
+RefJahr = 2022
 TYPE    = "Herbst"
 
 # sql = "CREATE TABLE rennen(" \

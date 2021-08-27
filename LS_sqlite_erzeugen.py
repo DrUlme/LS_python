@@ -1,12 +1,16 @@
 import os, sys, sqlite3
 
+# globale Parameter
+import LSglobal
+
+#========================================================================
 # Existenz feststellen
-if os.path.exists("LS2020H.db"):
+if os.path.exists( LSglobal.SQLiteFile ):
     print("Datei bereits vorhanden")
     sys.exit(0)
 
 # Verbindung zur Datenbank erzeugen
-connection = sqlite3.connect("LS2020H.db")
+connection = sqlite3.connect( LSglobal.SQLiteFile )
 
 # Datensatzcursor erzeugen
 cursor = connection.cursor()
@@ -34,16 +38,22 @@ sql = "CREATE TABLE ruderer(" \
       "gewicht REAL, " \
       "verein TEXT, " \
       "nummer INTEGER PRIMARY KEY, " \
-      "boot INTEGER, " \
       "form INTEGER)"
 cursor.execute(sql)
 
+sql = "CREATE TABLE r2boot(" \
+      "nummer INTEGER PRIMARY KEY, " \
+      "rennNr INTEGER, " \
+      "bootNr INTEGER, " \
+      "verein TEXT, " \
+      "rudererNr INTEGER " \
+      "platz INTEGER)"
+cursor.execute(sql)
+ 
 sql = "CREATE TABLE boote(" \
       "nummer INTEGER PRIMARY KEY, " \
       "startnummer INTEGER, " \
       "rennen INTEGER, " \
-      "vereine TEXT, " \
-      "ruderer TEXT, " \
       "planstart INTEGER, " \
       "secstart INTEGER, " \
       "sec3000 INTEGER, " \
