@@ -183,7 +183,7 @@ ws['H10'] = "Klasse"
 ws['H10'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
 ws.merge_cells('I1:J5')
-ws['I1'] = "Langstrecke H 2020"
+ws['I1'] = "Langstrecke " + LSglobal.Zeit + " " + str(LSglobal.Jahr)
 ws['I1'].alignment = Alignment(horizontal="center", vertical="bottom")
 
 
@@ -286,4 +286,4 @@ logo.width = 210
 
 ws.add_image(logo, "I1")
 
-wb.save('Meldebogen_H2020.xlsx')
+wb.save('Meldebogen_' + LSglobal.ZeitK + "_" + str(LSglobal.Jahr) + '.xlsx')

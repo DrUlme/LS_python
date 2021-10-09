@@ -21,8 +21,8 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 cursor = connection.cursor()
 
 # Definition des Jahrgangs und der Art (e.g. "Herbst")
-RefJahr = 2022
-TYPE    = "Herbst"
+RefJahr = LSglobal.RefJahr
+TYPE    = LSglobal.Zeit
 
 # sql = "CREATE TABLE rennen(" \
       # "nummer INTEGER PRIMARY KEY, " \

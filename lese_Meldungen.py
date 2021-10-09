@@ -257,16 +257,19 @@ for filename in FILES:
               else:
                 nRuderer = nRuderer + 1
                 Names = Names + str(nRuderer) + ","
-                
-                sql = "INSERT INTO ruderer VALUES( " \
+                #
+                #    sql = "INSERT INTO ruderer VALUES( " \
+                #       + "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " \
+                #      + str(LGWi) + ", -1.0, '" + Verein2 + "', " + str(nRuderer) + ", -1, 0 )"
+                 sql = "INSERT INTO ruderer VALUES( " \
                    + "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " \
-                  + str(LGWi) + ", -1.0, '" + Verein2 + "', " + str(nRuderer) + ", -1, 0 )"
-                print(sql)
+                  + str(LGWi) + ", -1.0, '" + Verein2 + "', " + str(nRuderer) + ", -1 )"
+               print(sql)
                 #  "( vorname , name , geschlecht, jahrgang, leichtgewicht, gewicht, verein, nummer, boot )"
                 #+ "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " 
                 cursor.execute(sql)
                 connection.commit()
-               
+              
             # print("Boot: '" + Boot + "': " + Names + " (" + str(JahrBoot) + ") in Rennen " + str(Rennen))
             
          if(NR > 0):
@@ -292,19 +295,26 @@ for filename in FILES:
             if(BootNr == 0):
                 print("_______________________________________________________")
                 nBoote = nBoote + 1
+                #    sql = "INSERT INTO boote VALUES( " \
+                #      + str(nBoote) + ", 0, " + str(Rennen) + ", '" + Verein + "', '" + Names + "', " \
+                #      + "0,   0, 0, 0,   0, 0,   0,   0, '" + Comment + "')"
                 sql = "INSERT INTO boote VALUES( " \
-                  + str(nBoote) + ", 0, " + str(Rennen) + ", '" + Verein + "', '" + Names + "', " \
+                  + str(nBoote) + ", 0, " + str(Rennen) + ", " \
                   + "0,   0, 0, 0,   0, 0,   0,   0, '" + Comment + "')"
                 cursor.execute(sql)
                 connection.commit()
-                #  nummer, startnummer, rennen, vereine(TEXT), ruderer(TEXT-index), " \
+                #  nummer, startnummer, rennen, [-- vereine(TEXT), ruderer(TEXT-index),--] " \
                 #  planstart   secstart sec3000 sec6000 zeit3000 zeit6000 zeit    abgemeldet (alles INTEGER)"
                 #____________________________________ BootsNummer (nBoote) zu Ruderern
                 print(Names)
                 Ruderer = Names.split(',')
                 for iP in range(NR):
                    # print(iP)
-                   sql = "UPDATE ruderer SET boot = " + str(nBoote) + " WHERE nummer = " + str(Ruderer[1 + iP])
+                   # sql = "UPDATE ruderer SET boot = " + str(nBoote) + " WHERE nummer = " + str(Ruderer[1 + iP])
+                   sql = "INSERT INTO r2boot VALUES( " \
+                     + str(nR2Boot) + ", " + str(Rennen) + ", " + str(nBoote) + ", '" + Verein2 \
+                     + "', " + str(Ruderer[1 + iP]) + ", " + str(iP) " )"
+                   # r2boot:  "nummer, rennNr, bootNr, verein, rudererNr, platz INTEGER"
                    cursor.execute(sql)
                    connection.commit()
                 # sql = "SELECT * FROM ruderer WHERE geschlecht LIKE '%," + Ruderer[1] + ",%' "

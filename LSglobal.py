@@ -6,8 +6,11 @@ Created on Mon Oct  5 14:57:53 2020
 @author: ulf
 """
 
-Name   = "Erlanger Herbst-Langstrecke 2020"
+Name   = "Erlanger Herbst-Langstrecke 2021"
 DBName = "LS2021H.db"
+
+Zeit   = "Herbst"
+ZeitK  = "H"
 
 Datum   = "23.10."
 Jahr    = 2021
@@ -16,6 +19,10 @@ Jahr    = 2021
 # Die Herbst-LS zählt bereits als Vorbereitung auf das folgende Jahr
 RefJahr = 2022
 
+Meldeschluss = "13.10."
+DoppeltGeld  = "16.10."
+AbmeldungDD  = "22.10."
+AbmeldungHH  = "14:00 Uhr"
 
 MeldeDir   = "Meldungen"
 StartXLS   = 'Startreihenfolge_H2021.xlsx'
