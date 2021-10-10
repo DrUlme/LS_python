@@ -130,7 +130,15 @@ for filename in FILES:
       nBoote = tmp[0]
       print("Anzahl der Boote in Datenbank:  ", nBoote)
       
+      sqlite_select_query = """SELECT count(*) from r2boot"""
+      cursor.execute(sqlite_select_query)
+      tmp = cursor.fetchone()
+      nR2Boot = tmp[0]
+      print("Anzahl der Ruderer in Booten in der Datenbank:  ", nR2Boot)
       
+      # indices für Ruderer (max. 4+)
+      Ruderer = [None] * 5
+      # =======================================================================   Loop über die Zeilen der Meldung   ==============
       Position = 11
       while Position > 7:
          Names = ","
@@ -167,7 +175,7 @@ for filename in FILES:
             else:
                Boot  = record[3]
                
-            #____________________________________ Boot -> Anzahl Ruderer
+            #____________________________________ Boot -> Anzahl Ruderer (NR)
             if   Boot == '1x':
                NR = 1
             elif Boot == '2x':
@@ -186,11 +194,13 @@ for filename in FILES:
             #Gender   = ws['E' + str(Position + iP)].value
             #LGW      = ws['D' + str(Position + iP)].value
             
+            # setze status-Flag für das Rennen - es existiert hiermit eine Meldung
             if(record[6] == 0):
                sql = "UPDATE rennen SET status = 1 WHERE nummer='" + str(Rennen) + "' "
                cursor.execute(sql)
                connection.commit()
             #
+            # =================================================================   Loop über die Ruderer   ==============
             for iP in range(NR):
               Vorname  = ws['C' + str(Position + iP)].value
               Name     = ws['D' + str(Position + iP)].value
@@ -231,15 +241,24 @@ for filename in FILES:
               record = cursor.fetchone()
               
               if record[0] == 1:
-                print ("Ruderer: " + Vorname + " " + Name + " (" + str(Jahr) + ", " + \
-                   Verein + ") ist schon in der Datenbank!" )
-                
-                sql = "SELECT boot FROM ruderer WHERE verein='" + Verein2 + "' and name='" + Name + \
+                sql = "SELECT nummer FROM ruderer WHERE verein='" + Verein2 + "' and name='" + Name + \
                      "' and vorname='" + Vorname + "' "
+                cursor.execute(sql)                
+                RHelp= cursor.fetchone()
+                Ruderer[iP] = RHelp[0]
+                
+                print ("Ruderer: " + Vorname + " " + Name + " (" + str(Jahr) + ", " + \
+                   Verein + ") ist schon in der Datenbank! " + str(Ruderer[iP]) )
+                   
+                # nun Suche 
+                sql = "SELECT bootNr FROM r2boot WHERE rudererNr=" + str(Ruderer[iP]) + " "
+                #sql = "SELECT boot FROM ruderer WHERE verein='" + Verein2 + "' and name='" + Name + \
+                #     "' and vorname='" + Vorname + "' "
+                print(sql)
                 cursor.execute(sql)
                 tupleNr = cursor.fetchone()
                 
-                if(tupleNr[0] > 0):
+                if(tupleNr != None  and  tupleNr[0] > 0):
                    BootNr = tupleNr[0]
                    print("Ruderer ist auch in Boot " + str(BootNr) + " gemeldet")
                    # ToDo: Check ob Rennen gleich ist!
@@ -261,14 +280,16 @@ for filename in FILES:
                 #    sql = "INSERT INTO ruderer VALUES( " \
                 #       + "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " \
                 #      + str(LGWi) + ", -1.0, '" + Verein2 + "', " + str(nRuderer) + ", -1, 0 )"
-                 sql = "INSERT INTO ruderer VALUES( " \
+                sql = "INSERT INTO ruderer VALUES( " \
                    + "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " \
-                  + str(LGWi) + ", -1.0, '" + Verein2 + "', " + str(nRuderer) + ", -1 )"
-               print(sql)
+                  + str(LGWi) + ", -1.0, '" + Verein2 + "', '', " + str(nRuderer) + ", -1 )"
+                print(sql)
                 #  "( vorname , name , geschlecht, jahrgang, leichtgewicht, gewicht, verein, nummer, boot )"
                 #+ "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " 
                 cursor.execute(sql)
                 connection.commit()
+                # definiere den Ruderer-index für den Ruderer auf Platz iP
+                Ruderer[iP] = nRuderer
               
             # print("Boot: '" + Boot + "': " + Names + " (" + str(JahrBoot) + ") in Rennen " + str(Rennen))
             
@@ -307,13 +328,14 @@ for filename in FILES:
                 #  planstart   secstart sec3000 sec6000 zeit3000 zeit6000 zeit    abgemeldet (alles INTEGER)"
                 #____________________________________ BootsNummer (nBoote) zu Ruderern
                 print(Names)
-                Ruderer = Names.split(',')
+                #
                 for iP in range(NR):
                    # print(iP)
                    # sql = "UPDATE ruderer SET boot = " + str(nBoote) + " WHERE nummer = " + str(Ruderer[1 + iP])
+                   nR2Boot = nR2Boot + 1
                    sql = "INSERT INTO r2boot VALUES( " \
-                     + str(nR2Boot) + ", " + str(Rennen) + ", " + str(nBoote) + ", '" + Verein2 \
-                     + "', " + str(Ruderer[1 + iP]) + ", " + str(iP) " )"
+                     + str(nR2Boot) + ", " + str(Rennen) + ", " + str(nBoote) + ", "  \
+                     + str(Ruderer[iP]) + ", " + str(iP) + " )"
                    # r2boot:  "nummer, rennNr, bootNr, verein, rudererNr, platz INTEGER"
                    cursor.execute(sql)
                    connection.commit()

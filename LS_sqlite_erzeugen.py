@@ -46,8 +46,7 @@ sql = "CREATE TABLE r2boot(" \
       "nummer INTEGER PRIMARY KEY, " \
       "rennNr INTEGER, " \
       "bootNr INTEGER, " \
-      "verein TEXT, " \
-      "rudererNr INTEGER " \
+      "rudererNr INTEGER, " \
       "platz INTEGER)"
 cursor.execute(sql)
  
