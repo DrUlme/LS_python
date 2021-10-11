@@ -30,6 +30,7 @@ sql = "CREATE TABLE rennen(" \
 cursor.execute(sql)
 
 sql = "CREATE TABLE ruderer(" \
+      "nummer INTEGER PRIMARY KEY, " \
       "vorname TEXT, " \
       "name TEXT, " \
       "geschlecht TEXT, " \
@@ -38,7 +39,6 @@ sql = "CREATE TABLE ruderer(" \
       "gewicht REAL, " \
       "verein TEXT, " \
       "kader TEXT, " \
-      "nummer INTEGER PRIMARY KEY, " \
       "form INTEGER)"
 cursor.execute(sql)
 

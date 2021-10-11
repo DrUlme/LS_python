@@ -25,7 +25,7 @@ Erstellt Melde-Ergebnis und Endergebnis mit LaTeX als pdf.
 
 ### Einlesen der Meldeergebnisse 
 **lese_Meldungen.py**
-**check_Kader.py** ToDo mit Einlesen aus Excel-File in Kader-Tabelle
+**check_Kader.py** mit Einlesen aus Excel-File in Kader-Tabelle
 **LS_write_Excel_Startreihenfolge.py**
 
 ### Vorbereitung der Regatta
@@ -52,5 +52,10 @@ LS_write_Excel_Endergebnis_BRV.py
 
 ### unbekannt
 Check_Startnummer.py  
-		     			    	     	    	   
+
 zz_Test_docx_number.py
+
+## LaTeX
+Für die Ausarbeitung wird das Textverarbeitungssystem LaTeX (TeX) verwendet.
+Mit diesem Befehl sollte es sofort klappen:
+**pdflatex** *Meldungen.tex*

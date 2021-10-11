@@ -18,6 +18,7 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 # Datensatzcursor erzeugen
 Rcursor  = connection.cursor()
 Bcursor  = connection.cursor()
+RBcursor  = connection.cursor()
 Pcursor  = connection.cursor()
 Vcursor  = connection.cursor()
 #
@@ -53,14 +54,17 @@ for Rsatz in Rcursor:
    #
    NoBoote = 0
    Ngray = 0
-   sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer, vereine "
+   # hole die gemeldeten Boote für die Rennen
+   sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer, nummer"
    Bcursor.execute(sql)
    for Bsatz in Bcursor:
       Boot   = Bsatz[0]
       StNr   = Bsatz[1]
       VBoot  = Bsatz[3]
-      RudInd = Bsatz[4].split(',')
-      Abmeldung = Bsatz[12]
+      sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
+      RBcursor.execute(sql)
+      #
+      Abmeldung = Bsatz[10]
       if(Abmeldung == 0):
          # _______________________________________________________________________________________________________________
          if(NoBoote == 0):
@@ -77,27 +81,29 @@ for Rsatz in Rcursor:
          JGNGstr = ['-']
          
          nPers   = 0
-         for iR in range(0, (len(RudInd) - 2)):         
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
+         iR      = 0
+         for RudInd in RBcursor: # for iR in range(0, (len(RudInd) - 2)):         
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[0])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
             nPers = nPers + 1
-            Vorname.insert(iR, Rd[0])
-            Name.insert(iR,  Rd[1])
-            JGNGstr.insert(iR, str(Rd[3]))
+            Vorname.insert(iR, Rd[1])
+            Name.insert(iR,  Rd[2])
+            JGNGstr.insert(iR, str(Rd[4]))
             if( iR == 0):
-               Verein = "{" + Rd[6] +"}"
-               VStr   = Rd[6]
-            elif(iR>0 and VStr != Rd[6]):
-               Verein =  Verein + "\\\\{" + Rd[6] + "}"
+               Verein = "{" + Rd[7] +"}"
+               VStr   = Rd[7]
+            elif(iR>0 and VStr != Rd[7]):
+               Verein =  Verein + "\\\\{" + Rd[7] + "}"
             #
             #
-            if(Rsatz[7] < 1 and Rd[4] == 1):
+            if(Rsatz[7] < 1 and Rd[5] == 1):
                # JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{\\textrm{Lgw}}$"))
-               JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{{Lgw}}$"))
+               JGNGstr.insert(iR, ("$" + str(Rd[4]) + "^{{Lgw}}$"))
             else:
-               JGNGstr.insert(iR, str(Rd[3]))      
+               JGNGstr.insert(iR, str(Rd[4]))      
             # print(Name[0] + ", '" + Name[1] + "' =>" + Rd[2] )
+            iR += 1
          #---------------------------------------------------------------------
          Btime = Bsatz[5]
          # print(Name[0] + " - " + str(len(RudInd)))
@@ -169,7 +175,7 @@ for Vsatz in Vcursor:
    #___________________________ durchsuche Rennen
    sql = "SELECT * FROM rennen "
    Rcursor.execute(sql)
-   for Rsatz in Rcursor:
+   if(1==2): # for Rsatz in Rcursor:
       Rennen       = Rsatz[0]
       RennenString = Rsatz[1]
       #

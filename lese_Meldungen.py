@@ -280,9 +280,9 @@ for filename in FILES:
                 #    sql = "INSERT INTO ruderer VALUES( " \
                 #       + "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " \
                 #      + str(LGWi) + ", -1.0, '" + Verein2 + "', " + str(nRuderer) + ", -1, 0 )"
-                sql = "INSERT INTO ruderer VALUES( " \
-                   + "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " \
-                  + str(LGWi) + ", -1.0, '" + Verein2 + "', '', " + str(nRuderer) + ", -1 )"
+                sql = "INSERT INTO ruderer VALUES( " + str(nRuderer) \
+                   + ", '" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " \
+                  + str(LGWi) + ", -1.0, '" + Verein2 + "', '', -1 )"
                 print(sql)
                 #  "( vorname , name , geschlecht, jahrgang, leichtgewicht, gewicht, verein, nummer, boot )"
                 #+ "'" + Vorname + "', '" + Name + "', '" + Gender + "', " + str(Jahr) + ", " 
