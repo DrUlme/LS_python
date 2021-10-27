@@ -27,7 +27,7 @@ sql = "SELECT * FROM rennen "
 cursor.execute(sql)
 for dsatz in cursor:
    Rennen = dsatz[0]
-   if( dsatz[4] == "3000" ):
+   if( dsatz[4] == "3000 m" ):
       is3000.insert(Rennen, 1)
    else:
       is3000.insert(Rennen, 0)
@@ -45,7 +45,7 @@ for iFile in range(0, len(LSglobal.TrzFiles) ):
    #
    for iL in range(0, len(TXT) ):
       PARTS = re.split('\s|\:', TXT[iL] )
-      seconds = 3600 * int(PARTS[1]) + 60 * int(PARTS[2]) + int(PARTS[3]) + LSglobal.Trz_dSec[iFile-1]
+      seconds = 3600 * int(PARTS[1]) + 60 * int(PARTS[2]) + int(PARTS[3]) + LSglobal.Trz_dSec[iFile]
       #
       # get values from SQL:
       sql = "SELECT * FROM boote WHERE startnummer = " + (PARTS[0])
@@ -53,7 +53,7 @@ for iFile in range(0, len(LSglobal.TrzFiles) ):
       Bt = cursor.fetchone()
       if(Bt == None):
          Part = "-"
-         # print("# " + str(PARTS[0]) + " ist NICHT in Datenbank !")         
+         print("# " + str(PARTS[0]) + " ist NICHT in Datenbank !")         
       else:
          print("# " + str(PARTS[0]) + ": " + LSglobal.TrzFiles[ iFile ] + ": " + str(Bt[LSglobal.TrzDBpos[ iFile ]]) + "(" + str(Bt[LSglobal.TrzDBpos[ iFile ]-1]) + ")... in DB" )
          # failback nehme nur kleinste Zahl
@@ -87,9 +87,9 @@ for dsatz in cursor2:
    Boot   = dsatz[0]
    Rennen = dsatz[2]
    #                für später: LSglobal.TrzDBpos[0]
-   Start  = dsatz[6]
-   m3000  = dsatz[7]
-   m6000  = dsatz[8]
+   Start  = dsatz[4]
+   m3000  = dsatz[5]
+   m6000  = dsatz[6]
    if(Start > 0):
       if(m3000 > 0):
          sql = "UPDATE boote SET zeit3000 = " + str(m3000 - Start) + " WHERE nummer = " + str(Boot)

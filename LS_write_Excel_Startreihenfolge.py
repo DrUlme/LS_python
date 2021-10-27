@@ -30,6 +30,9 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 cursor_R = connection.cursor()
 cursor   = connection.cursor()
 cursor_N = connection.cursor()
+cursor_B = connection.cursor()
+cursorRB = connection.cursor()
+cursorRu = connection.cursor()
 
 #======================================================================================
 FillCol = "44ff44"
@@ -79,6 +82,7 @@ ws2['D1'] = "frei"
 
 ws2['E1'] = "1. Nummer"
 ws2['F1'] = "1. Zeit"
+ws2['G1'] = "Pause danach"
 
 
 # Empfang des Ergebnisses
@@ -103,13 +107,15 @@ for dsatz in cursor_R:
    ws2['D' + str(zeile)].fill = (greenFill)
    #
    ws2['F' + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
+   ws2['G' + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
    
    if(zeile < 3):
       ws2['E' + str(zeile)] = "1"
       ws2['F' + str(zeile)] = "=Startzeit"
    else:
       ws2['E' + str(zeile)] = "=$E" + str(zeile-1) + " + $C" + str(zeile-1) + " + $D" + str(zeile-1)
-      ws2['F' + str(zeile)] = "=$F" + str(zeile-1) + " + ($C" + str(zeile-1) + " + $D" + str(zeile-1) + ")*Abstand"
+      ws2['F' + str(zeile)] = "=$F" + str(zeile-1) + " + ($C" + str(zeile-1) + " + $D" + str(zeile-1) + ")*Abstand + $G" + str(zeile-1)
+   ws2['G' + str(zeile)] = "=1/24/60 * 0"
    new_range = openpyxl.workbook.defined_name.DefinedName('StartNr_' + ReStr, attr_text='Rennen!$E$' + str(zeile))
    wb.defined_names.append(new_range)
    
@@ -122,16 +128,18 @@ ws2.column_dimensions['C'].width = "6"
 ws2.column_dimensions['D'].width = "6"
 ws2.column_dimensions['E'].width = "8"
 ws2.column_dimensions['F'].width = "10"
+ws2.column_dimensions['F'].width = "12"
 ws2.column_dimensions["A"].alignment = Alignment(horizontal='center')
 ws2.column_dimensions["C"].alignment = Alignment(horizontal='center')
 ws2.column_dimensions["D"].alignment = Alignment(horizontal='center')
 ws2.column_dimensions["E"].alignment = Alignment(horizontal='center')
 ws2.column_dimensions["F"].alignment = Alignment(horizontal='center')
+ws2.column_dimensions["G"].alignment = Alignment(horizontal='center')
 
 
 # ==============================================================================================================
 ws.merge_cells('H1:J5')
-ws['H1'] = "Langstrecke H 2020"
+ws['H1'] = LSglobal.Name # "Langstrecke " + str(LSglobal.Jahr)
 
 ws['H1'].alignment = Alignment(horizontal="center", vertical="bottom")
 
@@ -144,9 +152,10 @@ indStT = 'D'
 indVor = 'E'
 indNam = 'F'
 indJah = 'G'
-indEV  = 'H'
-indCom = 'I'
-indBot = 'J'
+indKdr = 'H'
+indEV  = 'I'
+indCom = 'J'
+indBot = 'K'
 
 ws[indRe + str(zeile)] = "Rennen"
 ws[indRe + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
@@ -169,6 +178,9 @@ ws[indNam + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color=
 ws[indJah + str(zeile)] = "Jahrgang"
 ws[indJah + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
+ws[indKdr + str(zeile)] = "Kader"
+ws[indKdr + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
+
 ws[indEV + str(zeile)] = "Verein"
 ws[indEV + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
@@ -186,7 +198,7 @@ ws.column_dimensions["C"].alignment = Alignment(horizontal='center')
 ws.column_dimensions["F"].alignment = Alignment(horizontal='center')
 ws.column_dimensions["G"].alignment = Alignment(horizontal='center')
 
-ws.column_dimensions["I"].alignment = Alignment(horizontal='center')
+ws.column_dimensions["J"].alignment = Alignment(horizontal='center')
 
 
 StNr = 1
@@ -208,10 +220,6 @@ for dsatz in cursor_R:
    ReStr  = str(Rennen)
    zeile = zeile + 1
    
-   # SQL-Abfrage
-   sql = "SELECT * FROM boote WHERE rennen = " + ReStr
-   # Empfang des Ergebnisses
-   cursor.execute(sql)
    
    # Renn-Nummer
    ws[indRe + str(zeile)] = Rennen
@@ -251,18 +259,23 @@ for dsatz in cursor_R:
    ws[indBot + str(zeile)].fill = (grayFill)
    ws[indBot + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='666666')
    
+   ws[indKdr + str(zeile)].fill = (grayFill)
    ws[indNam + str(zeile)].fill = (grayFill)
    ws[indJah + str(zeile)].fill = (grayFill)
    ws[indCom + str(zeile)].fill = (grayFill)
    
    # indRe  = 'A' - indPos = 'B' - indSNr = 'C' - indStT = 'D' - indVor = 'E' - indNam = 'F' - indJah = 'G' - indEV  = 'H'- indCom = 'I'- indBot = 'J'
+   
+   # SQL-Abfrage
+   sql = "SELECT * FROM boote WHERE rennen = " + ReStr
+   # Empfang des Ergebnisses
+   cursor_B.execute(sql)
 
-   for ds in cursor:
+   for ds in cursor_B:
       zeile = zeile + 1
+      BootIdx = ds[0] 
       #______________________________ Anzahl der Ruderer und ihre Nummern in der Datenbank
-      Names = ds[4]
-      Ruderer = Names.split(',')
-      nPers   = len(Ruderer) - 2
+      
       
       ws[indRe + str(zeile)] = Rennen
       ws[indRe + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
@@ -276,7 +289,7 @@ for dsatz in cursor_R:
       ws[indStT + str(zeile)] = "=INDIRECT(\"Zeit_\"& $A" + str(zeile) + ") + ($B" + str(zeile) + " - 1)*Abstand"
       ws[indStT + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #Bemerkung
-      ws[indCom + str(zeile)] = ds[13]
+      ws[indCom + str(zeile)] = ds[11]
       ws[indCom + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
       
       # 
@@ -287,31 +300,40 @@ for dsatz in cursor_R:
       ws[indBot + str(zeile)] = ds[0]
       ws[indBot + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
       
-      for iP in range(nPers):  
-         # SQL-Abfrage
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(Ruderer[iP + 1])
-         # print(str(iP) + ": " + str( Ruderer[iP + 1]) + ": " + sql)
-         # Empfang des Ergebnisses
-         cursor_N.execute(sql)
-         Rd = cursor_N.fetchone()
+      # suche nach Einträgen in r2boot for dieses Boot
+      sql = "SELECT * FROM r2boot WHERE bootNr = " + str(BootIdx)
+      cursorRB.execute(sql)
+      # loop über alle Einträge
+      iP = 0
+      for rbs in cursorRB:
+         # suche nach Einträgen in r2boot for dieses Boot
+         sql = "SELECT * FROM ruderer WHERE nummer = " + str(rbs[3])
+         cursorRu.execute(sql)
+         Rd = cursorRu.fetchone()
          if(iP == 0):
             # Vorname
-            Vorname = Rd[0]
+            Vorname = Rd[1]
             # Nachname
-            Nachname = Rd[1]
+            Nachname = Rd[2]
             # Jahrgang
-            Jahrgang = str( Rd[3] )
+            Jahrgang = str( Rd[4] )
             # Verein
-            Verein = Rd[6]
+            Verein = Rd[7]
+            # Kader
+            Kader = Rd[8]
          else:
             # Vorname
-            Vorname = Vorname + "\n" + Rd[0]
+            Vorname = Vorname + "\n" + Rd[1]
             # Nachname
-            Nachname = Nachname + "\n" + Rd[1]
+            Nachname = Nachname + "\n" + Rd[2]
             # Jahrgang
-            Jahrgang = Jahrgang + "\n" + str(Rd[3])
+            Jahrgang = Jahrgang + "\n" + str(Rd[4])
             # Verein
-            Verein = Verein + "\n" + Rd[6]
+            Verein = Verein + "\n" + Rd[7]
+            # Kader
+            Kader = Kader + "\n" + Rd[8]
+         #
+         iP += 1
       # Vorname
       ws[indVor + str(zeile)] = Vorname
       # Nachname
@@ -320,9 +342,11 @@ for dsatz in cursor_R:
       ws[indJah + str(zeile)] = Jahrgang
       # Verein
       ws[indEV + str(zeile)] = Verein
+      # Kader
+      ws[indKdr + str(zeile)] = Kader
       #
-      if(nPers > 1):
-         ws.row_dimensions[ zeile ].height = 18*nPers
+      if(iP > 1):
+         ws.row_dimensions[ zeile ].height = 18*iP
 
 
 
@@ -361,6 +385,7 @@ ws.column_dimensions[indStT].width = "11"
 ws.column_dimensions[indVor].width = "14"
 ws.column_dimensions[indNam].width = "14"
 ws.column_dimensions[indJah].width = "10"
+ws.column_dimensions[indKdr].width  = "8"
 ws.column_dimensions[indEV].width  = "8"
 ws.column_dimensions[indCom].width = "26"
 ws.column_dimensions[indBot].width = "4"
@@ -370,7 +395,7 @@ ws.freeze_panes = ws['A7']
 
 # erstelle Filter
 # maxCols = str( zeile + 10 ) auf 256 gesetzt
-ws.auto_filter.ref = "A6:J256"
+ws.auto_filter.ref = "A6:K256"
 
 
 # ______________________________________ set Logo
@@ -383,4 +408,4 @@ logo.width = 210
 ws.add_image(logo, "H1")
 
 # ______________________________________ save
-wb.save('Startreihenfolge_H2020.xlsx')
+wb.save('Startreihenfolge_' + LSglobal.ZeitK + str(LSglobal.Jahr) + '.xlsx')

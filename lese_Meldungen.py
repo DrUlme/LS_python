@@ -367,6 +367,7 @@ for filename in FILES:
       print("=========================================================================================================\n")
 
 
+connection.close()
 # import xlrd
 #
 # book = xlrd.open_workbook('../Meldeliste_RVE.xlsx')

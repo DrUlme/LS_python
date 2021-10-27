@@ -19,6 +19,7 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 Rcursor  = connection.cursor()
 Bcursor  = connection.cursor()
 Pcursor  = connection.cursor()
+Qcursor  = connection.cursor()
 Vcursor  = connection.cursor()
 #
 cursor  = connection.cursor()
@@ -42,7 +43,7 @@ TXT_1 = TXT_1 + "%\n%\n\\setlength{\\textheight}{26cm}\n\\setlength{\\footskip}{
 #   RVE-Flag.png: 692 x 252 pixel
 TXT_2 = "% Begin KOMA variables - make changes here\n\
 \\newkomavar{gigdate}\n\
-\\setkomavar{gigdate}{24. Oktober 2020}\n\
+\\setkomavar{gigdate}{" + LSglobal.Datum + str(LSglobal.Jahr) + "}\n\
 \\newkomavar{ausrichter}\n\
 \\setkomavar{ausrichter}{Ruderverein Erlangen e.V.}\n\
 \\setkomavar{fromname}{\\textbf{RVE}}\n\
@@ -130,7 +131,7 @@ Meldegeld = 15
 Bugnummer = 10
 Deckelung = 250
 
-fehlende_Bugnummern = [ 63, 101]
+fehlende_Bugnummern = [ 138 ]
 
 Vcursor.execute(sql)
 for Vsatz in Vcursor:
@@ -163,49 +164,53 @@ for Vsatz in Vcursor:
    TXTM = "Meldegeld für folgende Mannschaften: " +TXT_Fontsize + "{\\newline\n%"
    #
    #___________________________ durchsuche Rennen
-   sql = "SELECT * FROM rennen "
+   sql = "SELECT * FROM rennen WHERE status >= 1"
    Rcursor.execute(sql)
    for Rsatz in Rcursor:
       Rennen       = Rsatz[0]
       RennenString = Rsatz[1]
-      #
-      # print("checke Rennen " + str(Rennen) + " nach '" + Vsatz[1] + "'")
+      # 
       #
       Ngray = 0
-      Vrennen = 0
-      sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer, vereine "
+      Vrennen  = 0
+      VArennen = 0
+      sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer"
       Bcursor.execute(sql)
       for Bsatz in Bcursor:
          StNr   = Bsatz[1]
-         Verein = Bsatz[3]
-         RudInd = Bsatz[4].split(',')
-         Boot   = len(RudInd) - 2
-         Abmeldung = Bsatz[12]
+         Boot   = Bsatz[0]
+         #
+         Abmeldung = Bsatz[10]
          # ===========================================================================================
          nPers   = 0
-         for iR in range(0, (Boot)):         
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
+         sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot) 
+         Qcursor.execute(sql)
+         iR = 0
+         for RudInd in Qcursor:         
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[3])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
-            if(Rd[6] == Vsatz[1]):
+            #
+            if(Rd[7] == Vsatz[1]):
                nPers = nPers + 1
             if(iR == 0):
                # Name = "\\textbf{" + Rd[0] + " } " + Rd[1]
-               Name =  Rd[0] + " " + Rd[1]
+               Name =  Rd[1] + " " + Rd[2]
             else:
                # Name = Name + ", \\textbf{ " + Rd[0] + " } " + Rd[1]
-               Name = "(" + Name + ", " + Rd[0] + " " + Rd[1] + ")"
+               Name = "(" + Name + ", " + Rd[1] + " " + Rd[2] + ")"
             #               
-            if(Vsatz[1] != Rd[6]):
+            if(Vsatz[1] != Rd[7]):
                # Name = Name + " \\textcolor{gray}{\\scriptsize (" + Rd[6] + ")}"
-               Name = Name + "$ ^{(" + Rd[6] + ")}$"
+               Name = Name + "$ ^{(" + Rd[7] + ")}$"
             #
+            iR = iR + 1
          #
          if(nPers > 0):
             #
             if(Abmeldung == 0):
                NoBoote = NoBoote + 1
-               if(Boot == 2 and nPers == 1):
+               if(iR == 2 and nPers == 1):
                   EURO = EURO + Meldegeld/2
                else:
                   EURO = EURO + Meldegeld
@@ -220,14 +225,14 @@ for Vsatz in Vcursor:
                   TXTM = TXTM + ", " + Name + " "
             # ===========================================================================================
             elif(Abmeldung > 1):  # verspätet abgemeldet
-               if(Vrennen == 0):
-                  Vrennen = 1
+               if(VArennen == 0):
+                  VArennen = 1
                   TXTA = TXTA + "\n\\newline\\textbf{Rennen " + str(Rennen) + ": " + RennenString + ": } "
                   TXTA = TXTA + "\\textcolor{red}{ " + Name + "}"
                else:
                   TXTA = TXTA + ", \\textcolor{red}{ " + Name + "}"
                #
-               if(Boot == 2 and nPers == 1):
+               if(iR == 2 and nPers == 1):
                   EURA = EURA + Meldegeld/2
                else:
                   EURA = EURA + Meldegeld
@@ -257,11 +262,11 @@ for Vsatz in Vcursor:
    if(EURA > 0):
       euronen = "%6.2f"% (EURA)
       TXT = TXT + TXTA +  "\\newline}	& " + euronen + " \\\\\n"
-      TXT = TXT + "%\nKulanz für die verspäteten Abmeldungen: \\newline"
-      TXT = TXT + "\\footnotesize\\textsf{Durch das Ansteigen der Corona-Pandemie wurden Abmeldungen bis zum 23.10. um 14 Uhr kostenfrei gestellt. \n"
-      TXT = TXT + "Krankmeldungen waren danach auch noch kostenfrei.\\newline} & \color{red}{-" + euronen + "} \\\\\n%\n"
-      TXT = TXT + "%\nAufwandspauschale der entstandenen Kosten & 20,00 \\\\\n%"
-      EURA = 20
+      # TXT = TXT + "%\nKulanz für die verspäteten Abmeldungen: \\newline"
+      #TXT = TXT + "\\footnotesize\\textsf{Auf Grund der Corona-Pandemie waren Abmeldungen bis zum 22.10. um 14 Uhr kostenfrei. \n"
+      #TXT = TXT + "Danach haben wir für das Boot Start- und Bugnummern eingetütet.\\newline} & \color{red}{" + euronen + "} \\\\\n%\n"
+      # TXT = TXT + "%\nAufwandspauschale der entstandenen Kosten & 20,00 \\\\\n%"
+      # EURA = 20
    #           
    if(EURB > 0):
       euronen = "%6.2f"% (EURB)
@@ -300,5 +305,6 @@ for Vsatz in Vcursor:
 #TXT = TXT.replace('ß', '{\\ss}')
 
 # TXT = TXT + "\\n%======================\\n\\\\end{document}\\n"
+connection.close()
 
 print("Gemeldet haben " + str(Count_Verein) + " Vereine und wir stellen " + str(EUR_total) + " EUR in Rechnung")

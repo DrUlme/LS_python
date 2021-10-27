@@ -18,7 +18,7 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 # Datensatzcursor erzeugen
 Rcursor  = connection.cursor()
 Bcursor  = connection.cursor()
-RBcursor  = connection.cursor()
+RBcursor = connection.cursor()
 Pcursor  = connection.cursor()
 Vcursor  = connection.cursor()
 #
@@ -45,6 +45,112 @@ TXT = "\\documentclass[a4paper]{article}\n\\usepackage[ngerman]{babel}\n\\usepac
 
 #print(TXT)
 TXT = TXT + "\n"
+# --------------------------------------------------------------------------------------------------------------- Frühstarter
+sql = "SELECT * FROM boote  WHERE rennen = 3 ORDER BY planstart"
+Rcursor.execute(sql)
+TimeFrüh = 0
+for Rsatz in Rcursor:
+   if(TimeFrüh == 0):
+      TimeFrüh = Rsatz[3]
+if(TimeFrüh > 39600):    # 11*3600
+   sql = "SELECT * FROM boote  WHERE planstart < " + str(TimeFrüh) + " ORDER BY planstart, startnummer, nummer"
+   Bcursor.execute(sql)
+   NoBoote = 0
+   Ngray = 0
+   for Bsatz in Bcursor:
+      Boot   = Bsatz[0]
+      StNr   = Bsatz[1]
+      # VBoot  = Bsatz[3]
+      sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
+      RBcursor.execute(sql)
+      #
+      Abmeldung = Bsatz[10]
+      if(Abmeldung == 0):
+         # _______________________________________________________________________________________________________________
+         if(NoBoote == 0):
+            TXT = TXT + "\n% ============================= Rennen:  Frühstarter __________ Start\n\\noindent\n"
+            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.0cm}|C{2.0cm}|}\n\
+            \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
+            \\textbf{\\Large Frühstarter} \\hfill \\textbf{\\large Rennen } } } \\\\\n"
+         #
+         NoBoote = NoBoote + 1
+         #--------------------------------------------------------------------- Ruderer -
+         Vorname = ['-']
+         Name    = ['-']
+         JGNGstr = ['-']
+         
+         nPers   = 0
+         iR      = 0
+         for RudInd in RBcursor: # for iR in range(0, (len(RudInd) - 2)):         
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[0])
+            Pcursor.execute(sql)
+            Rd = Pcursor.fetchone()
+            nPers = nPers + 1
+            Vorname.insert(iR, Rd[1])
+            Name.insert(iR,  Rd[2])
+            JGNGstr.insert(iR, str(Rd[4]))
+            if( iR == 0):
+               Verein = "{" + Rd[7] +"}"
+               VStr   = Rd[7]
+            elif(iR>0 and VStr != Rd[7]):
+               Verein =  Verein + "\\\\{" + Rd[7] + "}"
+            #
+            #
+            if(Rsatz[7] < 1 and Rd[5] == 1):
+               # JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{\\textrm{Lgw}}$"))
+               JGNGstr.insert(iR, ("$" + str(Rd[4]) + "^{{Lgw}}$"))
+            else:
+               JGNGstr.insert(iR, str(Rd[4]))      
+            # print(Name[0] + ", '" + Name[1] + "' =>" + Rd[2] )
+            iR += 1
+         #---------------------------------------------------------------------
+         Btime = Bsatz[3]
+         # print(Name[0] + " - " + str(len(RudInd)))
+         #
+         if(Btime == 0):
+            StrStNr = "tbd."
+            StrZeit = "tbd."
+         else:
+            StrStNr = str(StNr)
+            if(isinstance(Btime, str)):
+               StrZeit = Btime
+            else:
+               BtimH = math.floor(Btime/3600)
+               BtimM = math.floor(Btime/60 - BtimH*60 )
+               #StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
+               StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "$:\\small{\\textcolor{gray}{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}}"
+         #
+         if(Ngray == 1):
+            TXT = TXT + "\\rowcolor[gray]{.9}"
+            Ngray = 0
+         else:
+            Ngray = 1
+         #
+         TXT = TXT + "\\parbox[1cm][" + str(nPers+1) + "em][c]{10mm}{\\textbf{" + StrStNr + "}} & \
+         \\parbox[1cm][" + str(nPers+1) + "em][c]{55mm}{"
+         #
+         for iR in range(0, nPers):
+            # Ruderer
+            TXT = TXT + "\\textbf{" + Vorname[iR] + " " + Name[iR] + "} {\\small(" + JGNGstr[iR] + ")} "
+            if(nPers > 1 and iR < (nPers - 1)):
+               # wenn mehrere:
+               TXT = TXT + "\\\\"
+         #
+         # Verein
+         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{60mm}{ \\small "
+         TXT = TXT + Verein
+         #for iR in range(0, nPers):
+         #   TXT = TXT + "Ruder-Club Aschaffenburg v. 1898 e.V."
+         #   # wenn mehrere und ungleich:
+         #   if(nPers > (iR + 1)):
+         #      TXT = TXT + "\\\\"
+         #
+         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{20mm}{ " + StrZeit + " }\\\\\myMidrule\n"
+      # _______________________________________________________________________________________________________________
+   #__________________________________________________________________________________________________________
+   if(NoBoote > 0):
+      TXT = TXT + "%\n\\end{tabular}\\\\[\\bigskipamount]\n%\n"
+
 
 sql = "SELECT * FROM rennen "
 Rcursor.execute(sql)
@@ -55,12 +161,12 @@ for Rsatz in Rcursor:
    NoBoote = 0
    Ngray = 0
    # hole die gemeldeten Boote für die Rennen
-   sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer, nummer"
+   sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY planstart, startnummer, nummer"
    Bcursor.execute(sql)
    for Bsatz in Bcursor:
       Boot   = Bsatz[0]
       StNr   = Bsatz[1]
-      VBoot  = Bsatz[3]
+      # VBoot  = Bsatz[3]
       sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
       RBcursor.execute(sql)
       #
@@ -105,14 +211,19 @@ for Rsatz in Rcursor:
             # print(Name[0] + ", '" + Name[1] + "' =>" + Rd[2] )
             iR += 1
          #---------------------------------------------------------------------
-         Btime = Bsatz[5]
+         Btime = Bsatz[3]
          # print(Name[0] + " - " + str(len(RudInd)))
          #
          if(Btime == 0):
             StrStNr = "tbd."
             StrZeit = "tbd."
          else:
-            StrStNr = str(StNr)
+            
+            if(TimeFrüh > Btime):
+               # StrStNr = "$" + str(StNr) + "^{{Früh}}$"
+               StrStNr = str(StNr) + "{\it F}"
+            else:
+               StrStNr = str(StNr)
             if(isinstance(Btime, str)):
                StrZeit = Btime
             else:
@@ -175,7 +286,7 @@ for Vsatz in Vcursor:
    #___________________________ durchsuche Rennen
    sql = "SELECT * FROM rennen "
    Rcursor.execute(sql)
-   if(1==2): # for Rsatz in Rcursor:
+   for Rsatz in Rcursor:
       Rennen       = Rsatz[0]
       RennenString = Rsatz[1]
       #
@@ -184,31 +295,35 @@ for Vsatz in Vcursor:
       NoBoote = 0
       Ngray = 0
       Vrennen = 0
-      sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer, vereine "
+      sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY planstart, startnummer, nummer "
       Bcursor.execute(sql)
       for Bsatz in Bcursor:
          Boot   = Bsatz[0]
          StNr   = Bsatz[1]
-         Verein = Bsatz[3]
-         RudInd = Bsatz[4].split(',')
-         Abmeldung = Bsatz[12]
+         Abmeldung = Bsatz[10]
          if(Abmeldung == 0):
             # ===========================================================================================
+            sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot) 
+            RBcursor.execute(sql)
             nPers   = 0
-            for iR in range(0, (len(RudInd) - 2)):         
-               sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
+            iR = 0
+            for RBind in RBcursor:
+               # rudererNr = 3 (4. Eintrag)
+               sql = "SELECT * FROM ruderer WHERE nummer = " + str(RBind[3])
                Pcursor.execute(sql)
                Rd = Pcursor.fetchone()
-               if(Rd[6] == Vsatz[1]):
+               # gibt nur diesen einen Eintrag pro Ruderer
+               if(Rd[7] == Vsatz[1]):
                   nPers = 1
                if(iR == 0):
-                  Name = "\\textbf{" + Rd[0] + " } " + Rd[1]
+                  Name = "\\textbf{" + Rd[1] + " } " + Rd[2]
                else:
-                  Name = Name + ", \\textbf{ " + Rd[0] + " } " + Rd[1]
+                  Name = Name + ", \\textbf{ " + Rd[1] + " } " + Rd[2]
                #               
-               if(Vsatz[1] != Rd[6]):
-                  Name = Name + " \\textcolor{gray}{\\small (" + Rd[6] + ")}"
+               if(Vsatz[1] != Rd[7]):
+                  Name = Name + " \\textcolor{gray}{\\small (" + Rd[7] + ")}"
                #
+               iR += 1
             #
             if(nPers > 0):
                if(Anzahl_Rennen == 0):
@@ -221,13 +336,17 @@ for Vsatz in Vcursor:
                   TXT = TXT + "\n{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + "\\\\\n%"
                   TXT = TXT + "\n\\begin{tabular}{m{1.0cm}m{8cm}m{2.0cm}}\n"
                #_______________________________________________________________________________________
-               Btime = Bsatz[5]
+               Btime = Bsatz[3]
                #
                if(Btime == 0):
                   StrStNr = "tbd."
                   StrZeit = "tbd."
                else:
-                  StrStNr = str(StNr)
+                  if(TimeFrüh > Btime):
+                     # StrStNr = "$" + str(StNr) + "^{{Früh}}$"
+                     StrStNr = str(StNr) + "{\it F}"
+                  else:
+                     StrStNr = str(StNr)
                   if(isinstance(Btime, str)):
                      StrZeit = Btime
                   else:
@@ -261,5 +380,7 @@ TXT = TXT + "\n%======================\n\\end{document}\n"
 fp = open("LaTeX/Meldungen.tex","w")
 fp.write(TXT)
 fp.close()
+
+connection.close()
 
 print("Gemeldet haben " + str(Count_Verein) + " Vereine")

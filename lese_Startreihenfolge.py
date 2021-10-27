@@ -41,7 +41,7 @@ while zeile > 6:
    Rennen = ws['A' + str(zeile)].value 
    Positi = ws['B' + str(zeile)].value 
    StNr   = ws['C' + str(zeile)].value
-   Boot   = ws['J' + str(zeile)].value
+   Boot   = ws['K' + str(zeile)].value
    # Zeit-String
    bZeit  = str(ws['D' + str(zeile)].value)
    #
@@ -64,7 +64,7 @@ while zeile > 6:
       Jahrgang = ws['G' + str(zeile)].value
       Jahre    = Jahrgang.split("\n")
       #
-      Vereine  = ws['H' + str(zeile)].value
+      Vereine  = ws['I' + str(zeile)].value
       Verein   = Vereine.split("\n")
       #
       print("Rennen " + str(Rennen) + "." + str(Positi) + "= #" + str(StNr) + " (" + str(Boot) + ") :  " + str(mySec))      
@@ -85,7 +85,8 @@ while zeile > 6:
       # print(dsatz)
       # print("Rennen " + str(Rennen) + " = " + str(dsatz[2]) )
       # print("Verein " + Verein[0] + " = " + dsatz[3])
-      ruderer = dsatz[4].split(',')
+      ruderer = ()
+      # dsatz[4].split(',')
       for iR in range(0, (len(ruderer) - 3)):
          #
          sql = "SELECT * FROM ruderer WHERE nummer = " + str(ruderer[iR + 1])
@@ -123,6 +124,10 @@ while zeile > 6:
             if(x == "Y" or x== "y" or x == "j" or x == "J"):
                sql = "UPDATE boote SET rennen = " + str(Rennen) + " WHERE nummer = " + str(Boot)
                # print( sql )
+               cursor.execute(sql)
+               connection.commit()
+               # dto. für r2boote - entfernen?!
+               sql = "UPDATE r2boote SET rennNr = " + str(Rennen) + " WHERE bootNr = " + str(Boot)
                cursor.execute(sql)
                connection.commit()
                print("... geändert !")

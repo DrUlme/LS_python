@@ -13,18 +13,25 @@ import fnmatch
 
 import LSglobal
 
-#========================================================================
+#===============================================================================================================================
 # Verbindung zur Datenbank erzeugen
 connection = sqlite3.connect( LSglobal.SQLiteFile )
 #
 # Datensatzcursor erzeugen
 Rcursor  = connection.cursor()
 Bcursor  = connection.cursor()
+Qcursor  = connection.cursor()
 Pcursor  = connection.cursor()
 Vcursor  = connection.cursor()
 #
+# --------------------------------------------------------------------------------------------------------------- Frühstarter
+sql = "SELECT * FROM boote  WHERE rennen = 3 ORDER BY planstart"
+Rcursor.execute(sql)
+Rsatz = Rcursor.fetchone()
+TimeFrüh = Rsatz[3]
 
 
+#===============================================================================================================================
 t1 = time.localtime()
 
 # HTMSel = "\n\n <select name=\"forma\" onchange=\"location = this.value;\" target=\"iframe_a\"; >\n"
@@ -47,10 +54,10 @@ HTXT = HTXT + "<iframe class=\"reload\" align=\"right\" height=\"900\" width=\"8
 # HTXT = HTXT + "<iframe src=\"aktuell.html\" name=\"iframe_a\"></iframe>\n\n"
 HTXT = HTXT + "<img height=\"15%\" width=\"15%\" src=\"RVE-Flag.png\"><br>\n\n"
 HTXT = HTXT + "<p style=\"font-size:30px; color:blue\">Langstrecke</p>\n"
-HTXT = HTXT + "<p style=\"font-size:25px; color:blue\">Herbst <b>2020</b><br></p>\n"
+HTXT = HTXT + "<p style=\"font-size:25px; color:blue\">" + LSglobal.Zeit + " <b>" + str(LSglobal.Jahr) + "</b><br></p>\n"
 HTXT = HTXT + "<br>\n<br>\n"
-HTXT = HTXT + "<font size=\"4\">Bitte beachtet <a href=\"Hygienekonzept_RVE_Langstrecke_24.10.20.pdf\"> unser Hygienekonzept </a>!<br></font>\n<br>\n"
-HTXT = HTXT + "<font size=\"4\"><a href=\"Meldungen.pdf\" >aktuelles Melde-PDF</a></font><br>\n\n<p><br>"
+HTXT = HTXT + "<font size=\"4\">Bitte beachtet <a href=\"Hygienekonzept_RVE_Langstrecke.pdf\"> unser Hygienekonzept </a>!<br><a HREF=\"Hinweise_Fahrordnung_Ruderstrecke.pdf\">Hinweise_Fahrordnung_Ruderstrecke.pdf</a></font>\n<br>\n"
+HTXT = HTXT + "<br><font size=\"4\"><a href=\"Meldungen.pdf\" >aktuelles Melde-PDF</a></font><br>\n\n<p><br>"
 #
 #HTXT = HTXT + "<font size=\"4\"><a href=\"aktuell.html\" target=\"iframe_a\">Aktuell</a></font> \n"
 #HTXT = HTXT + " <font size=\"3\" color=\"gray\"> aktuell laufende Rennen</font><br>\n<br>--------<br>\n<br>\n"
@@ -61,12 +68,14 @@ HTXT = HTXT + " <input type=\"radio\" name=\"biframe\" value=\"aktuell.html\" on
 Count_Boote   = 0
 Count_Ruderer = 0
 
+#===============================================================================================================================
 
 sql = "SELECT * FROM rennen WHERE status > 0"
 Rcursor.execute(sql)
 for Rsatz in Rcursor:
    Rennen       = Rsatz[0]
    RennenString = Rsatz[1]
+   RLgw         = Rsatz[7]
    Status       = Rsatz[6]
    RStr         = str(Rennen)
    #
@@ -99,20 +108,26 @@ for Rsatz in Rcursor:
    if(Status == 1):
       TXT = TXT + "- <iH> vorl&auml;ufige Meldungen</iH>"
       Bemerkung = "noch keine Zeitplanung"
-      sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " ORDER BY vereine, nummer "
+      myOrder = " ORDER BY nummer "
    elif(Status == 2):
       TXT = TXT + "- <iH> Melde-Ergebnis</iH>"
       Bemerkung = "Startzeit"
-      sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0 ORDER BY zeit, zeit3000, startnummer, planstart "
+      myOrder = " ORDER BY zeit3000 DESC, zeit DESC, planstart, startnummer "
    elif(Status == 5):
       TXT = TXT + "- <iH> Endergebnis </iH>"
       Bemerkung = "Endergebnis"
-      sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0  ORDER BY zeit"   
+      myOrder = " ORDER BY zeit"   
    else:
       TXT = TXT + "- <iH> vorl&auml;ufiges Ergebnis</iH>"
       Bemerkung = "vorläufig"
-      sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0  ORDER BY zeit, zeit3000, secstart, planstart " 
+      myOrder = " ORDER BY zeit, zeit3000, secstart, planstart " 
    #
+   if(Rennen == 2):
+      # Frühstarter besonders gehandelt
+      sql = "SELECT * FROM boote  WHERE abgemeldet = 0 and planstart < " + str(TimeFrüh) + " " + myOrder
+      print(sql)
+   else:
+      sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0 " + myOrder
    TXT = TXT + "</th>\n  </tr>\n </thead>\n <tbody>\n"
    # comment
    TXT = TXT + " <!-- ------------------------------------------------------------------------------------- -->\n"
@@ -122,28 +137,45 @@ for Rsatz in Rcursor:
    for Bsatz in Bcursor:
       Boot   = Bsatz[0]
       StNr   = Bsatz[1]
-      Verein = Bsatz[3]
-      RudInd = Bsatz[4].split(',')
-      Abmeldung = Bsatz[12]
+      # Verein = Bsatz[3]
+      # RudInd = Bsatz[4].split(',')
+      Abmeldung = Bsatz[10]
       if(Abmeldung == 0):
          # _______________________________________________________________________________________________________________
          #
          Count_Boote = Count_Boote + 1
          #
-         for iR in range(0, (len(RudInd) - 2)):         
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
+         sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot) 
+         Qcursor.execute(sql)
+         iR = 0
+         for RudInd in Qcursor:         
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[3])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
             # 
             Count_Ruderer = Count_Ruderer + 1
             #
             if(iR == 0):
-               Name   = "<b>" + Rd[0] + " " + Rd[1] + " </b> ( " + str(Rd[3]) + ") "
-               Verein = "<i>" + Rd[6] + "</i>"
+               Name   = "<b>" + Rd[1] + " " + Rd[2] + " </b> "
+               Verein = "<i>" + Rd[7] + "</i>"
             else:
-               Name = Name + ", <b>" + Rd[0] + " " + Rd[1] + " </b> ( " + str(Rd[3]) + ") "
-               if(("<i>" + Rd[6] + "</i>") != Verein):
-                  Verein = Verein + "<br><i>" + Rd[6] + "</i>"
+               Name = Name + ", <b>" + Rd[1] + " " + Rd[2] + " </b> "
+               if(("<i>" + Rd[7] + "</i>") != Verein):
+                  Verein = Verein + "<br><i>" + Rd[7] + "</i>"
+            if(RLgw < 0 and Rd[5] == 0):
+               Name = Name + " (" + str(Rd[4]) + ") "
+            elif(RLgw > 0 and Rd[6] < 0):
+               Name = Name + " (" + str(Rd[4]) + ") "
+            elif(Rd[6] <= 0):
+               Name = Name + " (" + str(Rd[4]) + "<sup> Lgw.</sup>) "
+            elif(Rd[6] <= RLgw):
+               Name = Name + " (" + str(Rd[4]) + "<sup> Lgw!</sup>) "
+            elif(Rd[6] <= (RLgw + 2) ):
+               Name = Name + " (" + str(Rd[4]) + "<sup> Lgw.</sup>) "
+            else:
+               Name = Name + " (" + str(Rd[4]) + "<sup> Lgw?</sup>) "
+               
+            iR = iR + 1
             #
          #
          if(StNr == 0):
@@ -151,26 +183,28 @@ for Rsatz in Rcursor:
             ZeitStr = "-"
          else:
             NrStr = str(StNr)
+            if(Rennen > 2 and Bsatz[3] < TimeFrüh):
+               NrStr = NrStr + "<sup><i>F</i></sup>"
             #
-            if(Bsatz[11] > 0):
-               Btime = Bsatz[11]
-               if(Bsatz[10] > 0):
-                  Bt3_s =  Bsatz[9]
+            if(Bsatz[9] > 0):
+               Btime = Bsatz[9]
+               if(Bsatz[8] > 0):
+                  Bt3_s =  Bsatz[7]
                   Bt3_M =  math.floor(Bt3_s/60)
-                  Bt6_s =  Bsatz[10]
+                  Bt6_s =  Bsatz[8]
                   Bt6_M =  math.floor(Bt6_s/60)
                   # Pfeil Mitte &#8614; oder &#8696;
                   zBemerkung = "<small>&#8614; " + str(Bt3_M) + ":" +  str(Bt3_s - 60*Bt3_M).rjust(2, '0') + " &#8696; "   + str(Bt6_M) + ":" +  str(Bt6_s - 60*Bt6_M).rjust(2, '0') + " &#8677;</small>"                
                else:
                   zBemerkung = "Endzeit"
-            elif(Bsatz[9] > 0):
-               Btime = Bsatz[9]
+            elif(Bsatz[7] > 0):
+               Btime = Bsatz[7]
                zBemerkung = "3000 m"
-            elif(Bsatz[6] > 0):
-               Btime = Bsatz[6]
+            elif(Bsatz[4] > 0):
+               Btime = Bsatz[4]
                zBemerkung = "gestartet"
             else:
-               Btime = Bsatz[5]
+               Btime = Bsatz[3]
                zBemerkung = "Plan"
                
                               
@@ -185,8 +219,14 @@ for Rsatz in Rcursor:
          TXT = TXT + "   </td>\n   <td> " + Verein + " </td>\n"
          if(Status == 1):
             TXT = TXT + "<td> <zeitbemerkung>" + Bemerkung +"</zeitbemerkung></td>\n"
-         else:
+         elif(Bsatz[9] > 0):
             TXT = TXT + "   <td><b>" + ZeitStr + " </b><br><zeitbemerkung>" + zBemerkung +"</zeitbemerkung></td>\n"
+         elif(Bsatz[7] > 0):
+            TXT = TXT + "   <td><font color=\"blue\"><b>" + ZeitStr + " </b><br><zeitbemerkung>" + zBemerkung +"</zeitbemerkung></font></td>\n"
+         elif(Bsatz[4] > 0):
+            TXT = TXT + "   <td><font color=\"red\"><i>" + ZeitStr + " </i><br><zeitbemerkung>" + zBemerkung +"</zeitbemerkung></font></td>\n"
+         else:
+            TXT = TXT + "   <td><font color=\"green\"><i>" + ZeitStr + " </i><br><zeitbemerkung>" + zBemerkung +"</zeitbemerkung></font></td>\n"
          TXT = TXT + "  </tr>\n\n"
 
    # comment
@@ -217,6 +257,8 @@ for Rsatz in Rcursor:
 HTMSel = HTMSel + " </select>\n\n\n  </p>\n\n</body>\n</html>\n"
 #
 HTXT = HTXT + "<br>\n" + HTMSel + "<br>\n"
+#
+HTXT = HTXT + "\n  <p><br><a HREF=\"H2020_Endergebnis.pdf\">Ergebnis der Herbst-Langstrecke 2020</a></p>\n"
 #
 HTXT = HTXT + "\n  </p>\n\n</body>\n</html>\n"
 fp = open("HTML/index.html","w")

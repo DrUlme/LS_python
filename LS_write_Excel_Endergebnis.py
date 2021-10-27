@@ -30,6 +30,8 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 cursor_R = connection.cursor()
 cursor   = connection.cursor()
 cursor_N = connection.cursor()
+Qcursor  = connection.cursor()
+Pcursor  = connection.cursor()
 
 #====================================================================================== Farben definieren
 FillCol = "44ff44"
@@ -73,8 +75,10 @@ indEZt = 'J'
 indZ03 = 'K'
 indZ36 = 'L'
 
-indCom = 'M'
-indBot = 'N'
+indKdr = 'M'
+indCom = 'N'
+indBot = 'O'
+
 
 ws[indRe + str(zeile)] = "Rennen"
 ws[indRe + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
@@ -126,6 +130,8 @@ ws.column_dimensions["G"].alignment = Alignment(horizontal='center')
 
 ws.column_dimensions["I"].alignment = Alignment(horizontal='center')
 
+ws.column_dimensions[indKdr].alignment = Alignment(horizontal='center')
+
 
 StNr = 1
 
@@ -146,11 +152,7 @@ for dsatz in cursor_R:
    ReStr  = str(Rennen)
    zeile = zeile + 1
    
-   # SQL-Abfrage
-   sql = "SELECT * FROM boote WHERE rennen = " + ReStr + " and abgemeldet = 0  ORDER BY zeit, zeit3000, secstart, planstart "
-   # Empfang des Ergebnisses
-   cursor.execute(sql)
-   
+  
    # Renn-Nummer
    ws[indRe + str(zeile)] = Rennen
    ws[indRe + str(zeile)].fill = (grayFill)
@@ -201,18 +203,20 @@ for dsatz in cursor_R:
    ws[indNam + str(zeile)].fill = (grayFill)
    ws[indJah + str(zeile)].fill = (grayFill)
    ws[indCom + str(zeile)].fill = (grayFill)
+   ws[indKdr + str(zeile)].fill = (grayFill)
    
    # indRe  = 'A' - indPos = 'B' - indSNr = 'C' - indStT = 'D' - indVor = 'E' - indNam = 'F' - indJah = 'G' - indEV  = 'H'- indCom = 'I'- indBot = 'J'
    Platz = 0
    Anz   = 0
    Last  = 0
+   #
+   # SQL-Abfrage
+   sql = "SELECT * FROM boote WHERE rennen = " + ReStr + " and abgemeldet = 0  ORDER BY zeit, zeit3000, secstart, planstart "
+   # Empfang des Ergebnisses
+   cursor.execute(sql)
    for ds in cursor:
       zeile = zeile + 1
-      #______________________________ Anzahl der Ruderer und ihre Nummern in der Datenbank
-      Names = ds[4]
-      Ruderer = Names.split(',')
-      nPers   = len(Ruderer) - 2
-      
+      #
       ws[indRe + str(zeile)] = Rennen
       ws[indRe + str(zeile)].font = Font(name='arial', sz=8, b=False, i=False, color='0000ff')
       ws[indRe + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
@@ -222,28 +226,28 @@ for dsatz in cursor_R:
       ws[indSNr + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #_______________________________________________________________________________________________________ Zeiten
       ws[indStT + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indStT + str(zeile)] = strftime("%H:%M:%S", gmtime(ds[6]))
+      ws[indStT + str(zeile)] = strftime("%H:%M:%S", gmtime(ds[4]))
       ws[indStT + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #
       ws[indEZt + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indEZt + str(zeile)] = strftime("%M:%S", gmtime(ds[11]))
+      ws[indEZt + str(zeile)] = strftime("%M:%S", gmtime(ds[9]))
       ws[indEZt + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
       ws[indEZt + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #
       ws[indZ03 + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indZ03 + str(zeile)] = strftime("%M:%S", gmtime(ds[9]))
+      ws[indZ03 + str(zeile)] = strftime("%M:%S", gmtime(ds[7]))
       ws[indZ03 + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #
       ws[indZ36 + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indZ36 + str(zeile)] = strftime("%M:%S", gmtime(ds[10]))
+      ws[indZ36 + str(zeile)] = strftime("%M:%S", gmtime(ds[8]))
       ws[indZ36 + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #
-      if(ds[11] == Last):
+      if(ds[9] == Last):
          Anz = Anz + 1
       else:
          Anz = Anz + 1
          Platz = Anz
-         Last  = ds[11]
+         Last  = ds[9]
       # 
       ws[indPos + str(zeile)] = Platz
       # ws[indPos + str(zeile)].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
@@ -252,48 +256,52 @@ for dsatz in cursor_R:
       #
       
       #Bemerkung
-      ws[indCom + str(zeile)] = ds[13]
+      ws[indCom + str(zeile)] = ds[11]
       ws[indCom + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
       
       # 
       ws[indBot + str(zeile)] = ds[0]
       ws[indBot + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
       
-      for iP in range(nPers):  
-         # SQL-Abfrage
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(Ruderer[iP + 1])
-         # print(str(iP) + ": " + str( Ruderer[iP + 1]) + ": " + sql)
-         # Empfang des Ergebnisses
-         cursor_N.execute(sql)
-         Rd = cursor_N.fetchone()
+      sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(ds[0]) 
+      Qcursor.execute(sql)
+      iP = 0
+      for RudInd in Qcursor:         
+         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[3])
+         Pcursor.execute(sql)
+         Rd = Pcursor.fetchone()      
+         #
          if(iP == 0):
             # Vorname
-            Vorname = Rd[0]
+            Vorname = Rd[1]
             # Nachname
-            Nachname = Rd[1]
+            Nachname = Rd[2]
             # Jahrgang
-            Jahrgang = str( Rd[3] )
+            Jahrgang = str( Rd[4] )
             # Verein
-            Verein = Rd[6]
+            Verein = Rd[7]
             # Gewicht
-            if(Rd[5] <= 0):
+            if(Rd[6] <= 0):
                Gewicht = '-'
             else:
-               Gewicht = str(Rd[5])
+               Gewicht = str(Rd[6])
+            Kader = Rd[8]
          else:
             # Vorname
-            Vorname = Vorname + "\n" + Rd[0]
+            Vorname = Vorname + "\n" + Rd[1]
             # Nachname
-            Nachname = Nachname + "\n" + Rd[1]
+            Nachname = Nachname + "\n" + Rd[2]
             # Jahrgang
-            Jahrgang = Jahrgang + "\n" + str(Rd[3])
+            Jahrgang = Jahrgang + "\n" + str(Rd[4])
             # Verein
-            Verein = Verein + "\n" + Rd[6]
+            Verein = Verein + "\n" + Rd[7]
             #Gewicht
-            if(Rd[5] > 0):
-               Gewicht = Gewicht + "\n" + str(Rd[5])
+            if(Rd[6] > 0):
+               Gewicht = Gewicht + "\n" + str(Rd[6])
             elif(Gewicht != "-"):
                Gewicht = Gewicht + "\n-"
+            Kader = Kader + "\n" + Rd[8]
+         iP = iP + 1
       # Vorname
       ws[indVor + str(zeile)] = Vorname
       # Nachname
@@ -304,10 +312,11 @@ for dsatz in cursor_R:
       ws[indEV  + str(zeile)] = Verein
       # Gewicht
       ws[indGew + str(zeile)] = Gewicht
-     #
-      if(nPers > 1):
-         ws.row_dimensions[ zeile ].height = 18*nPers
-
+      # Kader
+      ws[indKdr + str(zeile)] = Kader
+      #
+      if(iP > 1):
+         ws.row_dimensions[ zeile ].height = 18*iP
 
 
 # =================================== Data validation für Bootsklasse
@@ -342,13 +351,14 @@ ws.column_dimensions[indZ36].width = "8"
 
 ws.column_dimensions[indCom].width = "26"
 ws.column_dimensions[indBot].width = "2"
+ws.column_dimensions[indKdr].width = "8"
 
 # fixiere Tabelle:
 ws.freeze_panes = ws['A2']
 
 # erstelle Filter
 # maxCols = str( zeile + 10 ) auf 256 gesetzt
-ws.auto_filter.ref = "A1:J256"
+ws.auto_filter.ref = "A1:O256"
 
 
 # ______________________________________ set Logo
@@ -359,10 +369,10 @@ logo = Image("RVE_BRV_Flag.png")
 #logo.width = 210
 logo.height = 108
 logo.width = 294
-ws.merge_cells('O2:R7')
-ws.add_image(logo, "O2")
-ws.merge_cells('O1:R1')
-ws['O1'].alignment = Alignment(horizontal="center",vertical="center")
-ws['O1'] = LSglobal.Name
+ws.merge_cells('P2:S7')
+ws.add_image(logo, "P2")
+ws.merge_cells('P1:S1')
+ws['P1'].alignment = Alignment(horizontal="center",vertical="center")
+ws['P1'] = LSglobal.Name
 # ______________________________________ save
 wb.save('Endergebnis_H2020_test.xlsx')

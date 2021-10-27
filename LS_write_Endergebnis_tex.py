@@ -18,6 +18,7 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 # Datensatzcursor erzeugen
 Rcursor  = connection.cursor()
 Bcursor  = connection.cursor()
+Qcursor  = connection.cursor()
 Pcursor  = connection.cursor()
 Vcursor  = connection.cursor()
 #
@@ -25,10 +26,11 @@ Vcursor  = connection.cursor()
 # DRV Zeiten von 2020
 #DRV_velo = [ 0, 1, 2, 3, 4, 5,  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
 #            20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36 ]
-DRV_velo = [ 0, 0, 0, 4.85, 4.71, 5.43, 5.15, 5.12, 4.89, 4.61, 4.86, 4.74, 4.42, 4.28, 5.12, 5.12, 4.68, 4.39, 4.28, 0, 
+DRV_velo = [ 0, 0, 0, 4.85, 4.71, 5.43, 5.15, 5.12, 4.87, 4.61, 4.86, 4.74, 4.42, 4.28, 5.09, 5.09, 4.68, 4.39, 4.28, 0, 
             0, 0, 0, 0, 0,  0,  0,  0,  0,  0, 0,  0, 0, 0,  0, 0, 0 ]
 # gesondert für Leichtgewichte:
-DRV_velo_Lgw = [ 0, 0, 0, 4.85, 4.71, 5.43, 5.15, 5.12, 4.89, 4.61, 4.86, 4.74, 4.42, 4.28, 4.98, 4.98, 4.52, 4.39, 4.28, 0, 
+# DRV_velo_Lgw = [ 0, 0, 0, 4.85, 4.71, 5.43, 5.15, 5.12, 4.87, 4.61, 4.86, 4.74, 4.42, 4.28, 4.98, 4.98, 4.52, 4.39, 4.28, 0, 
+DRV_velo_Lgw = [ 0, 0, 0, 4.85, 4.71, 5.43, 5.15, 5.12, 4.87, 4.61, 4.86, 4.74, 4.42, 4.28, 5.09, 5.09, 4.68, 4.39, 4.28, 0,
             0, 0, 0, 0, 0,  0,  0,  0,  0,  0, 0,  0, 0, 0,  0, 0, 0 ]
 
 
@@ -54,6 +56,15 @@ TXT = "\\documentclass[a4paper]{article}\n\\usepackage[ngerman]{babel}\n\\usepac
 #print(TXT)
 TXT = TXT + "\n"
 
+# --------------------------------------------------------------------------------------------------------------- Frühstarter
+sql = "SELECT * FROM boote  WHERE rennen = 3 ORDER BY planstart"
+Rcursor.execute(sql)
+Rcursor.execute(sql)
+Rsatz = Rcursor.fetchone()
+TimeFrüh = Rsatz[3]
+
+
+#================================================================================================
 myTab1 = "7mm"
 
 sql = "SELECT * FROM rennen "
@@ -62,7 +73,7 @@ for Rsatz in Rcursor:
    Rennen       = Rsatz[0]
    RennenString = Rsatz[1]
    Gewicht      = Rsatz[7]
-   Strecke      = int(Rsatz[4])
+   Strecke      = int(Rsatz[4][0:4])
    #
    NoBoote = 0
    Platz = 0
@@ -74,8 +85,7 @@ for Rsatz in Rcursor:
       Boot    = Bsatz[0]
       StNr    = Bsatz[1]
       StrStNr = str(StNr)
-      VBoot   = Bsatz[3]
-      RudInd  = Bsatz[4].split(',')
+      #
       RefV    = DRV_velo[Rennen]
       #
       # _______________________________________________________________________________________________________________
@@ -93,23 +103,28 @@ for Rsatz in Rcursor:
       JGNGstr = ['-']
       
       nPers   = 0
-      for iR in range(0, (len(RudInd) - 2)):         
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[iR + 1])
+      #
+      sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot) 
+      Qcursor.execute(sql)
+      iR = 0
+      for RudInd in Qcursor:         
+         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[3])
          Pcursor.execute(sql)
          Rd = Pcursor.fetchone()
+         #
          nPers = nPers + 1
-         Vorname.insert(iR, Rd[0])
-         Name.insert(iR,  Rd[1])
-         JGNGstr.insert(iR, str(Rd[3]))
+         Vorname.insert(iR, Rd[1])
+         Name.insert(iR,  Rd[2])
+         JGNGstr.insert(iR, str(Rd[4]))
          if( iR == 0):
-            Verein = "{" + Rd[6] +"}"
-            VStr   = Rd[6]
-         elif(iR>0 and VStr != Rd[6]):
-            Verein =  Verein + "\\\\{" + Rd[6] + "}"
+            Verein = "{" + Rd[7] +"}"
+            VStr   = Rd[7]
+         elif(iR>0 and VStr != Rd[7]):
+            Verein =  Verein + "\\\\{" + Rd[7] + "}"
          #
          # ______________________________________________________________________________ Lgw ? 
-         if(Rsatz[7] < 1 and Rd[4] == 1):
-            if(Rd[5] < 0 or Rd[5] > (Gewicht + 5) ):
+         if(Rsatz[7] < 1 and Rd[5] == 1):
+            if(Rd[6] < 0 or Rd[6] > (Gewicht + 2.5) ):
                JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{\\textrm{Lgw}}$"))
             else:
                JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{{Lgw}}$"))
@@ -120,7 +135,7 @@ for Rsatz in Rcursor:
          # print(Name[0] + ", '" + Name[1] + "' =>" + Rd[2] )
       # ______________________________________________________________________________       # Zeiten: 
       # --------------------------------    Startzeit: Bsatz[6]
-      Stime = Bsatz[6]
+      Stime = Bsatz[4]
       StimH = math.floor(Stime/3600)
       StimM = math.floor(Stime/60 - StimH*60 )
       StZeit = "$" + str(StimH) + "$:$" + str(StimM).rjust(2, '0') + "$:" + str(Stime - 3600*StimH - 60*StimM).rjust(2, '0') + "}"
@@ -129,17 +144,17 @@ for Rsatz in Rcursor:
       #         6000 m     Bsatz[10]
       #         Endzeit    Bsatz[11]
       # ---------------------------------------------------------------------
-      Btime = Bsatz[11]   
+      Btime = Bsatz[9]   
       BtimM = math.floor(Btime/60)
       EZeit = "\\textbf{ " + str(BtimM) + ":" + str(Btime - 60*BtimM).rjust(2, '0') + "}" 
       if(RefV > 0):
          Percent = "%4.1f"% (100 * Strecke / Btime / RefV)
          EZeit = EZeit + "$^{\\textrm{ }" + Percent + "\\%}$"
       #
-      Time6 = Bsatz[10]
+      Time6 = Bsatz[8]
       if(Time6 > 0):
          Time6m = math.floor(Time6/60)
-         Time3  = Bsatz[9]
+         Time3  = Bsatz[7]
          Time3m = math.floor(Time3/60)
          #
          EZeit = EZeit + "\\\\ \\tiny{  " + str(Time3m) + ":" + str(Time3 - 60*Time3m).rjust(2, '0') \
@@ -188,7 +203,7 @@ for Rsatz in Rcursor:
 ##############################################################################################################
 TXT = TXT + "%\n%======================\n%\n"
 TXT = TXT + "Die fette Zahl bei den \\textbf{ Zeiten } ist die finale Zeit über die jeweilige Wettkampfstrecke.\\\\\n\\\\\n\
-Wenn \\textbf{ DRV-Vergleichszahlen } für die Altersklasse existieren, ist die Prozentzahl der Geschwindigkeit zum Referenzwert \
+Wenn \\textbf{ DRV-Prognosezahlen von 2020 } für die Altersklasse existieren, ist die Prozentzahl der Geschwindigkeit zum Referenzwert \
 über die Standardstrecke (2000 m, bei Junioren B 1500m) dahinter zu sehen. \\\\\n\\\\\n\
 Bei \\textbf{ 6000 m Streckenlänge } sind die Zeiten für die ersten 3000 m und für die zweiten 3000 m in der Zeile darunter angegeben.\n%\n"
 
@@ -204,7 +219,9 @@ for Vsatz in Vcursor:
    VereinStr = "{" + Vsatz[1] + "}"
    TXT = TXT.replace(VereinStr, ("{" + Vsatz[0] + "}"))
 ##############################################################################################################
+connection.close()
 
 fp = open("LaTeX/Endergebnis.tex","w")
 fp.write(TXT)
 fp.close()
+

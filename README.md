@@ -59,3 +59,9 @@ zz_Test_docx_number.py
 Für die Ausarbeitung wird das Textverarbeitungssystem LaTeX (TeX) verwendet.
 Mit diesem Befehl sollte es sofort klappen:
 **pdflatex** *Meldungen.tex*
+
+
+## Fehler und Ergänzungen
+Bei Meldung 19 - Spätstarter - abgebrochen. Richtige RennNr klappte wieder.
+
+Behandlung der Früh- und Spät-Starter ?!

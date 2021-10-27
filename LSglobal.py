@@ -40,11 +40,15 @@ TrzFiles  = ["Start.trz", "3000.trz", "Ziel.trz"]
 
 
 TrzDBname = ["secstart",  "sec3000",  "sec6000", "zeit3000", "zeit6000", "zeit"]
-TrzDBpos  = [ 6,    7,   8]
+TrzDBpos  = [ 4,    5,   6]
 Trz_m     = [ 0, 3000, 6000]
 
 # Zeit-Versatz in TRZ-Dateien ausgleichen:
-Trz_dSec  = [ 0, 0, 0]
+Trz_dSec  = [ 0, 68, 0]
+
+# zusätzlich erlaubtes Gewicht für die Langstrecke
+Gewicht = 2.5
+
 
 """
 ========================================================================
