@@ -9,6 +9,20 @@ import time
 import math
 import os, sys, sqlite3
 
+# library für Excel:
+import openpyxl
+from openpyxl import Workbook
+from openpyxl.styles import Alignment
+from openpyxl.styles import Font
+from openpyxl.utils import range_boundaries
+from openpyxl.styles.borders import Border, Side, BORDER_THIN
+from openpyxl.styles import Color, PatternFill, Font, Border
+from openpyxl.formatting.rule import ColorScaleRule, CellIsRule, FormulaRule, Rule
+from openpyxl.styles import numbers
+# from openpyxl.worksheet.datavalidation import DataValidation
+# from openpyxl.worksheet.defined_name import DefinedName
+# image - using pillow?
+
 import LSglobal
 
 #========================================================================
@@ -24,7 +38,31 @@ Vcursor  = connection.cursor()
 #
 cursor  = connection.cursor()
 #
+#====================================================================================== Farben definieren
+FillCol = "44ff44"
+grayFill = PatternFill(start_color='666666',end_color='666666',fill_type='solid')
+greenFill = PatternFill(start_color='44ff44',end_color='44ff44',fill_type='solid')
+noFill = PatternFill(start_color='ffffff',end_color='ffffff',fill_type='solid')
 
+# Erstellen eines Workbooks:
+wb = Workbook()
+# wb = openpyxl.Workbook()
+ws = wb.active
+ws.title = LSglobal.Name
+
+book = Workbook()
+sheet = book.active
+
+# ==============================================================================================================
+ws.merge_cells('B1:H1')
+ws['B1'] = LSglobal.Name
+ws['B3'] = "Rechnungen"
+ws['A4'] = "Verein"
+ws['B4'] = "Kürzel"
+ws['C4'] = "Betrag"
+ws['D4'] = "e-mails"
+
+wsNr = 5
 
 t1 = time.localtime()
 
@@ -296,7 +334,24 @@ for Vsatz in Vcursor:
    fp = open("LaTeX/Rechnung_" + Vsatz[1] + ".tex","w")
    fp.write(TXT)
    fp.close()
-
+   ws['A'+str(wsNr)] = Vsatz[0]
+   ws['B'+str(wsNr)] = Vsatz[1]
+   ws['C'+str(wsNr)] = str(EURO + EURA + EURB)
+   #
+   sql = "SELECT * FROM betreuer WHERE verein = '" + Vsatz[1] + "' "
+   Bcursor.execute(sql)
+   Betreuer = " - "
+   nB = 0
+   for Bsatz in Bcursor:
+      if(nB == 0):
+         Betreuer = Bsatz[4]
+      else:
+        Betreuer = Betreuer +"\n" + Bsatz[4]
+      nB = nB + 1
+   #--------------
+   ws['D'+str(wsNr)] = Betreuer
+   #
+   wsNr = wsNr + 1
 
 #TXT = TXT_1 + TXT_2 + TXT_3 + TXT_4
 
@@ -306,5 +361,8 @@ for Vsatz in Vcursor:
 
 # TXT = TXT + "\\n%======================\\n\\\\end{document}\\n"
 connection.close()
+
+# ______________________________________ save
+wb.save('Rechnungen_' + LSglobal.Zeit + "_" + str(LSglobal.Jahr) + '.xlsx')
 
 print("Gemeldet haben " + str(Count_Verein) + " Vereine und wir stellen " + str(EUR_total) + " EUR in Rechnung")

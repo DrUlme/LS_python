@@ -31,6 +31,8 @@ cursor_R = connection.cursor()
 cursor   = connection.cursor()
 cursor_N = connection.cursor()
 cursor_V = connection.cursor()
+RBcursor = connection.cursor()
+Pcursor  = connection.cursor()
 
 #====================================================================================== Farben definieren
 FillCol = "44ff44"
@@ -42,14 +44,15 @@ noFill = PatternFill(start_color='ffffff',end_color='ffffff',fill_type='solid')
 wb = Workbook()
 # wb = openpyxl.Workbook()
 ws = wb.active
-ws.title = "HLS_Erlangen_2020"
+ws.title = "HLS_Erlangen_" + str(LSglobal.Jahr)
 
 book = Workbook()
 sheet = book.active
 
 # ==============================================================================================================
 ws.merge_cells('B1:H1')
-ws['B1'] = "Herbst" + "-Langstrecke des Bayerischen Ruderverbandes in Erlangen " + " 24. Oktober 2020"
+ws['B1'] = LSglobal.Zeit + "-Langstrecke des Bayerischen Ruderverbandes in Erlangen " + LSglobal.Datum + " " + str(LSglobal.Jahr)
+# " 24. Oktober 2020"
 ws['B3'] = "1. Ergebnis"
 #
 #ws['H1'].alignment = Alignment(horizontal="center", vertical="bottom")
@@ -188,31 +191,20 @@ for dsatz in cursor_R:
    Anz   = 0
    Last  = 0
    for ds in cursor:
+      Boot   = ds[0]
+      StNr   = ds[1]
+      #
       if(Anz == 0):
          NR = NR + 1
       #______________________________ Anzahl der Ruderer und ihre Nummern in der Datenbank
-      Names = ds[4]
-      Ruderer = Names.split(',')
-      nPers   = len(Ruderer) - 2
+      sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
+      RBcursor.execute(sql)
       #
-      #
-      #
-      if(ds[11] == Last):
-         Anz = Anz + 1
-      else:
-         Anz = Anz + 1
-         Platz = Anz
-         Last  = ds[11]
-      # 
-      # 
-      for iP in range(nPers):  
-         zeile = zeile + 1
-         LNR   = LNR + 1
-         # SQL-Abfrage
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(Ruderer[iP + 1])
-         # Empfang des Ergebnisses
-         cursor_N.execute(sql)
-         Rd = cursor_N.fetchone()
+      for RudInd in RBcursor: # for iR in range(0, (len(RudInd) - 2)):         
+         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[0])
+         Pcursor.execute(sql)
+         Rd = Pcursor.fetchone()
+         #
          # ------------------------------------------------------------------
          #
          ws[indLNR + str(zeile)] = str(LNR)
@@ -238,7 +230,8 @@ for dsatz in cursor_R:
          #_______________________________________________________________________________________________________ Zeiten
          #
          ws[indEZt + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-         ws[indEZt + str(zeile)] = strftime("%M:%S", gmtime(ds[11]))
+         ws[indEZt + str(zeile)] = strftime("%M:%S", gmtime(ds[9]))
+         # ds 11 => 9
          ws[indEZt + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
          ws[indEZt + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
          #_______________________________________________________________________________________________________ Zeiten
@@ -250,46 +243,46 @@ for dsatz in cursor_R:
          #_______________________________________________________________________________________________________ Zeiten
          #
          # Nachname
-         ws[indNam + str(zeile)] = Rd[0] + " " + Rd[1]
+         ws[indNam + str(zeile)] = Rd[1] + " " + Rd[2]
          # Jahrgang
-         ws[indJah + str(zeile)] = str( Rd[3] )
+         ws[indJah + str(zeile)] = str( Rd[4] )
          #
          if(Gender == 'M'):
             NAM = NAM + 1
-            if(Rd[3] == (LSglobal.RefJahr - 16) or Rd[3] == (LSglobal.RefJahr - 15)):
-               if(Rd[5] > 1):
+            if(Rd[4] == (LSglobal.RefJahr - 16) or Rd[4] == (LSglobal.RefJahr - 15)):
+               if(Rd[6] > 1):
                   JMB_Lgw = JMB_Lgw + 1
                else:
                   JMB = JMB + 1
-            elif(Rd[3] == (LSglobal.RefJahr - 18) or Rd[3] == (LSglobal.RefJahr - 17)):
-               if(Rd[5] > 1):
+            elif(Rd[4] == (LSglobal.RefJahr - 18) or Rd[4] == (LSglobal.RefJahr - 17)):
+               if(Rd[6] > 1):
                   JMA_Lgw = JMA_Lgw + 1
                else:
                   JMA = JMA + 1
-            elif(Rd[3] > (LSglobal.RefJahr - 18) ):
-               if(Rd[5] > 1):
+            elif(Rd[4] > (LSglobal.RefJahr - 18) ):
+               if(Rd[6] > 1):
                   SM_Lgw = SM_Lgw + 1
                else:
                   SM = SM + 1
          else:
             NAW = NAW + 1
-            if(Rd[3] == (LSglobal.RefJahr - 16) or Rd[3] == (LSglobal.RefJahr - 15)):
-               if(Rd[5] > 1):
+            if(Rd[4] == (LSglobal.RefJahr - 16) or Rd[4] == (LSglobal.RefJahr - 15)):
+               if(Rd[6] > 1):
                   JFB_Lgw = JFB_Lgw + 1
                else:
                   JFB = JFB + 1
-            elif(Rd[3] == (LSglobal.RefJahr - 18) or Rd[3] == (LSglobal.RefJahr - 17)):
-               if(Rd[5] > 1):
+            elif(Rd[4] == (LSglobal.RefJahr - 18) or Rd[4] == (LSglobal.RefJahr - 17)):
+               if(Rd[6] > 1):
                   JFA_Lgw = JFA_Lgw + 1
                else:
                   JFA = JFA + 1
-            elif(Rd[3] > (LSglobal.RefJahr - 18) ):
-               if(Rd[5] > 1):
+            elif(Rd[4] > (LSglobal.RefJahr - 18) ):
+               if(Rd[6] > 1):
                   SF_Lgw = SF_Lgw + 1
                else:
                   SF = SF + 1
          # Verein - Kurzform
-         sql = "SELECT * FROM verein WHERE kurz = '" + Rd[6] + "' "
+         sql = "SELECT * FROM verein WHERE kurz = '" + Rd[7] + "' "
          # Empfang des Ergebnisses
          cursor_V.execute(sql)
          Vp = cursor_V.fetchone()
@@ -410,14 +403,23 @@ sql = "SELECT * FROM verein "
 cursor_V.execute(sql)
 for dsatz in cursor_V:
    v_Athlet = 0
+   # suche nach Ruderern
    sql = "SELECT * FROM ruderer WHERE verein = '" + dsatz[1] +"'"
    cursor_R.execute(sql)
+   #
    for ds in cursor_R:
-      sql = "SELECT * FROM boote WHERE nummer = " + str(ds[8]) + ""
-      cursor.execute(sql)
-      Rd = cursor.fetchone()
-      if(Rd[12] == 0):
-         v_Athlet = v_Athlet + 1
+      # ______________________________ suche nach den Booten pro Ruderer
+      sql = "SELECT * FROM r2boot  WHERE rudererNr = " + str(ds[0]) 
+      RBcursor.execute(sql)
+      #
+      for RudInd in RBcursor:   # for iR in range(0, (len(RudInd) - 2)):   
+         # print(RudInd)
+         sql = "SELECT * FROM boote WHERE nummer = " + str(RudInd[2]) + "  "
+         cursor.execute(sql)
+         Rd = cursor.fetchone()
+         # check - nicht abgemeldet:
+         if(Rd[10] == 0):
+            v_Athlet = v_Athlet + 1
       #
    #
    if(v_Athlet > 0):
@@ -499,4 +501,4 @@ ws['S' + str(zeile)].font = Font(name='arial', sz=11, b=False, i=False, color='2
 connection.close()
 
 # ______________________________________ save
-wb.save('Endergebnis_H2020_BRV.xlsx')
+wb.save('Endergebnis_H2021_BRV.xlsx')

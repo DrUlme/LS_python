@@ -1,3 +1,16 @@
+# Excel, Doc & html files
+*.xls*
+*.doc*
+*.htm*
+
+# LaTeX
+*.tex
+*.aux
+*.pdf
+*.dvi
+*.out
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
