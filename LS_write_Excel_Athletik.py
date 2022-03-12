@@ -165,7 +165,10 @@ sql = "SELECT * FROM rennen WHERE nummer > 20"
 # Empfang des Ergebnisses
 cursor_R.execute(sql)
 #
+##########################################
+SetStartnummern = -1
 StartNr = 0
+##########################################
 for dsatz in cursor_R:
    Rennen = dsatz[0]
    ReStr  = str(Rennen)
@@ -305,7 +308,21 @@ for dsatz in cursor_R:
    for ds in cursor_B:
       Zeile = Zeile + 1
       sZ = str(Zeile)
-      StartNr = StartNr + 1
+      if(SetStartnummern == 1 or ds[1] == 0):
+         StartNr = StartNr + 1
+         if(SetStartnummern == 1 ):
+            sql = "UPDATE boote SET startnummer = " + str(StartNr) + " WHERE nummer = " + str(ds[0])
+            cursor.execute(sql)
+            connection.commit()
+      elif(SetStartnummern == -1 ):
+         StartNr = StartNr + 1
+         sql = "UPDATE boote SET startnummer = 0 WHERE nummer = " + str(ds[0])
+         cursor.execute(sql)
+         connection.commit()
+      else:
+         StartNr = ds[1]
+      #
+      #
       # suche nach Einträgen in r2boot for dieses Boot
       sql = "SELECT * FROM r2boot WHERE bootNr = " + str(ds[0])
       cursorRB.execute(sql)

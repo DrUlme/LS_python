@@ -83,6 +83,8 @@ def searchID():
          rudererInd = dsatz[0]
    elif(useNR > 0):
       sql = "SELECT * FROM boote  WHERE startnummer = " + str(StartNr) 
+      if(LSglobal.ZeitK == "F"):
+         sql = sql + " and rennen<21"
       Bcursor.execute(sql)
       Boot = Bcursor.fetchone()
       #
@@ -136,7 +138,7 @@ win.geometry("800x400")
 #========================================================================
 
 # Databases
-mydata=tk.Label(win,text="Langstrecke 2021 H",font=("Hack",16),fg="blue")
+mydata=tk.Label(win,text="Langstrecke " + str(LSglobal.Jahr) + " " + LSglobal.ZeitK,font=("Hack",16),fg="blue")
 mydata.grid(row=0,column=0)
 
 mylabel=tk.Label(win,text="Kein Name\n kein Verein\nangegeben",font=("Hack",10),fg="blue")
