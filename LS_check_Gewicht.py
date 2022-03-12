@@ -17,10 +17,16 @@ from PIL import Image
 
 #========================================================================
 class bcolors:
-    OK = '\033[92m' #GREEN
-    WARNING = '\033[93m' #YELLOW
-    FAIL = '\033[91m' #RED
-    RESET = '\033[0m' #RESET COLOR
+    #__________________________________ Spyder:
+    OK = '\x1b[92m' #GREEN
+    WARNING = '\x1b[93m' #YELLOW
+    FAIL = '\x1b[91m' #RED
+    RESET = '\x1b[0m' #RESET COLOR
+    #__________________________________ bash:
+    # OK = '\033[92m' #GREEN
+    # WARNING = '\033[93m' #YELLOW
+    # FAIL = '\033[91m' #RED
+    # RESET = '\033[0m' #RESET COLOR
 
 #========================================================================
 

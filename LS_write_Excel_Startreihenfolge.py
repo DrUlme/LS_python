@@ -211,7 +211,7 @@ StNr = 1
 # Ausgabe des Ergebnisses
 # ============================================================================================================
 # SQL-Abfrage
-sql = "SELECT * FROM rennen WHERE nummer < 114"
+sql = "SELECT * FROM rennen WHERE nummer < 114 AND boot IS NOT 'Athletik'"
 
 # Empfang des Ergebnisses
 cursor_R.execute(sql)

@@ -6,7 +6,9 @@
 # has issues with SoftMaker Office !!! 
 # XML support:
 # from lxml import etree
-import os, sys, sqlite3
+import os, sqlite3
+
+from termcolor import colored
 
 # Excel
 #========================================================================
@@ -64,11 +66,14 @@ for filename in FILES:
       
       if record[0] == 1:
          print (Verein +  " ist schon in der Datenbank!" )
+         sql = "UPDATE verein SET dabei = 1 WHERE kurz='" + Verein + "' LIMIT 1)"
+         #cursor.execute(sql)
+         #connection.commit()
       else:
          sql = "INSERT INTO verein VALUES(" \
             "'" + Vereinsname + "', '" + Verein + "', '" \
             + Adresse_1 + "', '" + Adresse_2 + "', " \
-            "0.0)"
+            "0.0, 1, 1)"
          # print(sql)
          cursor.execute(sql)
       
@@ -186,6 +191,8 @@ for filename in FILES:
                NR = 4
             elif Boot == '4x+':
                NR = 5
+            elif Boot == 'Athletik':
+               NR = 1
             else:
                NR = 0
             
@@ -260,7 +267,7 @@ for filename in FILES:
                 
                 if(tupleNr != None  and  tupleNr[0] > 0):
                    BootNr = tupleNr[0]
-                   print("Ruderer ist auch in Boot " + str(BootNr) + " gemeldet")
+                   print(colored('WARNING: ', 'red', attrs=['bold']), "Ruderer ist auch in Boot " + str(BootNr) + " gemeldet")
                    # ToDo: Check ob Rennen gleich ist!
                 
                 sql = "SELECT nummer FROM ruderer WHERE verein='" + Verein2 + "' and name='" + Name + \

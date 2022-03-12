@@ -70,7 +70,9 @@ sql = "CREATE TABLE verein(" \
       "kurz TEXT, " \
       "anschrift TEXT, " \
       "anschrift2 TEXT, " \
-      "rechnung REAL)"
+      "rechnung REAL, " \
+      "dabei INTEGER, " \
+      "bayrisch INTEGER )"
 cursor.execute(sql)
 
 sql = "CREATE TABLE betreuer(" \

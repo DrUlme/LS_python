@@ -125,7 +125,7 @@ ws['A3'].fill = PatternFill(start_color=FillCol, end_color="4444dd",  fill_type 
 
 ws['G2'] = "Kurzform Verein"
 ws['G2'].font = Font(name='arial', sz=8, b=True, i=False, color='4444dd')
-ws.merge_cells('G3:H3')
+# ws.merge_cells('G3:H3')
 ws['G3'].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
 
 ws['A4'] = "Adresse Verein"
@@ -182,9 +182,10 @@ ws['H9'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 ws['H10'] = "Klasse"
 ws['H10'].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
-ws.merge_cells('I1:J5')
-ws['I1'] = "Langstrecke " + LSglobal.Zeit + " " + str(LSglobal.Jahr)
-ws['I1'].alignment = Alignment(horizontal="center", vertical="bottom")
+# H1 (vorher I1)
+ws.merge_cells('H1:J5')
+ws['H1'] = "Langstrecke " + LSglobal.Zeit + " " + str(LSglobal.Jahr)
+ws['H1'].alignment = Alignment(horizontal="center", vertical="bottom")
 
 
 ws.merge_cells('I10:J10')
@@ -239,8 +240,8 @@ for ROW in range(11,54):
    if(ROW > 11):
       ws['A' + str(ROW)] = '= IF(H' + str(ROW-1) + '="1x",A' + str(ROW-1) + '+1,IF(H' + str(ROW-2) + '="2-",A' + str(ROW-2) \
       + '+1,IF(H' + str(ROW-2) + '="2x",A' + str(ROW-2) + '+1,IF(H' + str(ROW-4) + '="4x",A' + str(ROW-4) + '+1,IF(H' + str(ROW-4) \
-      + '="4x+","Stm.",IF(H' + str(ROW-5) + '="4x+",A' + str(ROW-5) + '+1,IF(H' + str(ROW-1) + '="2-","-","")))))))'
-
+      + '="4x+","Stm.",IF(H' + str(ROW-5) + '="4x+",A' + str(ROW-5) + '+1,IF(H' + str(ROW-1) + '="2-","-",IF(H' + str(ROW-1) + '="Athletik",A' + str(ROW-1) + '+1, ""))))))))'
+      # "2-";"-";WENN(H13="Athletik";A13+1;""))))))))
 
 
 # ====================================================================== adapt column with
@@ -284,6 +285,7 @@ logo = Image("RVE_BRV_Flag.png")
 logo.height = 77
 logo.width = 210
 
-ws.add_image(logo, "I1")
+# ws.add_image(logo, "I1")
+ws.add_image(logo, "H1")
 
 wb.save('Meldebogen_' + LSglobal.ZeitK + "_" + str(LSglobal.Jahr) + '.xlsx')

@@ -349,12 +349,12 @@ else:
    cursor.execute(sql)
    connection.commit()
    # 25	Ausser Konkurrenz	Athletiktest 	Athletik
-   Rennen = Rennen + 1
-   sql = "INSERT INTO rennen VALUES(" \
-      "25, 'Athletiktest ausser Konkurrenz', 'all', 'Athletik', 'div.', '10:00'," \
-      " 0, -1.0, " + str(RefJahr - 9) + ", " + str(RefJahr - 15) + " )"
-   cursor.execute(sql)
-   connection.commit()
+   # Rennen = Rennen + 1
+   # sql = "INSERT INTO rennen VALUES(" \
+   #    "25, 'Athletiktest ausser Konkurrenz', 'all', 'Athletik', 'div.', '10:00'," \
+   #    " 0, -1.0, " + str(RefJahr - 9) + ", " + str(RefJahr - 15) + " )"
+   # cursor.execute(sql)
+   # connection.commit()
 
 
 # Von Rennen zu Excel in neuem Programm !!

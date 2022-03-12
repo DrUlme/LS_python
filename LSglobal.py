@@ -6,14 +6,14 @@ Created on Mon Oct  5 14:57:53 2020
 @author: ulf
 """
 
-Name   = "Erlanger Herbst-Langstrecke 2021"
-DBName = "LS2021H.db"
+Name   = "Erlanger Früjahrs-Langstrecke 2022" # "Erlanger Herbst-Langstrecke 2021"
+DBName = "LS2022F.db"
 
-Zeit   = "Herbst"
-ZeitK  = "H"
+Zeit   = "Frühjahr" # "Herbst"
+ZeitK  = "F"
 
-Datum   = "23.10."
-Jahr    = 2021
+Datum   = "19.3."
+Jahr    = 2022
 
 # Referenz für diese Langstrecke
 # Die Herbst-LS zählt bereits als Vorbereitung auf das folgende Jahr
@@ -25,9 +25,9 @@ AbmeldungDD  = "22.10."
 AbmeldungHH  = "14:00 Uhr"
 
 MeldeDir   = "Meldungen"
-StartXLS   = 'Startreihenfolge_H2021.xlsx'
+StartXLS   = 'Startreihenfolge_F2022.xlsx'
 
-SQLiteFile = "LS2021H.db"
+SQLiteFile = "LS2022F.db"
 
 # _________________________________________________ Herbst 2019
 # TrzDir    = "../H2019/Zeiten"

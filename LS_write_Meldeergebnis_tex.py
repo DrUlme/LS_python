@@ -69,7 +69,7 @@ if(TimeFrüh > 39600):    # 11*3600
          # _______________________________________________________________________________________________________________
          if(NoBoote == 0):
             TXT = TXT + "\n% ============================= Rennen:  Frühstarter __________ Start\n\\noindent\n"
-            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.0cm}|C{2.0cm}|}\n\
+            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.5cm}|C{2.0cm}|}\n\
             \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
             \\textbf{\\Large Frühstarter} \\hfill \\textbf{\\large Rennen } } } \\\\\n"
          #
@@ -157,6 +157,7 @@ Rcursor.execute(sql)
 for Rsatz in Rcursor:
    Rennen       = Rsatz[0]
    RennenString = Rsatz[1]
+   BootTyp      = Rsatz[3]
    #
    NoBoote = 0
    Ngray = 0
@@ -175,7 +176,7 @@ for Rsatz in Rcursor:
          # _______________________________________________________________________________________________________________
          if(NoBoote == 0):
             TXT = TXT + "\n% ============================= Rennen:  " + str(Rennen) + " __________ Start\n\\noindent\n"
-            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.0cm}|C{2.0cm}|}\n\
+            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.5cm}|C{2.0cm}|}\n\
             \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
             \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} } } \\\\\n"
             print("Rennen " + str(Rennen) + " : " + RennenString)
@@ -215,8 +216,12 @@ for Rsatz in Rcursor:
          # print(Name[0] + " - " + str(len(RudInd)))
          #
          if(Btime == 0):
-            StrStNr = "tbd."
-            StrZeit = "tbd."
+            if(BootTyp == 'Athletik'):
+               StrStNr = "tbd."
+               StrZeit = "Halle 10:30"
+            else:
+               StrStNr = "tbd."
+               StrZeit = "tbd."
          else:
             
             if(TimeFrüh > Btime):
@@ -249,7 +254,7 @@ for Rsatz in Rcursor:
                TXT = TXT + "\\\\"
          #
          # Verein
-         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{60mm}{ \\small "
+         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{65mm}{ \\small "
          TXT = TXT + Verein
          #for iR in range(0, nPers):
          #   TXT = TXT + "Ruder-Club Aschaffenburg v. 1898 e.V."
@@ -271,6 +276,7 @@ for Rsatz in Rcursor:
 # Count_Boote   = 0
 # Count_Ruderer = 0
 Count_Verein  = 0
+Athletiktest = "10:30 in Halle - Dorfstraße 21"
 
 sql = "SELECT * FROM verein "
 Vcursor.execute(sql)
@@ -289,6 +295,7 @@ for Vsatz in Vcursor:
    for Rsatz in Rcursor:
       Rennen       = Rsatz[0]
       RennenString = Rsatz[1]
+      BootTyp      = Rsatz[3]
       #
       # print("checke Rennen " + str(Rennen) + " nach '" + Vsatz[1] + "'")
       #
@@ -334,13 +341,18 @@ for Vsatz in Vcursor:
                if(Vrennen == 0):
                   Vrennen = 1
                   TXT = TXT + "\n{\\textbf Rennen " + str(Rennen) + ": } " + RennenString + "\\\\\n%"
-                  TXT = TXT + "\n\\begin{tabular}{m{1.0cm}m{8cm}m{2.0cm}}\n"
+                  TXT = TXT + "\n\\begin{tabular}{m{1.0cm}m{8cm}m{6.0cm}}\n"
+                  # TXT = TXT + "\n\\begin{tabular}{m{1.0cm}m{8cm}m{2.0cm}}\n"
                #_______________________________________________________________________________________
                Btime = Bsatz[3]
                #
                if(Btime == 0):
-                  StrStNr = "tbd."
-                  StrZeit = "tbd."
+                  if(BootTyp == 'Athletik'):
+                     StrStNr = "tbd."
+                     StrZeit = Athletiktest
+                  else:
+                     StrStNr = "tbd."
+                     StrZeit = "tbd."
                else:
                   if(TimeFrüh > Btime):
                      # StrStNr = "$" + str(StNr) + "^{{Früh}}$"
