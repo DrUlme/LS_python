@@ -267,7 +267,7 @@ for dsatz in cursor_R:
    # indRe  = 'A' - indPos = 'B' - indSNr = 'C' - indStT = 'D' - indVor = 'E' - indNam = 'F' - indJah = 'G' - indEV  = 'H'- indCom = 'I'- indBot = 'J'
    
    # SQL-Abfrage
-   sql = "SELECT * FROM boote WHERE rennen = " + ReStr
+   sql = "SELECT * FROM boote WHERE rennen = " + ReStr + " and abgemeldet = 0"
    # Empfang des Ergebnisses
    cursor_B.execute(sql)
 

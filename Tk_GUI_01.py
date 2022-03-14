@@ -22,15 +22,20 @@ Qcursor = connection.cursor()
 Bcursor = connection.cursor()
 
 rudererInd = 0
+bootNr=0
+
 #========================================================================
 def searchID():
    global rudererInd
+   global bootNr
    print("searchID: ")
    sql = "SELECT * FROM ruderer WHERE "   
    LTEXT = "found: "
    STEXT = ""
+   BTEXT = ""
    # setze den globalen Index wider zurück:
    rudererInd = 0
+   bootNr = 0
    #
    useNAME = 0
    #
@@ -67,11 +72,23 @@ def searchID():
          RnrStr = str(dsatz[0]) 
          sql = "SELECT * FROM r2boot  WHERE rudererNr = " + RnrStr
          Qcursor.execute(sql)
+         anzahl = 0
          for RBind in Qcursor:
+            anzahl = anzahl + 1
             sql = "SELECT * FROM boote  WHERE nummer = " + str(RBind[2]) 
             Bcursor.execute(sql)
             Boot = Bcursor.fetchone()
+            if(anzahl > 1):
+               bootNr = 0
+            else:
+               bootNr = Boot[0]
+            #
             LTEXT = LTEXT + "#" + str(Boot[0]) + ": StNr." + str(Boot[1]) + " in Rennen " + str(Boot[2]) + "\n" 
+            BTEXT = BTEXT + "#" + str(Boot[0]) + ": StNr." + str(Boot[1]) + " in Rennen " + str(Boot[2]) 
+            if(Boot[10] == 1):
+               BTEXT = BTEXT + " - abgemeldet\n"
+            else:
+               BTEXT = BTEXT + " - ok\n"
             # print("B#" + str(Boot[0]) + ": StartNr." + str(Boot[1]) + " in Rennen " + str(Boot[2]) )
             if(useNR and int(StartNr) == int(Boot[1])):
                STEXT = "'" + dsatz[1] + "' '" + dsatz[2] + "':  Boot #" + str(Boot[0]) + ": StNr. " + str(Boot[1]) + " in Rennen " + str(Boot[2])
@@ -88,6 +105,13 @@ def searchID():
       Bcursor.execute(sql)
       Boot = Bcursor.fetchone()
       #
+      BTEXT = BTEXT + "#" + str(Boot[0]) + ": StNr." + str(Boot[1]) + " in Rennen " + str(Boot[2]) 
+      if(Boot[10] == 1):
+         BTEXT = BTEXT + " - abgemeldet\n"
+      else:
+         BTEXT = BTEXT + " - ok\n"
+      #
+      bootNr = Boot[0]
       sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot[0])
       Qcursor.execute(sql)
       nR = 0
@@ -106,7 +130,14 @@ def searchID():
       mylabel.configure(text=STEXT) 
    else:
       print(LTEXT)
-      mylabel.configure(text=LTEXT) 
+      mylabel.configure(text=LTEXT)
+   #
+   if(len(BTEXT) > 3):
+      print(BTEXT)
+      myStatus.configure(text=BTEXT) 
+   else:
+      print('BTEXT="' + BTEXT + '"')
+      myStatus.configure(text="?") 
    #
    print(" - saved Index for ruderer = " + str(rudererInd) )
    return
@@ -131,6 +162,32 @@ def submit():
          connection.commit()
    return
 #========================================================================
+def abmelden():
+   global bootNr
+   if(bootNr == 0):
+      print("submit abgemeldet  - with no defined boot ?!")
+   else:
+      sql = "SELECT * FROM boote WHERE nummer = " + str(bootNr)
+      Bcursor.execute(sql)
+      Boot = Bcursor.fetchone()
+      if(Boot[10] == 1):
+         abmeldung = "0"
+      else:
+         abmeldung = "1"
+      # 
+      sql = "UPDATE boote SET abgemeldet = " + abmeldung + " WHERE nummer = " + str(bootNr)
+      cursor.execute(sql)
+      connection.commit()
+      #
+      BTEXT = "#" + str(Boot[0]) + ": StNr." + str(Boot[1]) + " in Rennen " + str(Boot[2]) 
+      if(Boot[10] == 0):
+         BTEXT = BTEXT + " - abgemeldet\n"
+      else:
+         BTEXT = BTEXT + " - ok\n"
+
+      myStatus.configure(text=BTEXT) 
+   return
+#========================================================================
 win = tk.Tk()
 win.title('my GUI for Langstrecke')
 win.geometry("800x400")
@@ -144,6 +201,8 @@ mydata.grid(row=0,column=0)
 mylabel=tk.Label(win,text="Kein Name\n kein Verein\nangegeben",font=("Hack",10),fg="blue")
 mylabel.grid(row=4,column=0,columnspan=3)
 
+myStatus=tk.Label(win,text="?",font=("Hack",10),fg="blue")
+myStatus.grid(row=8,column=2,columnspan=1)
 #
 
 butGetEntry = tk.Button(win, text="Hole Einträge", command=searchID)
@@ -151,6 +210,9 @@ butGetEntry.grid(row=6,column=0,padx=10,pady=10,ipadx=20)
 
 butSetKG = tk.Button(win, text="Setze Gewicht", command=submit)
 butSetKG.grid(row=9,column=0,padx=10,pady=10,ipadx=20)
+
+butAbmeldung = tk.Button(win, text="Abmeldung", command=abmelden)
+butAbmeldung.grid(row=9,column=2,padx=10,pady=10,ipadx=20)
 
 H_StartNr=tk.Label(win,text="Startnr",font=("Hack",10),fg="blue")
 H_StartNr.grid(row=2,column=0)

@@ -61,7 +61,7 @@ else:
    #
    # loop über die Zeilen:
    iL = 1
-   while iL < 100:
+   while iL < 104:
       # print(iL)
       # Nummer 
       Nummer   = ws['B' + str(iL)].value
