@@ -6,28 +6,42 @@ Created on Mon Oct  5 14:57:53 2020
 @author: ulf
 """
 
-Name   = "Erlanger Früjahrs-Langstrecke 2022" # "Erlanger Herbst-Langstrecke 2021"
-DBName = "LS2022F.db"
-
-Zeit   = "Frühjahr" # "Herbst"
-ZeitK  = "F"
-
-Datum   = "19.3."
+Tag     = 22
+Monat   = 10
 Jahr    = 2022
 
-# Referenz für diese Langstrecke
-# Die Herbst-LS zählt bereits als Vorbereitung auf das folgende Jahr
-RefJahr = 2022
+if(Monat < 7):
+   Zeit    = "Frühjahr" # "Herbst"
+   Name    = "Erlanger Frühjahrs-Langstrecke " + str(Jahr)
+   RefJahr = Jahr
+else:
+   Zeit    = "Herbst"
+   Name    = "Erlanger Herbst-Langstrecke " + str(Jahr)
+   # Die Herbst-LS zählt bereits als Vorbereitung auf das folgende Jahr
+   RefJahr = Jahr + 1
 
-Meldeschluss = "13.10."
-DoppeltGeld  = "16.10."
-AbmeldungDD  = "22.10."
+
+ZeitK  = Zeit[0]
+DBName = "LS" + str(Jahr) + ZeitK + ".db"
+
+
+
+
+
+# Referenz für diese Langstrecke
+
+
+Datum        = str(Tag)    + "." + str(Monat) + "."
+Meldeschluss = str(Tag-10) + "." + str(Monat) + "."
+DoppeltGeld  = str(Tag-7)  + "." + str(Monat) + "."
+AbmeldungDD  = str(Tag-1)  + "." + str(Monat) + "."
 AbmeldungHH  = "14:00 Uhr"
 
 MeldeDir   = "Meldungen"
-StartXLS   = 'Startreihenfolge_F2022.xlsx'
+StartXLS   = 'Startreihenfolge_" + ZeitK + str(Jahr) + ".xlsx'
 
-SQLiteFile = "LS2022F.db"
+# SQLiteFile = "LS2022F.db"
+SQLiteFile = DBName
 
 # _________________________________________________ Herbst 2019
 # TrzDir    = "../H2019/Zeiten"
@@ -44,10 +58,13 @@ TrzDBpos  = [ 4,    5,   6]
 Trz_m     = [ 0, 3000, 6000]
 
 # Zeit-Versatz in TRZ-Dateien ausgleichen:
-Trz_dSec  = [ 0, 68, 0]
+Trz_dSec  = [ 0, 0, 0]
 
 # zusätzlich erlaubtes Gewicht für die Langstrecke
-Gewicht = 2.5
+if(ZeitK == "F"):
+   Gewicht = 0.0
+else:
+   Gewicht = 2.5
 
 
 """

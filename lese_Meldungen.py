@@ -66,9 +66,9 @@ for filename in FILES:
       
       if record[0] == 1:
          print (Verein +  " ist schon in der Datenbank!" )
-         sql = "UPDATE verein SET dabei = 1 WHERE kurz='" + Verein + "' LIMIT 1)"
-         #cursor.execute(sql)
-         #connection.commit()
+         sql = "UPDATE verein SET dabei = 1 WHERE kurz='" + Verein + "' "
+         cursor.execute(sql)
+         connection.commit()
       else:
          sql = "INSERT INTO verein VALUES(" \
             "'" + Vereinsname + "', '" + Verein + "', '" \
@@ -341,8 +341,10 @@ for filename in FILES:
                    # sql = "UPDATE ruderer SET boot = " + str(nBoote) + " WHERE nummer = " + str(Ruderer[1 + iP])
                    nR2Boot = nR2Boot + 1
                    sql = "INSERT INTO r2boot VALUES( " \
-                     + str(nR2Boot) + ", " + str(Rennen) + ", " + str(nBoote) + ", "  \
+                     + str(nR2Boot) + ", "  + str(nBoote) + ", "  \
                      + str(Ruderer[iP]) + ", " + str(iP) + " )"
+                   # old: + str(nR2Boot) + ", " + str(Rennen) + ", " + str(nBoote) + ", "  \
+                   #      + str(Ruderer[iP]) + ", " + str(iP) + " )"
                    # r2boot:  "nummer, rennNr, bootNr, verein, rudererNr, platz INTEGER"
                    cursor.execute(sql)
                    connection.commit()

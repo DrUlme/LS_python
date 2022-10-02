@@ -315,7 +315,7 @@ if(TYPE == "Herbst"):
    # Mäd 1x LG 13 Jahre
    Rennen = Rennen + 1
    sql = "INSERT INTO rennen VALUES(" \
-      "36, 'Mädchen 1x 13 LG Jahre', 'F', '1x', '3000 m', '10:00'," \
+      "36, 'Mädchen 1x LG 13 Jahre', 'F', '1x', '3000 m', '10:00'," \
       " 0, 50.0, " + str(RefJahr - 13) + ", " + str(RefJahr - 13) + " )"
    cursor.execute(sql)
    connection.commit()

@@ -86,7 +86,7 @@ TXT_2 = "% Begin KOMA variables - make changes here\n\
 \\setkomavar{ausrichter}{Ruderverein Erlangen e.V.}\n\
 \\setkomavar{fromname}{\\textbf{RVE}}\n\
 \\setkomavar{fromaddress}{Habichtstra{\\ss}e 12\\\\91056 Erlangen}\n\
-\\setkomavar{subject}{Rechnung:	Meldegebühr für die Herbst-Langstrecke }\n\
+\\setkomavar{subject}{Rechnung:	Meldegebühr für die " + LSglobal.Zeit + "-Langstrecke }\n\
 \\setkomavar{fromurl}{\\url{http://www.ruderverein-erlangen.de}}\n\
 \\setkomavar{fromemail}{\\href{mailto:langstrecke@ruderverein-erlangen.de}{langstrecke@ruderverein-erlangen.de}}\n\
 \\setkomavar{fromlogo}{\\includegraphics[height=1.76cm,width=2cm]{RVE-Flag.png}}\n\
@@ -163,13 +163,14 @@ Count_Ruderer = 0
 Count_Verein  = 0
 
 EUR_total = 0
-sql = "SELECT * FROM verein WHERE kurz != 'RVE' "
+sql = "SELECT * FROM verein WHERE kurz != 'RVE' AND dabei = 1"
 
-Meldegeld = 15
+Kanal     = 15
+Athletik  = 6
 Bugnummer = 10
-Deckelung = 250
+Deckelung = 2500
 
-fehlende_Bugnummern = [ 138 ]
+fehlende_Bugnummern = [  ]
 
 Vcursor.execute(sql)
 for Vsatz in Vcursor:
@@ -182,6 +183,8 @@ for Vsatz in Vcursor:
    EURA = 0
    # ____________ verlorene Bugnummer
    EURB = 0
+   # ____________ Nachmeldungen
+   NACH = 0
    #
    TXT = TXT_1 + TXT_2 + TXT_3 
    TXT = TXT +  "% Begin main part - make changes here\n\\begin{document}\n\\begin{letter}{"
@@ -208,7 +211,6 @@ for Vsatz in Vcursor:
       Rennen       = Rsatz[0]
       RennenString = Rsatz[1]
       # 
-      #
       Ngray = 0
       Vrennen  = 0
       VArennen = 0
@@ -217,14 +219,27 @@ for Vsatz in Vcursor:
       for Bsatz in Bcursor:
          StNr   = Bsatz[1]
          Boot   = Bsatz[0]
-         #
          Abmeldung = Bsatz[10]
+         #
+         #_____________________________________________ Höhe des Meldegeldes
+         if(Rsatz[4] == "div."):
+            Meldegeld = Athletik
+         else:
+            Meldegeld = Kanal
+         #
+         SH = ""
+         Kommentar = Bsatz[11]
+         if(Kommentar.find('achmeldung') > 0):
+            Meldegeld = 2 * Meldegeld
+            SH = "$^N$"
+         #
+         #
          # ===========================================================================================
          nPers   = 0
          sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot) 
          Qcursor.execute(sql)
          iR = 0
-         for RudInd in Qcursor:         
+         for RudInd in Qcursor:
             sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[3])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
@@ -258,9 +273,14 @@ for Vsatz in Vcursor:
                if(Vrennen == 0):
                   Vrennen = 1
                   TXTM = TXTM + "\n\\newline\\textbf{ Rennen " + str(Rennen) + ": " + RennenString + ":} "
-                  TXTM = TXTM + Name + " "
+                  TXTM = TXTM + Name + SH
                else:
-                  TXTM = TXTM + ", " + Name + " "
+                  TXTM = TXTM + ", " + Name + SH
+               #
+               if(SH == "$^N$"):
+                  NACH = NACH + 1
+                  print("Nachmeldung #" + str(Boot) + " - " + str(NACH)  + " (" + Vsatz[1] + ")")
+               #
             # ===========================================================================================
             elif(Abmeldung > 1):  # verspätet abgemeldet
                if(VArennen == 0):
@@ -274,7 +294,11 @@ for Vsatz in Vcursor:
                   EURA = EURA + Meldegeld/2
                else:
                   EURA = EURA + Meldegeld
-            #
+               #____________________________ Nachmeldung
+               if(SH == "$^N$"):
+                  NACH = NACH + 1
+                  print("Nachmeldung #" + str(Boot) + " - " + str(NACH) + " (" + Vsatz[1] + ")")
+             #
             if(StNr in fehlende_Bugnummern):
                TXTB = TXTB +  "	(" + str(StNr) + ") " + Name + "\\newline"
                EURB = EURB + 10
@@ -322,6 +346,12 @@ for Vsatz in Vcursor:
    euronen = "%6.2f"% (EURO + EURA + EURB)
    TXT = TXT + "\\textbf{Gesamtbetrag (brutto):} & " + euronen + " \\\\\n"
    TXT = TXT + "\\bottomrule\n\\end{tabular}\n%\n\\vspace{10pt}\\\\\n%\n"
+   #
+   if(NACH == 1):
+      TXT = TXT + "{\\scriptsize$^N$: Die Nachmeldung deutlich verspätet eingegangen, daher doppeltes Meldegeld.}\\\\\n"
+   elif(NACH > 1):
+      TXT = TXT + "{\\scriptsize$^N$: Nachmeldungen sind deutlich verspätet eingegangen, daher jeweils doppeltes Meldegeld.}\\\\\n"
+   
    TXT = TXT + "{\\scriptsize Die Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer nach \\textsection19 UStG.\\vspace{5pt}\\\\}\n"
    TXT = TXT + "Bitte benutzen Sie bei der Überweisung das Kennwort:\n\\\\ '\\textbf{Meldegebühr Langstreckentest " + Vsatz[1] + "'} \\vspace{1.2cm}\\\\\n"
    #TXT = TXT + "\\vspace{5pt}\\\\\nMit rudersportlichen Grü{\ss}en,\\vspace{-10pt}\\\\\n\\includegraphics[height=1.71cm,width=4.13cm]{UlfMeerwald.png}"

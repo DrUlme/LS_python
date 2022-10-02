@@ -166,7 +166,7 @@ sql = "SELECT * FROM rennen WHERE nummer > 20"
 cursor_R.execute(sql)
 #
 ##########################################
-SetStartnummern = -1
+SetStartnummern = 0
 StartNr = 0
 ##########################################
 for dsatz in cursor_R:

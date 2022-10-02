@@ -61,7 +61,7 @@ while zeile > 6:
       Namen    = ws['F' + str(zeile)].value
       Name     = Namen.split("\n")
       #
-      Jahrgang = ws['G' + str(zeile)].value
+      Jahrgang = str(ws['G' + str(zeile)].value)
       Jahre    = Jahrgang.split("\n")
       #
       Vereine  = ws['I' + str(zeile)].value

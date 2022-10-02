@@ -62,7 +62,7 @@ ws['A3'].number_format = numbers.FORMAT_DATE_TIME4
 ws['D3'].number_format = numbers.FORMAT_DATE_TIME4
 
 #now = time.strftime(" %H:%M:%S", time.localtime(36000))
-ws['A3'] = strftime("%H:%M:%S", gmtime(60*60*10))
+ws['A3'] = strftime("%H:%M:%S", gmtime(60*60*11))
 # ws['A3']  = "10:00"
 new_range = openpyxl.workbook.defined_name.DefinedName('Startzeit', attr_text='Meldungen!$A$3')
 wb.defined_names.append(new_range)   

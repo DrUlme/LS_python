@@ -143,7 +143,7 @@ StNr = 1
 # Ausgabe des Ergebnisses
 # ============================================================================================================
 # SQL-Abfrage
-sql = "SELECT * FROM rennen WHERE status >= 1"
+sql = "SELECT * FROM rennen WHERE status >= 1  AND  strecke LIKE '%000 m' "
 
 # Empfang des Ergebnisses
 cursor_R.execute(sql)
@@ -375,4 +375,4 @@ ws.merge_cells('P1:S1')
 ws['P1'].alignment = Alignment(horizontal="center",vertical="center")
 ws['P1'] = LSglobal.Name
 # ______________________________________ save
-wb.save('Endergebnis_H2020_test.xlsx')
+wb.save('Endergebnis_' +LSglobal.Zeit + str(LSglobal.Jahr) + '_test.xlsx')

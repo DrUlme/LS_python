@@ -39,21 +39,21 @@ LS_write_Meldeergebnis_tex.py
 
 
 ### Regatta
-LS_read_TRZ.py
-LS_write_HTML.py		   
-Check_times.py
-LS_clear_times.py	
+* LS_read_TRZ.py
+* LS_write_HTML.py		   
+* Check_times.py
+* LS_clear_times.py	
 	
 ### Ende
-LS_write_Excel_Endergebnis.py
-LS_write_Endergebnis_tex.py
-LS_write_Rechnungen_tex.py
-LS_write_Excel_Endergebnis_BRV.py
+* LS_write_Excel_Endergebnis.py
+* LS_write_Endergebnis_tex.py
+* LS_write_Rechnungen_tex.py
+* LS_write_Excel_Endergebnis_BRV.py
 
 ### unbekannt
-Check_Startnummer.py  
+* Check_Startnummer.py  
 
-zz_Test_docx_number.py
+* zz_Test_docx_number.py
 
 ## LaTeX
 Für die Ausarbeitung wird das Textverarbeitungssystem LaTeX (TeX) verwendet.

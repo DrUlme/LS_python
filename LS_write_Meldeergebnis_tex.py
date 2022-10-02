@@ -45,15 +45,34 @@ TXT = "\\documentclass[a4paper]{article}\n\\usepackage[ngerman]{babel}\n\\usepac
 
 #print(TXT)
 TXT = TXT + "\n"
+# --------------------------------------------------------------------------------------------------------------- Athletiktest
+maxRennen = 100
+sql = "SELECT * FROM rennen WHERE boot LIKE 'Athletik%' ORDER BY nummer"
+Rcursor.execute(sql)
+for Rd in Rcursor:
+   if(maxRennen > Rd[0]):
+      maxRennen = Rd[0]
+
+LateStart = 0
+# --------------------------------------------------------------------------------------------------------------- Athletiktest
+sql = "SELECT * FROM rennen WHERE name LIKE 'Spätstarter%'"
+Rcursor.execute(sql)
+Rd = Rcursor.fetchone()
+print(Rd)
+SpätR = Rd[0]
+SpätT = int(Rd[5])
+
+
+
 # --------------------------------------------------------------------------------------------------------------- Frühstarter
-sql = "SELECT * FROM boote  WHERE rennen = 3 ORDER BY planstart"
+sql = "SELECT * FROM boote  WHERE rennen = 3 and abgemeldet = 0  ORDER BY planstart"
 Rcursor.execute(sql)
 TimeFrüh = 0
 for Rsatz in Rcursor:
    if(TimeFrüh == 0):
       TimeFrüh = Rsatz[3]
 if(TimeFrüh > 39600):    # 11*3600
-   sql = "SELECT * FROM boote  WHERE planstart < " + str(TimeFrüh) + " ORDER BY planstart, startnummer, nummer"
+   sql = "SELECT * FROM boote  WHERE planstart < " + str(TimeFrüh) + " and rennen < " + str(maxRennen) + " and abgemeldet = 0  ORDER BY planstart, startnummer, nummer"
    Bcursor.execute(sql)
    NoBoote = 0
    Ngray = 0
@@ -162,7 +181,23 @@ for Rsatz in Rcursor:
    NoBoote = 0
    Ngray = 0
    # hole die gemeldeten Boote für die Rennen
-   sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY planstart, startnummer, nummer"
+   if(Rennen == SpätR and SpätT > 0):
+      sqlPart = " FROM boote  WHERE rennen < " + str(SpätR) + " and planstart > " + str(SpätT) + " and abgemeldet = 0  ORDER BY planstart, startnummer, nummer"
+   else:
+      sqlPart = " FROM boote  WHERE rennen = " + str(Rennen) + " and abgemeldet = 0  ORDER BY planstart, startnummer, nummer"
+      #
+   #----------------------------------- Anzahl der Boote und setzen von Split:
+   sql = "SELECT count(*) " + sqlPart
+   Bcursor.execute(sql)
+   tmp = Bcursor.fetchone()
+   myBoote = tmp[0]
+   # print("Rennen #" + str(Rennen) + ": " + str(myBoote) + " Boote/Teilnehmer")
+   if(myBoote > 29):
+      mySplit = 25
+   else:
+      mySplit = -1
+   #
+   sql = "SELECT * " + sqlPart
    Bcursor.execute(sql)
    for Bsatz in Bcursor:
       Boot   = Bsatz[0]
@@ -179,7 +214,13 @@ for Rsatz in Rcursor:
             TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.5cm}|C{2.0cm}|}\n\
             \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
             \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} } } \\\\\n"
-            print("Rennen " + str(Rennen) + " : " + RennenString)
+            print("Rennen " + str(Rennen) + " : " + RennenString + "      ( " + str(myBoote) + " )")
+         elif(NoBoote == mySplit):
+            TXT = TXT + "\n% ============================= split  %\n\\end{tabular}\\\\[\\bigskipamount]\nWeiter auf nächster Seite\\\\\n\\noindent\n"
+            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.5cm}|C{2.0cm}|}\n\
+            \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
+            \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} Fortsetzung} } \\\\\n"
+            mySplit = mySplit + 25
          #
          NoBoote = NoBoote + 1
          #--------------------------------------------------------------------- Ruderer -
@@ -217,7 +258,10 @@ for Rsatz in Rcursor:
          #
          if(Btime == 0):
             if(BootTyp == 'Athletik'):
-               StrStNr = "tbd."
+               if(StNr == 0):
+                  StrStNr = "tbd."
+               else:
+                  StrStNr = "{\\it " + str(StNr) + "}"
                StrZeit = "Halle 10:30"
             else:
                StrStNr = "tbd."
@@ -227,6 +271,9 @@ for Rsatz in Rcursor:
             if(TimeFrüh > Btime):
                # StrStNr = "$" + str(StNr) + "^{{Früh}}$"
                StrStNr = str(StNr) + "{\it F}"
+            elif(Rennen < SpätR and Btime > SpätT):
+               # StrStNr = "$" + str(StNr) + "^{{Früh}}$"
+               StrStNr = str(StNr) + "{\it S}"
             else:
                StrStNr = str(StNr)
             if(isinstance(Btime, str)):
@@ -348,7 +395,10 @@ for Vsatz in Vcursor:
                #
                if(Btime == 0):
                   if(BootTyp == 'Athletik'):
-                     StrStNr = "tbd."
+                     if(StNr == 0):
+                        StrStNr = "tbd."
+                     else:
+                        StrStNr = "{\\it " + str(StNr) + "}"
                      StrZeit = Athletiktest
                   else:
                      StrStNr = "tbd."

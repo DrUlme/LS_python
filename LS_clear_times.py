@@ -18,8 +18,22 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 cursor  = connection.cursor()
 #
 
-for DBname in LSglobal.TrzDBname:
-   sql = "UPDATE boote SET " + DBname + " = 0 "
-   cursor.execute(sql)
-   connection.commit()
+removeSet = 0
+removeStart = 1
 
+if(removeSet == 1):
+   for DBname in LSglobal.TrzDBname:
+      sql = "UPDATE boote SET " + DBname + " = 0 "
+      cursor.execute(sql)
+      connection.commit()
+
+if(removeStart == 1):
+      sql = "UPDATE boote SET startnummer = 0 "
+      print(sql)
+      cursor.execute(sql)
+      connection.commit()
+      #
+      sql = "UPDATE boote SET planstart = 0 "
+      print(sql)
+      cursor.execute(sql)
+      connection.commit()

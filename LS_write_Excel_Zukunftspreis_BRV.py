@@ -45,7 +45,7 @@ noFill = PatternFill(start_color='ffffff',end_color='ffffff',fill_type='solid')
 wb = Workbook()
 # wb = openpyxl.Workbook()
 ws = wb.active
-ws.title = "HLS_Erlangen_" + str(LSglobal.Jahr)
+ws.title = LSglobal.ZeitK + "LS_Erlangen_" + str(LSglobal.Jahr)
 
 book = Workbook()
 sheet = book.active
@@ -183,4 +183,4 @@ for dsatz in cursor_V:
 connection.close()
 
 # ______________________________________ save
-wb.save('Zukunftspreis_H2021_BRV.xlsx')
+wb.save('Zukunftspreis_' + LSglobal.ZeitK + str(LSglobal.Jahr) + '_BRV.xlsx')

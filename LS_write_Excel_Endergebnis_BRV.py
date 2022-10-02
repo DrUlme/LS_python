@@ -44,7 +44,7 @@ noFill = PatternFill(start_color='ffffff',end_color='ffffff',fill_type='solid')
 wb = Workbook()
 # wb = openpyxl.Workbook()
 ws = wb.active
-ws.title = "HLS_Erlangen_" + str(LSglobal.Jahr)
+ws.title = LSglobal.Zeit + "LS_Erlangen_" + str(LSglobal.Jahr)
 
 book = Workbook()
 sheet = book.active
@@ -168,7 +168,7 @@ Mf_Lgw = 0
 # Ausgabe des Ergebnisses
 # ============================================================================================================
 # SQL-Abfrage
-sql = "SELECT * FROM rennen WHERE status >= 1"
+sql = "SELECT * FROM rennen WHERE status >= 1  AND  strecke LIKE '%000 m' "
 
 # Empfang des Ergebnisses
 cursor_R.execute(sql)
@@ -501,4 +501,4 @@ ws['S' + str(zeile)].font = Font(name='arial', sz=11, b=False, i=False, color='2
 connection.close()
 
 # ______________________________________ save
-wb.save('Endergebnis_H2021_BRV.xlsx')
+wb.save('Endergebnis_' + LSglobal.ZeitK + str(LSglobal.Jahr) + '_BRV.xlsx')

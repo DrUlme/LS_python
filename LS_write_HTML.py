@@ -30,6 +30,14 @@ Rcursor.execute(sql)
 Rsatz = Rcursor.fetchone()
 TimeFrüh = Rsatz[3]
 
+# --------------------------------------------------------------------------------------------------------------- Athletiktest
+sql = "SELECT * FROM rennen WHERE name LIKE 'Spätstarter%'"
+Rcursor.execute(sql)
+Rd = Rcursor.fetchone()
+print(Rd)
+SpätR = Rd[0]
+TimeSpät = int(Rd[5])
+
 
 #===============================================================================================================================
 t1 = time.localtime()
@@ -70,7 +78,7 @@ Count_Ruderer = 0
 
 #===============================================================================================================================
 
-sql = "SELECT * FROM rennen WHERE status > 0"
+sql = "SELECT * FROM rennen WHERE status > 0 and nummer < 20"  # Athletik-Wettbewerb!
 Rcursor.execute(sql)
 for Rsatz in Rcursor:
    Rennen       = Rsatz[0]
@@ -124,8 +132,11 @@ for Rsatz in Rcursor:
    #
    if(Rennen == 2):
       # Frühstarter besonders gehandelt
-      sql = "SELECT * FROM boote  WHERE abgemeldet = 0 and planstart < " + str(TimeFrüh) + " " + myOrder
+      sql = "SELECT * FROM boote  WHERE abgemeldet = 0 and planstart < " + str(TimeFrüh) + " and rennen < 20 " + myOrder
       print(sql)
+   elif(Rennen ==19):
+      # Spätstarter besonders gehandelt
+      sql = "SELECT * FROM boote  WHERE abgemeldet = 0 and planstart > " + str(TimeSpät) + " and rennen < 20 " + myOrder
    else:
       sql = "SELECT * FROM boote  WHERE rennen = " + RStr + " and abgemeldet = 0 " + myOrder
    TXT = TXT + "</th>\n  </tr>\n </thead>\n <tbody>\n"
@@ -185,6 +196,8 @@ for Rsatz in Rcursor:
             NrStr = str(StNr)
             if(Rennen > 2 and Bsatz[3] < TimeFrüh):
                NrStr = NrStr + "<sup><i>F</i></sup>"
+            elif(Rennen < 20 and Bsatz[3] >= TimeSpät ):
+               NrStr = NrStr + "<sup><i>S</i></sup>"
             #
             if(Bsatz[9] > 0):
                Btime = Bsatz[9]
@@ -258,6 +271,7 @@ HTMSel = HTMSel + " </select>\n\n\n  </p>\n\n</body>\n</html>\n"
 #
 HTXT = HTXT + "<br>\n" + HTMSel + "<br>\n"
 #
+HTXT = HTXT + "\n  <p><br><a HREF=\"H2021_Endergebnis.pdf\">Ergebnis der Herbst-Langstrecke 2021</a></p>\n"
 HTXT = HTXT + "\n  <p><br><a HREF=\"H2020_Endergebnis.pdf\">Ergebnis der Herbst-Langstrecke 2020</a></p>\n"
 #
 HTXT = HTXT + "\n  </p>\n\n</body>\n</html>\n"
