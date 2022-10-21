@@ -75,7 +75,7 @@ def searchID():
          anzahl = 0
          for RBind in Qcursor:
             anzahl = anzahl + 1
-            sql = "SELECT * FROM boote  WHERE nummer = " + str(RBind[2]) 
+            sql = "SELECT * FROM boote  WHERE nummer = " + str(RBind[1]) 
             Bcursor.execute(sql)
             Boot = Bcursor.fetchone()
             if(anzahl > 1):
@@ -116,7 +116,7 @@ def searchID():
       Qcursor.execute(sql)
       nR = 0
       for RBind in Qcursor:
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RBind[3])
+         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RBind[2])
          cursor.execute(sql)
          dsatz = cursor.fetchone()
          nR = nR + 1

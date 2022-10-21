@@ -54,15 +54,21 @@ for Rd in Rcursor:
       maxRennen = Rd[0]
 
 LateStart = 0
-# --------------------------------------------------------------------------------------------------------------- Athletiktest
+# --------------------------------------------------------------------------------------------------------------- Spätstarter
 sql = "SELECT * FROM rennen WHERE name LIKE 'Spätstarter%'"
 Rcursor.execute(sql)
 Rd = Rcursor.fetchone()
-print(Rd)
+# print(Rd)
 SpätR = Rd[0]
-SpätT = int(Rd[5])
-
-
+SpätT = Rd[5]
+# suche letztes Boot vom Rennen davor (später als spät ...)
+sql = "SELECT * FROM boote  WHERE rennen == " + str(SpätR-1) + " and abgemeldet = 0  ORDER BY planstart"
+Rcursor.execute(sql)
+SpätT = 0
+for Rsatz in Rcursor:
+   if(SpätT < Rsatz[3]):
+      SpätT = Rsatz[3]
+print("TimeSpät = " + str(SpätT))
 
 # --------------------------------------------------------------------------------------------------------------- Frühstarter
 sql = "SELECT * FROM boote  WHERE rennen = 3 and abgemeldet = 0  ORDER BY planstart"
@@ -71,8 +77,149 @@ TimeFrüh = 0
 for Rsatz in Rcursor:
    if(TimeFrüh == 0):
       TimeFrüh = Rsatz[3]
+print("TimeFrüh = " + str(TimeFrüh))
+# --------------------------------------------------------------------------------------------------------------- Großboot
+
+sql = "SELECT * FROM rennen WHERE nummer = 1"
+Rcursor.execute(sql)
+for Rsatz in Rcursor:
+   Rennen       = Rsatz[0]
+   RennenString = Rsatz[1]
+   BootTyp      = Rsatz[3]
+   #
+   NoBoote = 0
+   Ngray = 0
+   # hole die gemeldeten Boote für die Rennen
+   sqlPart = " FROM boote  WHERE rennen = " + str(Rennen) + " and abgemeldet = 0  ORDER BY planstart, startnummer, nummer"
+   #
+   #----------------------------------- Anzahl der Boote und setzen von Split:
+   sql = "SELECT count(*) " + sqlPart
+   Bcursor.execute(sql)
+   tmp = Bcursor.fetchone()
+   myBoote = tmp[0]
+   # print("Rennen #" + str(Rennen) + ": " + str(myBoote) + " Boote/Teilnehmer")
+   if(myBoote > 29):
+      mySplit = 25
+   else:
+      mySplit = -1
+   #
+   sql = "SELECT * " + sqlPart
+   Bcursor.execute(sql)
+   for Bsatz in Bcursor:
+      Boot   = Bsatz[0]
+      StNr   = Bsatz[1]
+      # VBoot  = Bsatz[3]
+      sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
+      RBcursor.execute(sql)
+      #
+      Abmeldung = Bsatz[10]
+      if(Abmeldung == 0):
+         # _______________________________________________________________________________________________________________
+         if(NoBoote == 0):
+            TXT = TXT + "\n% ============================= Rennen:  " + str(Rennen) + " __________ Start\n\\noindent\n"
+            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.5cm}|C{2.0cm}|}\n\
+            \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
+            \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} } } \\\\\n"
+            print("Rennen " + str(Rennen) + " : " + RennenString + "      ( " + str(myBoote) + " )")
+         elif(NoBoote == mySplit):
+            TXT = TXT + "\n% ============================= split  %\n\\end{tabular}\\\\[\\bigskipamount]\nWeiter auf nächster Seite\\\\\n\\noindent\n"
+            TXT = TXT + "\\begin{tabular}{|m{1.0cm}|m{5.5cm}m{6.5cm}|C{2.0cm}|}\n\
+            \\rowcolor{cMidGray} \\small Start- Nr. & \\multicolumn{3}{|c|}{\\color{white}\\parbox[1cm][2em][c]{135mm}{\
+            \\textbf{\\Large Rennen " + str(Rennen) + "} \\hfill \\textbf{\\large " + RennenString + "} Fortsetzung} } \\\\\n"
+            mySplit = mySplit + 25
+         #
+         NoBoote = NoBoote + 1
+         #--------------------------------------------------------------------- Ruderer -
+         Vorname = ['-']
+         Name    = ['-']
+         JGNGstr = ['-']
+         
+         nPers   = 0
+         iR      = 0
+         for RudInd in RBcursor: # for iR in range(0, (len(RudInd) - 2)):         
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[0])
+            Pcursor.execute(sql)
+            Rd = Pcursor.fetchone()
+            nPers = nPers + 1
+            Vorname.insert(iR, Rd[1])
+            Name.insert(iR,  Rd[2])
+            JGNGstr.insert(iR, str(Rd[4]))
+            if( iR == 0):
+               Verein = "{" + Rd[7] +"}"
+               VStr   = Rd[7]
+            elif(iR>0 and VStr != Rd[7]):
+               Verein =  Verein + "\\\\{" + Rd[7] + "}"
+            #
+            #
+            if(Rsatz[7] < 1 and Rd[5] == 1):
+               # JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{\\textrm{Lgw}}$"))
+               JGNGstr.insert(iR, ("$" + str(Rd[4]) + "^{{Lgw}}$"))
+            else:
+               JGNGstr.insert(iR, str(Rd[4]))      
+            # print(Name[0] + ", '" + Name[1] + "' =>" + Rd[2] )
+            iR += 1
+         #---------------------------------------------------------------------
+         Btime = Bsatz[3]
+         # print(Name[0] + " - " + str(len(RudInd)))
+         #
+         if(Btime == 0):
+            if(BootTyp == 'Athletik'):
+               if(StNr == 0):
+                  StrStNr = "tbd."
+               else:
+                  StrStNr = "{\\it " + str(StNr) + "}"
+               StrZeit = "Halle 10:30"
+            else:
+               StrStNr = "tbd."
+               StrZeit = "tbd."
+         else:
+            
+            StrStNr = str(StNr)
+            if(isinstance(Btime, str)):
+               StrZeit = Btime
+            else:
+               BtimH = math.floor(Btime/3600)
+               BtimM = math.floor(Btime/60 - BtimH*60 )
+               #StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
+               StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "$:\\small{\\textcolor{gray}{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}}"
+         #
+         if(Ngray == 1):
+            TXT = TXT + "\\rowcolor[gray]{.9}"
+            Ngray = 0
+         else:
+            Ngray = 1
+         #
+         TXT = TXT + "\\parbox[1cm][" + str(nPers+1) + "em][c]{10mm}{\\textbf{" + StrStNr + "}} & \
+         \\parbox[1cm][" + str(nPers+1) + "em][c]{55mm}{"
+         #
+         for iR in range(0, nPers):
+            # Ruderer
+            TXT = TXT + "\\textbf{" + Vorname[iR] + " " + Name[iR] + "} {\\small(" + JGNGstr[iR] + ")} "
+            if(nPers > 1 and iR < (nPers - 1)):
+               # wenn mehrere:
+               TXT = TXT + "\\\\"
+         #
+         # Verein
+         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{65mm}{ \\small "
+         TXT = TXT + Verein
+         #for iR in range(0, nPers):
+         #   TXT = TXT + "Ruder-Club Aschaffenburg v. 1898 e.V."
+         #   # wenn mehrere und ungleich:
+         #   if(nPers > (iR + 1)):
+         #      TXT = TXT + "\\\\"
+         #
+         TXT = TXT + "} & \\parbox[1cm][" + str(nPers+1) + "em][c]{20mm}{ " + StrZeit + " }\\\\\myMidrule\n"
+      # _______________________________________________________________________________________________________________
+   #__________________________________________________________________________________________________________
+   if(NoBoote > 0):
+      TXT = TXT + "%\n\\end{tabular}\\\\[\\bigskipamount]\n%\n"
+   #else:
+   #   
+
+# --------------------------------------------------------------------------------------------------------------- Frühstarter
 if(TimeFrüh > 39600):    # 11*3600
-   sql = "SELECT * FROM boote  WHERE planstart < " + str(TimeFrüh) + " and rennen < " + str(maxRennen) + " and abgemeldet = 0  ORDER BY planstart, startnummer, nummer"
+   sql = "SELECT * FROM boote  WHERE planstart < " + str(TimeFrüh) + " and rennen > 1 and rennen < " + str(maxRennen) + " and abgemeldet = 0  ORDER BY planstart, startnummer, nummer"
+   # print(sql)
    Bcursor.execute(sql)
    NoBoote = 0
    Ngray = 0
@@ -81,6 +228,7 @@ if(TimeFrüh > 39600):    # 11*3600
       StNr   = Bsatz[1]
       # VBoot  = Bsatz[3]
       sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
+      # print(sql)
       RBcursor.execute(sql)
       #
       Abmeldung = Bsatz[10]
@@ -171,7 +319,7 @@ if(TimeFrüh > 39600):    # 11*3600
       TXT = TXT + "%\n\\end{tabular}\\\\[\\bigskipamount]\n%\n"
 
 
-sql = "SELECT * FROM rennen "
+sql = "SELECT * FROM rennen WHERE nummer > 2"
 Rcursor.execute(sql)
 for Rsatz in Rcursor:
    Rennen       = Rsatz[0]
@@ -363,7 +511,7 @@ for Vsatz in Vcursor:
             iR = 0
             for RBind in RBcursor:
                # rudererNr = 3 (4. Eintrag)
-               sql = "SELECT * FROM ruderer WHERE nummer = " + str(RBind[3])
+               sql = "SELECT * FROM ruderer WHERE nummer = " + str(RBind[2])
                Pcursor.execute(sql)
                Rd = Pcursor.fetchone()
                # gibt nur diesen einen Eintrag pro Ruderer

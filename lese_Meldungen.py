@@ -33,7 +33,10 @@ print("Suche Files in Pfad '" + Pfad_Meldungen + "'")
 
 #os.chdir( Pfad_Meldungen )
 #FILES=os.listdir( '.' )
-FILES=os.listdir( Pfad_Meldungen )
+# FILES=os.listdir( Pfad_Meldungen )
+# Get list of all files in a given directory sorted by name
+FILES = sorted( filter( lambda x: os.path.isfile(os.path.join(Pfad_Meldungen, x)),
+                        os.listdir(Pfad_Meldungen) ) )
 for filename in FILES:
    print(filename)
    nFN = len(filename)
@@ -43,6 +46,7 @@ for filename in FILES:
       
       # open existent workbook:
       print("_________________________________________________________ " + filename )
+      print(Pfad_Meldungen + "/" + filename)
       wb = load_workbook(Pfad_Meldungen + "/" + filename)
       # wb = load_workbook(filename = '../F2020/Meldungen/01__RVE_Thea.xlsx')
       # create a new Workbook:
@@ -174,7 +178,7 @@ for filename in FILES:
                anz = Comment.find('LGW') + Comment.find('Lgw')
                # print(anz)
             #
-            if(record[3] == 'All'):
+            if(record[3] == 'All' or record[3] == 'all'):
                print("Undefiniertes Rennen, muß Comment auswerten!")
                Boot  = ws['H' + str(Position)].value
             else:

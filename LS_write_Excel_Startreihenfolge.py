@@ -307,7 +307,7 @@ for dsatz in cursor_R:
       iP = 0
       for rbs in cursorRB:
          # suche nach Einträgen in r2boot for dieses Boot
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(rbs[3])
+         sql = "SELECT * FROM ruderer WHERE nummer = " + str(rbs[2])
          cursorRu.execute(sql)
          Rd = cursorRu.fetchone()
          if(iP == 0):

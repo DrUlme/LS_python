@@ -17,7 +17,8 @@ Erstellt Melde-Ergebnis und Endergebnis mit LaTeX als pdf.
 
 ### Erstellen der Datenbank
 **LS_sqlite_erzeugen.py** erzeugt die Datenbank ohne Daten
-**LS_define_Rennen.py** definiert die Rennen
+**LS_define_Rennen.py**   definiert die Rennen
+**LS_add_Vereine.py**     fügt bekannte Vereine hinzu
 
 ### Vorbereiten der Ausschreibung
 **LS_write_Excel_Meldeformular.py** schreibt das Meldeformular 
@@ -25,7 +26,7 @@ Erstellt Melde-Ergebnis und Endergebnis mit LaTeX als pdf.
 
 ### Einlesen der Meldeergebnisse 
 **lese_Meldungen.py**
-**check_Kader.py** mit Einlesen aus Excel-File in Kader-Tabelle
+**LS_update_Kader.py** mit Einlesen aus Excel-File in Kader-Tabelle
 **LS_write_Excel_Startreihenfolge.py**
 
 ### Vorbereitung der Regatta
@@ -61,7 +62,15 @@ Mit diesem Befehl sollte es sofort klappen:
 **pdflatex** *Meldungen.tex*
 
 
-## Fehler und Ergänzungen
-Bei Meldung 19 - Spätstarter - abgebrochen. Richtige RennNr klappte wieder.
+# ToDo
+Bereich der auftretenden Änderungen
 
-Behandlung der Früh- und Spät-Starter ?!
+## Fehler und Ergänzungen
+* Behandlung der Früh- und Spät-Starter und Grossboote ?!
+* Kein oder falscher Jahrgang
+
+## GUI für 
+* Namen => Vorname / Nachname vertauschen
+* Leichtgewicht => mit Änderung von Rennen
+* Kommentar bearbeiten
+* Boots-Doppelnutzung => Früh-/Spätstarter

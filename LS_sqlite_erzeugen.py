@@ -22,7 +22,7 @@ sql = "CREATE TABLE rennen(" \
       "gender TEXT, " \
       "boot TEXT, " \
       "strecke TEXT, " \
-      "startzeit TEXT, " \
+      "startzeit INTEGER, " \
       "status INTEGER, " \
       "gewicht REAL, " \
       "jahrgangmin INTEGER, " \

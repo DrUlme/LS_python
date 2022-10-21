@@ -126,10 +126,6 @@ while zeile > 6:
                # print( sql )
                cursor.execute(sql)
                connection.commit()
-               # dto. für r2boote - entfernen?!
-               sql = "UPDATE r2boote SET rennNr = " + str(Rennen) + " WHERE bootNr = " + str(Boot)
-               cursor.execute(sql)
-               connection.commit()
                print("... geändert !")
          
       # ______________________________________________________________________________________
