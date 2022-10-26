@@ -2,13 +2,16 @@
 # GUI for a database
 #  python3
 
-import os, sys, sqlite3
+# os, sys,
+import  sqlite3
 
 # import modules
 import tkinter as tk
 # 
-from PIL import Image
-#, ImageTk
+
+
+from datetime import datetime
+
 
 # globale Parameter
 import LSglobal

@@ -112,8 +112,10 @@ ws[indEV + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='
 ws[indEZt + str(zeile)] = "Endzeit"
 ws[indEZt + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
-ws[indBot + str(zeile)] = "TNR"
-ws[indBot + str(zeile)].font = Font(name='arial', sz=6, b=False, i=False, color='ddddff')
+# ws[indBot + str(zeile)] = "TNR"
+# ws[indBot + str(zeile)].font = Font(name='arial', sz=6, b=False, i=False, color='ddddff')
+ws[indBot + str(zeile)] = "kg"
+ws[indBot + str(zeile)].font = Font(name='arial', sz=10, b=True, i=False, color='ddddff')
 
 
 ws.column_dimensions["A"].alignment = Alignment(horizontal='center')
@@ -165,6 +167,7 @@ Mf_Lgw = 0
 # private_range = openpyxl.workbook.defined_name.DefinedName('privaterange', attr_text='Sheet!$A$6', localSheetId=sheetid)
 # wb.defined_names.append(private_range)
 
+zeile = zeile + 1
 # Ausgabe des Ergebnisses
 # ============================================================================================================
 # SQL-Abfrage
@@ -196,6 +199,7 @@ for dsatz in cursor_R:
       #
       if(Anz == 0):
          NR = NR + 1
+      LNR = LNR + 1
       #______________________________ Anzahl der Ruderer und ihre Nummern in der Datenbank
       sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
       RBcursor.execute(sql)
@@ -210,7 +214,10 @@ for dsatz in cursor_R:
          ws[indLNR + str(zeile)] = str(LNR)
          ws[indLNR + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='aaaaaa')
          #
-         ws[indBot + str(zeile)] = ds[0]
+         if(Rd[6] > 10):
+            ws[indBot + str(zeile)].number_format = '0.0'
+            ws[indBot + str(zeile)] = Rd[6]
+            # ws[indBot + str(zeile)] = ds[0]
          ws[indBot + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='aaaaaa')
          #
          ws[indRNR + str(zeile)] = ReStr
@@ -289,7 +296,7 @@ for dsatz in cursor_R:
          ws[indEV  + str(zeile)] =  Vp[0]
          ws[indEV  + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='222222')
          # ws[indVN  + str(zeile)] =  Vp[0] # Vereins-Nummer
-
+         zeile = zeile + 1
 
 
 
@@ -414,7 +421,7 @@ for dsatz in cursor_V:
       #
       for RudInd in RBcursor:   # for iR in range(0, (len(RudInd) - 2)):   
          # print(RudInd)
-         sql = "SELECT * FROM boote WHERE nummer = " + str(RudInd[2]) + "  "
+         sql = "SELECT * FROM boote WHERE nummer = " + str(RudInd[1]) + "  "
          cursor.execute(sql)
          Rd = cursor.fetchone()
          # check - nicht abgemeldet:

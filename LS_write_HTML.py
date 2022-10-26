@@ -39,6 +39,8 @@ SpätR = Rd[0]
 TimeSpät = int(Rd[5])
 
 
+# Tfrüh = 40500
+TimeSpät = 45870
 #===============================================================================================================================
 t1 = time.localtime()
 
@@ -57,8 +59,12 @@ HTXT = HTXT + "    margin-left: 0;\n    margin-right: 80%;\n  }\n"
 # HTXT = HTXT + "  iframe { height:100%; width:80%; position:absolute; right:0px; }\n"
 HTXT = HTXT + " </style>\n</head>\n\n<body>\n\n"
 # 
-HTXT = HTXT + "<iframe class=\"reload\" align=\"right\" height=\"900\" width=\"80%\" src=\"aktuell.html\" name=\"iframe_a\"></iframe>\n\n"
-# HTXT = HTXT + "<iframe align=\"right\" height=\"100%\" width=\"80%\" src=\"aktuell.html\" name=\"iframe_a\"></iframe>\n\n"
+# ToDo: zeitabhängig reload abfragen:
+# am Tag der Regatta / bis 1 Woche davor
+# HTXT = HTXT + "<iframe class=\"reload\" align=\"right\" height=\"900\" width=\"80%\" src=\"aktuell.html\" name=\"iframe_a\"></iframe>\n\n"
+# sonst ohne 'reload'
+HTXT = HTXT + "<iframe align=\"right\" height=\"100%\" width=\"80%\" src=\"aktuell.html\" name=\"iframe_a\"></iframe>\n\n"
+#
 # HTXT = HTXT + "<iframe src=\"aktuell.html\" name=\"iframe_a\"></iframe>\n\n"
 HTXT = HTXT + "<img height=\"15%\" width=\"15%\" src=\"RVE-Flag.png\"><br>\n\n"
 HTXT = HTXT + "<p style=\"font-size:30px; color:blue\">Langstrecke</p>\n"
@@ -78,7 +84,7 @@ Count_Ruderer = 0
 
 #===============================================================================================================================
 
-sql = "SELECT * FROM rennen WHERE status > 0 and nummer < 20"  # Athletik-Wettbewerb!
+sql = "SELECT * FROM rennen WHERE status > 0 and nummer < 37"  # Athletik-Wettbewerb!
 Rcursor.execute(sql)
 for Rsatz in Rcursor:
    Rennen       = Rsatz[0]
@@ -109,7 +115,10 @@ for Rsatz in Rcursor:
    TXT = "<!DOCTYPE html>\n<html lang=\"de\">\n  <head>\n    <meta charset=\"utf-8\">\n    <title> Rennen "
    TXT = TXT + RStr + "</title>\n    <link rel=\"stylesheet\" href=\"Rennen.css\">\n"
    TXT = TXT + "   <link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"/Langstrecke/favicon.ico\">\n\n"
-   TXT = TXT + "   <meta http-equiv=\"refresh\" content=\"120\"/>\n"
+   #
+   # ToDo: zeitabhängig reload abfragen:
+   # TXT = TXT + "   <meta http-equiv=\"refresh\" content=\"120\"/>\n"
+   #
    TXT = TXT + "  </head>\n\n<body>\n"
    TXT = TXT + "<table id=\"coll\">\n <thead>\n  <tr>\n      <th>Start-<br>Nummer</th>\n      <th colspan=\"3\"><b> Rennen "
    TXT = TXT + RStr +" - " + RennenString + " - </b> "
@@ -160,7 +169,7 @@ for Rsatz in Rcursor:
          Qcursor.execute(sql)
          iR = 0
          for RudInd in Qcursor:         
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[3])
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[2])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
             # 
@@ -271,6 +280,7 @@ HTMSel = HTMSel + " </select>\n\n\n  </p>\n\n</body>\n</html>\n"
 #
 HTXT = HTXT + "<br>\n" + HTMSel + "<br>\n"
 #
+HTXT = HTXT + "\n  <p><br><a HREF=\"F2022_Endergebnis.pdf\">Ergebnis der Fr&uuml;hjahrs-Langstrecke 2022</a></p>\n"
 HTXT = HTXT + "\n  <p><br><a HREF=\"H2021_Endergebnis.pdf\">Ergebnis der Herbst-Langstrecke 2021</a></p>\n"
 HTXT = HTXT + "\n  <p><br><a HREF=\"H2020_Endergebnis.pdf\">Ergebnis der Herbst-Langstrecke 2020</a></p>\n"
 #

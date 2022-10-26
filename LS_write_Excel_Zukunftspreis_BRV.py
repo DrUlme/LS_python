@@ -161,7 +161,7 @@ for dsatz in cursor_V:
       #
       for RudInd in RBcursor:   # for iR in range(0, (len(RudInd) - 2)):   
          # print(RudInd)
-         sql = "SELECT * FROM boote WHERE nummer = " + str(RudInd[2]) + "  "
+         sql = "SELECT * FROM boote WHERE nummer = " + str(RudInd[1]) + "  "
          cursor.execute(sql)
          Rd = cursor.fetchone()
          # check - nicht abgemeldet:

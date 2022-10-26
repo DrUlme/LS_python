@@ -25,7 +25,7 @@ Vcursor  = connection.cursor()
 
 t1 = time.localtime()
 
-Meter = 000
+Meter = 6000
 
 if(Meter == 0):
    POSITION = "S T A R T"
@@ -55,7 +55,7 @@ TXT = "\\documentclass[a4paper]{article}\n\\usepackage[ngerman]{babel}\n\\usepac
 TXT = TXT + "\n"
 
 if(Meter == 6000):
-   sql = "SELECT * FROM rennen WHERE strecke = " + str(Meter) + " "
+   sql = "SELECT * FROM rennen WHERE strecke = '6000 m' "
 else:
    sql = "SELECT * FROM rennen "
 print(sql)
@@ -99,7 +99,7 @@ for Rsatz in Rcursor:
          #
          for RBind in Qcursor:
             # rudererNr = 3 (4. Eintrag)
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RBind[3])
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RBind[2])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
             #

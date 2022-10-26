@@ -65,9 +65,13 @@ Mit diesem Befehl sollte es sofort klappen:
 # ToDo
 Bereich der auftretenden Änderungen
 
+* Speichern der FTP-Daten (auch Verzeichnis
+
 ## Fehler und Ergänzungen
 * Behandlung der Früh- und Spät-Starter und Grossboote ?!
 * Kein oder falscher Jahrgang
+* check Doppelte Startnummern => Abmeldungen vor Frist Startnummer entziehen
+* AbmeldeZeitpunkt nach Frist notieren (Kommentar?) => "22. 11:22 (a),"
 
 ## GUI für 
 * Namen => Vorname / Nachname vertauschen

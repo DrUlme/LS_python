@@ -168,6 +168,7 @@ sql = "SELECT * FROM verein WHERE kurz != 'RVE' AND dabei = 1"
 Kanal     = 15
 Athletik  = 6
 Bugnummer = 10
+# Deckelung noch aus alten Zeiten (€ 250) jetzt auf übertriebene 2.500 EUR
 Deckelung = 2500
 
 fehlende_Bugnummern = [  ]
@@ -240,7 +241,7 @@ for Vsatz in Vcursor:
          Qcursor.execute(sql)
          iR = 0
          for RudInd in Qcursor:
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[3])
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[2])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
             #

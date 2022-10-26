@@ -35,26 +35,20 @@ Vcursor  = connection.cursor()
 #
 
 # DRV Zeiten von 2020
-#DRV_velo =    [ 0, 1, 2,  3,   4,    5,    6,    7,    8,    9,    10,   11,   12,   13,   14,   15,   16,   17,   18,   19, 
-#            20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36 ]
-DRV_velo =     [ 0, 0, 0, 4.85, 4.71, 5.43, 5.15, 5.12, 4.87, 4.61, 4.86, 4.74, 4.42, 4.28, 5.09, 5.09, 4.68, 4.39, 4.28, 0, 
-            0, 0, 0, 0, 0,  0,  0,  0,  0,  0, 0,  0, 0, 0,  0, 0, 0 ]
-# gesondert für Leichtgewichte:
-# DRV_velo_Lgw = [ 0, 0, 0, 4.85, 4.71, 5.43, 5.15, 5.12, 4.87, 4.61, 4.86, 4.74, 4.42, 4.28, 4.98, 4.98, 4.52, 4.39, 4.28, 0, 
-DRV_velo_Lgw = [ 0, 0, 0, 4.85, 4.71, 5.24, 5.02, 4.98, 4.87, 4.61, 4.86, 4.74, 4.42, 4.28, 4.98, 4.98, 4.52, 4.39, 4.28, 0,
-            0, 0, 0, 0, 0,  0,  0,  0,  0,  0, 0,  0, 0, 0,  0, 0, 0 ]
+DRV_Prognose_Str = "9/2022" # "12.9.2022" - [m/s] aus Zeiten neu gewonnen !!!
 
 Gewichtsklassen = dict([('SM A', 70.0), ('SM B', 70.0), ('JM A', 65.0), ('JM B', 62.5), ('SF A', 57.0), ('SF B', 57.0), ('JF A', 55.0), ('JF B', 52.5)])
 Gewichtsgrenzen = dict([('SM A', 72.5), ('SM B', 72.5), ('JM A', 67.5), ('JM B', 65.0), ('SF A', 59.0), ('SF B', 59.0), ('JF A', 57.5), ('JF B', 55.0)])
 
-DRV_velo = dict([('JF A 1x', 4.425), ('JF A 2x', 4.765), ('JF A 2-', 4.613), ('JF AL 1x', 4.283), ('JF AL 2x', 4.587), ('JF AL 2-', 4.465),
-                 ('JF B 1x', 4.392), ('JF B 2x', 4.759), ('JF B 2-', 4.528), ('JF BL 1x', 4.283), ('JF BL 2x', 4.587), ('JF BL 2-', 4.465),
-                 ('SF A 1x', 4.676), ('SF A 2x', 5.034), ('SF A 2-', 4.871), ('SF AL 1x', 4.525), ('SF AL 2x', 4.907), ('SF AL 2-', 4.748),
-                 ('SF B 1x', 4.676), ('SF B 2x', 5.034), ('SF B 2-', 4.871), ('SF BL 1x', 4.525), ('SF BL 2x', 4.907), ('SF BL 2-', 4.748),
-                 ('JM A 1x', 4.861), ('JM A 2x', 5.342), ('JM A 2-', 5.155), ('JM AL 1x', 4.738), ('JM AL 2x', 5.180), ('JM AL 2-', 5.023),
-                 ('JM B 1x', 4.847), ('JM B 2x', 5.323), ('JM B 2-', 5.125), ('JM BL 1x', 4.710), ('JM BL 2x', 5.126), ('JM BL 2-', 5.000),
-                 ('SM A 1x', 5.085), ('SM A 2x', 5.560), ('SM A 2-', 5.427), ('SM AL 1x', 4.975), ('SM AL 2x', 5.475), ('SM AL 2-', 5.236),
-                 ('SM B 1x', 5.085), ('SM B 2x', 5.560), ('SM B 2-', 5.427), ('SM BL 1x', 4.975), ('SM BL 2x', 5.475), ('SM BL 2-', 5.236) ])
+DRV_velo = dict([('JF A 1x', 4.430), ('JF A 2x', 4.765), ('JF A 2-', 4.613), ('JF AL 1x', 4.329), ('JF AL 2x', 4.696), ('JF AL 2-', 4.465),
+                 ('JF B 1x', 4.372), ('JF B 2x', 4.704), ('JF B 2-', 4.552), ('JF BL 1x', 4.283), ('JF BL 2x', 4.587), ('JF BL 2-', 4.465),
+                 ('SF A 1x', 4.676), ('SF A 2x', 5.034), ('SF A 2-', 4.909), ('SF AL 1x', 4.525), ('SF AL 2x', 4.984), ('SF AL 2-', 4.695),
+                 ('SF B 1x', 4.676), ('SF B 2x', 5.034), ('SF B 2-', 4.909), ('SF BL 1x', 4.525), ('SF BL 2x', 4.984), ('SF BL 2-', 4.695),
+                 ('JM A 1x', 4.933), ('JM A 2x', 5.342), ('JM A 2-', 5.181), ('JM AL 1x', 4.773), ('JM AL 2x', 5.240), ('JM AL 2-', 5.023),
+                 ('JM B 1x', 4.869), ('JM B 2x', 5.272), ('JM B 2-', 5.114), ('JM BL 1x', 4.710), ('JM BL 2x', 5.126), ('JM BL 2-', 5.000),
+                 ('SM A 1x', 5.119), ('SM A 2x', 5.560), ('SM A 2-', 5.427), ('SM AL 1x', 5.000), ('SM AL 2x', 5.475), ('SM AL 2-', 5.263),
+                 ('SM B 1x', 5.119), ('SM B 2x', 5.560), ('SM B 2-', 5.427), ('SM BL 1x', 5.000), ('SM BL 2x', 5.475), ('SM BL 2-', 5.263) ])
+ohne_aktuelle_Daten=[ "JF AL2- ohne", "JF/JM B Lg" ]
 
 t1 = time.localtime()
 
@@ -94,6 +88,7 @@ Rcursor.execute(sql)
 for Rsatz in Rcursor:
    Rennen       = Rsatz[0]
    RennenString = Rsatz[1]
+   Bootstyp     = Rsatz[3]
    # definiere das Durchschnittsgewicht / max.-Gewicht für das Rennen ---------
    Gewicht      = Rsatz[7]
    if(Gewicht > 0):
@@ -143,7 +138,7 @@ for Rsatz in Rcursor:
       Qcursor.execute(sql)
       iR = 0
       for RudInd in Qcursor:         
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[3])
+         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[2])
          Pcursor.execute(sql)
          Rd = Pcursor.fetchone()
          #
@@ -179,24 +174,37 @@ for Rsatz in Rcursor:
          ReDefNew = "Mädchen"
       else:
          ReDefNew = "Jungen"
+      #__________________________________ ToDo: Großboot
+      if(StNr == 1):
+         ReDefNew = "SF B"
+         Bootstyp = "2x"
+      elif(StNr == 2):
+         ReDefNew = "JM B"
+         Bootstyp = "2x"
+         
+      # ' hole Gewichtslimit pro Rennen'
+      RennenMaxGewicht = Gewichtsgrenzen.get(ReDefNew)
+      RennenGewichtsKlasse = Gewichtsklassen.get(ReDefNew)
+      #
       # Check Leichtgewicht:
-      if(maxGewicht > 0):
+      if(RennenMaxGewicht is not None and RennenGewichtsKlasse is not None and maxGewicht > 0):
          maxGewStr = ""
          bootGewicht = bootGewicht / nPers - LSglobal.Gewicht
          maxGewicht = maxGewicht - LSglobal.Gewicht
+         
          if(nPers == 1):
-            if(maxGewicht > Gewichtsgrenzen.get(ReDefNew)):
-               print(StrStNr + " (" + ReDefNew + "): " +  colored(str(bootGewicht), 'red', attrs=['bold']) + " kg > " + str(Gewichtsgrenzen.get(ReDefNew)))
+            if(maxGewicht > RennenMaxGewicht):
+               print(StrStNr + " (" + ReDefNew + "): " +  colored(str(bootGewicht), 'red', attrs=['bold']) + " kg > " + str(RennenMaxGewicht))
                maxGewStr = "^+"
                StrStNr = "$" + str(StNr) + "^{{Lgw^+}}$"
             else:
                StrStNr = "$" + str(StNr) + "^{{Lgw}}$"
-         elif(maxGewicht > Gewichtsgrenzen.get(ReDefNew)):
-            print(StrStNr + " (" + ReDefNew + "): " + str(maxGewicht) + " kg > " + str(Gewichtsgrenzen.get(ReDefNew)))
+         elif(maxGewicht > RennenMaxGewicht):
+            print(StrStNr + " (" + ReDefNew + "): " + str(maxGewicht) + " kg > " + str(RennenMaxGewicht))
             maxGewStr = "^+"
             StrStNr = "$" + str(StNr) + "^{{Lgw^+}}$"
-         elif(bootGewicht > Gewichtsklassen.get(ReDefNew) ):
-            print(StrStNr + " (" + ReDefNew + "): " + str(maxGewicht) + " kg > " + str(Gewichtsklassen.get(ReDefNew)))
+         elif(bootGewicht > RennenGewichtsKlasse ):
+            print(StrStNr + " (" + ReDefNew + "): " + str(maxGewicht) + " kg > " + str(RennenGewichtsKlasse))
             maxGewStr = "^+"
          #
          if(Rsatz[7] > 1):
@@ -205,7 +213,7 @@ for Rsatz in Rcursor:
             StrStNr = "$" + str(StNr) + "^{{Lgw" + maxGewStr + "}}$"
          ReDefNew = ReDefNew + "L"
       # Ergänze die Bootsklasse - Rsatz kann unbekannt sein
-      ReDefNew = ReDefNew + " " + Rsatz[3]
+      ReDefNew = ReDefNew + " " + Bootstyp
       RefV = DRV_velo.get( ReDefNew )
       # ______________________________________________________________________________       # Zeiten: 
       # --------------------------------    Startzeit: Bsatz[6]
@@ -221,7 +229,7 @@ for Rsatz in Rcursor:
       Btime = Bsatz[9]   
       BtimM = math.floor(Btime/60)
       EZeit = "\\textbf{ " + str(BtimM) + ":" + str(Btime - 60*BtimM).rjust(2, '0') + "}" 
-      if(RefV > 0):
+      if(RefV is not None and RefV > 0):
          Percent = "%4.1f"% (100 * Strecke / Btime / RefV)
          EZeit = EZeit + "$^{\\textrm{ }" + Percent + "\\%}$"
       #
@@ -286,7 +294,7 @@ TXT = TXT + "%\nDie \\textbf{2. Spalte} gibt die \\textbf{Startnummer} und die \
    Wenn die Gewichtslimits nur knapp gerissen werden erscheint zusätzlich ein $^+$ dahinter.\\\\\n\
    \\\\\n%======================\n%\n"
 TXT = TXT + "Die fette Zahl bei den \\textbf{ Zeiten } ist die finale Zeit über die jeweilige Wettkampfstrecke.\\\\\n\\\\\n\
-Wenn \\textbf{ DRV-Prognosezahlen von 2020 } für die Altersklasse existieren, ist die Prozentzahl der Geschwindigkeit zum Referenzwert \
+Wenn \\textbf{ DRV-Prognosezahlen von " + DRV_Prognose_Str + " } für die Altersklasse existieren, ist die Prozentzahl der Geschwindigkeit zum Referenzwert \
 über die Standardstrecke (2000 m, bei Junioren B 1500m) dahinter zu sehen. \\\\\n\\\\\n\
 Bei \\textbf{ 6000 m Streckenlänge } sind die Zeiten für die ersten 3000 m und für die zweiten 3000 m in der Zeile darunter angegeben.\n%\n"
 
