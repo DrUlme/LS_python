@@ -6,12 +6,12 @@ Created on Mon Oct  5 14:57:53 2020
 @author: ulf
 """
 
-Tag     = 22
-Monat   = 10
-Jahr    = 2022
+Tag     = 18
+Monat   =  3
+Jahr    = 2023
 
 if(Monat < 7):
-   Zeit    = "Frühjahr" # "Herbst"
+   Zeit    = "Frühjahr" 
    Name    = "Erlanger Frühjahrs-Langstrecke " + str(Jahr)
    RefJahr = Jahr
 else:

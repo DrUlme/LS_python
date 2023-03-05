@@ -37,7 +37,7 @@ paragraph = header.paragraphs[0]
 
 
 text_run = paragraph.add_run()
-text_run.text = "BRV Herbst-Langsteckentest Erlangen '21" +  '\t' # For center align of text
+text_run.text = "BRV Langsteckentest Erlangen " + LSglobal.Zeit + " '" + str(LSglobal.Jahr-2000) +  '\t' # For center align of text
 text_run.style = "Heading 2 Char"
 logo_run = paragraph.add_run()
 logo_run.add_picture("RVE_BRV_Flag.png", width=Inches(1.25))
