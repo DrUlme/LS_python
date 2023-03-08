@@ -225,7 +225,7 @@ for ROW in range(11,54):
    + ',IF(ISNUMBER($B' + str(ROW-2) + '),$B' + str(ROW-2) + ',IF(ISNUMBER($B' + str(ROW-3) + '),$B' + str(ROW-3) + ', 0))))))'
    # Check des Alters
    ws['Q' + str(ROW)] = '=IF(ISBLANK($A' + str(ROW) + '),0,IF($R' + str(ROW) + '<1,0,IF($E' + str(ROW) + '<1,1,IF($E' + str(ROW) + \
-   '>INDIRECT("Rennen!$G"&($R' + str(ROW) + ')),2,IF($E' + str(ROW) + '<INDIRECT("Rennen!$H"&($R' + str(ROW) + ')),2,1)))))'
+   '<INDIRECT("Rennen!$G"&($R' + str(ROW) + ')),2,IF($E' + str(ROW) + '>INDIRECT("Rennen!$H"&($R' + str(ROW) + ')),2,1)))))'
    # hide Q & R column:
    # ws['Q' + str(ROW)].font = Font(name='arial', sz=8, b=False, i=False, color='BBBBBB')
    # ws['R' + str(ROW)].font = Font(name='arial', sz=8, b=False, i=False, color='BBBBBB')

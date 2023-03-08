@@ -22,7 +22,10 @@ RBcursor = connection.cursor()
 Pcursor  = connection.cursor()
 Vcursor  = connection.cursor()
 #
-
+# Counter für angemeldete:
+Count_Boote   = 0
+Count_Ruderer = 0
+Count_Athlets = 0
 
 t1 = time.localtime()
 
@@ -109,9 +112,12 @@ for Rsatz in Rcursor:
       Boot   = Bsatz[0]
       StNr   = Bsatz[1]
       # VBoot  = Bsatz[3]
-      sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
+      # sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
+      sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot) 
       RBcursor.execute(sql)
       #
+      Count_Boote   = Count_Boote + 1
+      
       Abmeldung = Bsatz[10]
       if(Abmeldung == 0):
          # _______________________________________________________________________________________________________________
@@ -133,11 +139,14 @@ for Rsatz in Rcursor:
          Vorname = ['-']
          Name    = ['-']
          JGNGstr = ['-']
+         Platz   = ['-']
          
          nPers   = 0
          iR      = 0
          for RudInd in RBcursor: # for iR in range(0, (len(RudInd) - 2)):         
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[0])
+            # rudererNr: sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[0])
+            Count_Ruderer = Count_Ruderer + 1
+            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[2])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
             nPers = nPers + 1
@@ -150,6 +159,11 @@ for Rsatz in Rcursor:
             elif(iR>0 and VStr != Rd[7]):
                Verein =  Verein + "\\\\{" + Rd[7] + "}"
             #
+            if(RudInd[3] < 0):
+               Platz.insert(iR,  "Stm.")
+               print("Steuermann...?")
+            else:
+               Platz.insert(iR,  str(RudInd[3]))               
             #
             if(Rsatz[7] < 1 and Rd[5] == 1):
                # JGNGstr.insert(iR, ("$" + str(Rd[3]) + "^{\\textrm{Lgw}}$"))
@@ -194,6 +208,8 @@ for Rsatz in Rcursor:
          #
          for iR in range(0, nPers):
             # Ruderer
+            if(Platz[iR] == "Stm."):
+               TXT = TXT + "\\textit{Stm. }" 
             TXT = TXT + "\\textbf{" + Vorname[iR] + " " + Name[iR] + "} {\\small(" + JGNGstr[iR] + ")} "
             if(nPers > 1 and iR < (nPers - 1)):
                # wenn mehrere:
@@ -231,6 +247,8 @@ if(TimeFrüh > 39600):    # 11*3600
       # print(sql)
       RBcursor.execute(sql)
       #
+      Count_Boote   = Count_Boote + 1
+      
       Abmeldung = Bsatz[10]
       if(Abmeldung == 0):
          # _______________________________________________________________________________________________________________
@@ -248,7 +266,8 @@ if(TimeFrüh > 39600):    # 11*3600
          
          nPers   = 0
          iR      = 0
-         for RudInd in RBcursor: # for iR in range(0, (len(RudInd) - 2)):         
+         for RudInd in RBcursor: # for iR in range(0, (len(RudInd) - 2)):
+            Count_Ruderer = Count_Ruderer + 1
             sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[0])
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
@@ -354,6 +373,9 @@ for Rsatz in Rcursor:
       sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
       RBcursor.execute(sql)
       #
+      if(BootTyp != "Athletik"):
+         Count_Boote   = Count_Boote + 1
+      #
       Abmeldung = Bsatz[10]
       if(Abmeldung == 0):
          # _______________________________________________________________________________________________________________
@@ -400,6 +422,13 @@ for Rsatz in Rcursor:
                JGNGstr.insert(iR, str(Rd[4]))      
             # print(Name[0] + ", '" + Name[1] + "' =>" + Rd[2] )
             iR += 1
+            #
+            if(BootTyp != "Athletik"):
+               Count_Ruderer = Count_Ruderer + 1
+            else:
+               Count_Athlets = Count_Athlets + 1
+         #-----
+         
          #---------------------------------------------------------------------
          Btime = Bsatz[3]
          # print(Name[0] + " - " + str(len(RudInd)))
@@ -471,7 +500,8 @@ for Rsatz in Rcursor:
 # Count_Boote   = 0
 # Count_Ruderer = 0
 Count_Verein  = 0
-Athletiktest = "10:30 in Halle - Dorfstraße 21"
+# Athletiktest = "10:30 in Halle - Dorfstraße 21"
+Athletiktest = "10:30 am Ruderverein Erlangen"
 
 sql = "SELECT * FROM verein "
 Vcursor.execute(sql)
@@ -497,7 +527,9 @@ for Vsatz in Vcursor:
       NoBoote = 0
       Ngray = 0
       Vrennen = 0
+      # alle: 
       sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY planstart, startnummer, nummer "
+      # sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " AND abgemeldet = 0 ORDER BY planstart, startnummer, nummer "
       Bcursor.execute(sql)
       for Bsatz in Bcursor:
          Boot   = Bsatz[0]
@@ -593,4 +625,8 @@ fp.close()
 
 connection.close()
 
-print("Gemeldet haben " + str(Count_Verein) + " Vereine")
+print("-----------\nGemeldet haben " + str(Count_Verein) + " Vereine")
+print(str(Count_Ruderer) + " Ruderer in " + str(Count_Boote) + " Booten")
+if(Count_Athlets > 0):
+   print("Zusätzlich sind " + str(Count_Athlets) + " Kinder für die Lauf und Athletikwettbewerbe gemeldet.")
+
