@@ -72,6 +72,7 @@ Bereich der auftretenden Änderungen
 * Kein oder falscher Jahrgang
 * check Doppelte Startnummern => Abmeldungen vor Frist Startnummer entziehen
 * AbmeldeZeitpunkt nach Frist notieren (Kommentar?) => "22. 11:22 (a),"
+* Einlesen der Meldungen: Vereinskürzel vorhanden oder Telefon-Nummer !!!
 
 ## GUI für 
 * Namen => Vorname / Nachname vertauschen

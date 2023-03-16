@@ -173,7 +173,10 @@ for dsatz in cursor_R:
    Rennen = dsatz[0]
    ReStr  = str(Rennen)
    # ----------------------------------------- hole Boote (= Athleten)
-   sql = "SELECT * FROM boote WHERE rennen = " + str(Rennen) + " AND abgemeldet = 0"
+   if(SetStartnummern > 0):
+      sql = "SELECT * FROM boote WHERE rennen = " + str(Rennen) + " AND abgemeldet = 0"
+   else:
+      sql = "SELECT * FROM boote WHERE rennen = " + str(Rennen) + " AND abgemeldet = 0  ORDER BY startnummer, nummer"
    # Empfang des Ergebnisses
    cursor_B.execute(sql)
    Meldungen = len(cursor_B.fetchall())
@@ -328,10 +331,14 @@ for dsatz in cursor_R:
       cursorRB.execute(sql)
       # 
       rbs = cursorRB.fetchone()
+      if(rbs == None):
+         print("kein Eintrag in r2boot für Boot #" + str(ds[0]))
       # suche nach Einträgen in r2boot for dieses Boot
-      sql = "SELECT * FROM ruderer WHERE nummer = " + str(rbs[3])
+      sql = "SELECT * FROM ruderer WHERE nummer = " + str(rbs[2])
       cursor_A.execute(sql)
       Rd = cursor_A.fetchone()
+      if(Rd == None):
+         print("kein ruderer mit #" + str(rbs[2]))
       Vorname  = Rd[1]
       Name     = Rd[2]
       MW       = Rd[3]

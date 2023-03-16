@@ -242,6 +242,7 @@ if(TimeFrüh > 39600):    # 11*3600
    for Bsatz in Bcursor:
       Boot   = Bsatz[0]
       StNr   = Bsatz[1]
+      print(Boot)
       # VBoot  = Bsatz[3]
       sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
       # print(sql)
@@ -439,7 +440,7 @@ for Rsatz in Rcursor:
                   StrStNr = "tbd."
                else:
                   StrStNr = "{\\it " + str(StNr) + "}"
-               StrZeit = "Halle 10:30"
+               StrZeit = "Halle RVE 9:30"
             else:
                StrStNr = "tbd."
                StrZeit = "tbd."
@@ -501,7 +502,7 @@ for Rsatz in Rcursor:
 # Count_Ruderer = 0
 Count_Verein  = 0
 # Athletiktest = "10:30 in Halle - Dorfstraße 21"
-Athletiktest = "10:30 am Ruderverein Erlangen"
+Athletiktest = "9:00 -9:30 Halle des RVE " # "am Ruderverein Erlangen"
 
 sql = "SELECT * FROM verein "
 Vcursor.execute(sql)
