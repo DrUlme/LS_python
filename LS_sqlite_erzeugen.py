@@ -18,19 +18,22 @@ cursor = connection.cursor()
 # Tabellen erzeugen
 sql = "CREATE TABLE rennen(" \
       "nummer INTEGER PRIMARY KEY, " \
+      "id TEXT, " \
       "name TEXT, " \
-      "gender TEXT, " \
+      "code TEXT, " \
+      "sex TEXT, " \
       "boot TEXT, " \
       "strecke TEXT, " \
       "startzeit INTEGER, " \
       "status INTEGER, " \
       "gewicht REAL, " \
       "jahrgangmin INTEGER, " \
-      "jahrgangmax INTEGER)"
+      "jahrgangmax INTEGER, " \
+      "cost REAL)"
 cursor.execute(sql)
 
 sql = "CREATE TABLE ruderer(" \
-      "nummer INTEGER PRIMARY KEY, " \
+      "id TEXT, " \
       "vorname TEXT, " \
       "name TEXT, " \
       "geschlecht TEXT, " \
@@ -43,28 +46,31 @@ sql = "CREATE TABLE ruderer(" \
 cursor.execute(sql)
 
 sql = "CREATE TABLE r2boot(" \
-      "nummer INTEGER PRIMARY KEY, " \
-      "bootNr INTEGER, " \
-      "rudererNr INTEGER, " \
+      "meldeid TEXT, " \
+      "bootid TEXT, " \
+      "rudererid TEXT, " \
       "platz INTEGER)"
 cursor.execute(sql)
  
 sql = "CREATE TABLE boote(" \
-      "nummer INTEGER PRIMARY KEY, " \
+      "id TEXT, " \
+      "revision TEXT, " \
       "startnummer INTEGER, " \
       "rennen INTEGER, " \
-      "planstart INTEGER, " \
-      "secstart INTEGER, " \
-      "sec3000 INTEGER, " \
-      "sec6000 INTEGER, " \
-      "zeit3000 INTEGER, " \
-      "zeit6000 INTEGER, " \
-      "zeit INTEGER, " \
+      "planstart TEXT, " \
+      "tStart TEXT, " \
+      "t3000 TEXT, " \
+      "t6000 TEXT, " \
+      "zeit3000 TEXT, " \
+      "zeit6000 TEXT, " \
+      "zeit TEXT, " \
       "abgemeldet INTEGER, " \
+      "alternativ INTEGER, "\
       "kommentar TEXT )"
 cursor.execute(sql)
 
 sql = "CREATE TABLE verein(" \
+      "id TEXT, " \
       "name TEXT, " \
       "kurz TEXT, " \
       "anschrift TEXT, " \
@@ -82,6 +88,20 @@ sql = "CREATE TABLE betreuer(" \
       "email TEXT)"
 cursor.execute(sql)
 
+sql = "CREATE TABLE meta(" \
+      "name TEXT, " \
+      "wert TEXT)"
+cursor.execute(sql)
+
+connection.commit()
+
+# Zeitdeltas für die Meßpunkte
+sql = "INSERT INTO meta VALUES( 'sec_Start', '0' )"
+cursor.execute(sql)
+sql = "INSERT INTO meta VALUES( 'sec_3000m', '0' )"
+cursor.execute(sql)
+sql = "INSERT INTO meta VALUES( 'sec_6000m', '0' )"
+cursor.execute(sql)
 
 connection.commit()
 

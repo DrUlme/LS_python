@@ -48,7 +48,8 @@ noFill = PatternFill(start_color='ffffff',end_color='ffffff',fill_type='solid')
 wb = Workbook()
 # wb = openpyxl.Workbook()
 ws = wb.active
-ws.title = LSglobal.Name
+# ws.title = LSglobal.Name
+ws.title = "LS" + str(LSglobal.Jahr) + LSglobal.ZeitK
 
 book = Workbook()
 sheet = book.active
@@ -165,6 +166,7 @@ Count_Verein  = 0
 EUR_total = 0
 sql = "SELECT * FROM verein WHERE kurz != 'RVE' AND dabei = 1"
 
+# Gebühren für:
 Kanal     = 15
 Athletik  = 6
 Bugnummer = 10
@@ -189,9 +191,9 @@ for Vsatz in Vcursor:
    #
    TXT = TXT_1 + TXT_2 + TXT_3 
    TXT = TXT +  "% Begin main part - make changes here\n\\begin{document}\n\\begin{letter}{"
-   TXT = TXT +  Vsatz[0] + "\\\\\n"
-   TXT = TXT +  Vsatz[2] + "\\\\\n"
-   TXT = TXT +  Vsatz[3] + "}\n%\n"
+   TXT = TXT +  Vsatz[1] + "\\\\\n"
+   TXT = TXT +  Vsatz[3] + "\\\\\n"
+   TXT = TXT +  Vsatz[4] + "}\n%\n"
    TXT = TXT +  "\\opening{Sehr geehrte Damen und Herren,}\n\n"
    TXT = TXT +  "Für die Teilnahme an der Langstrecke vom Bayrischen Ruderverband und dem \\usekomavar{ausrichter} am \n"
    TXT = TXT +  "\\usekomavar{gigdate} dürfen wir Ihnen folgendes berechnen:\n\n\\vspace{10pt}\n\n"
@@ -210,7 +212,7 @@ for Vsatz in Vcursor:
    Rcursor.execute(sql)
    for Rsatz in Rcursor:
       Rennen       = Rsatz[0]
-      RennenString = Rsatz[1]
+      RennenString = Rsatz[3]
       # 
       Ngray = 0
       Vrennen  = 0
@@ -218,18 +220,18 @@ for Vsatz in Vcursor:
       sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY startnummer"
       Bcursor.execute(sql)
       for Bsatz in Bcursor:
-         StNr   = Bsatz[1]
+         StNr   = Bsatz[2]
          Boot   = Bsatz[0]
-         Abmeldung = Bsatz[10]
+         Abmeldung = Bsatz[11]
          #
-         #_____________________________________________ Höhe des Meldegeldes
-         if(Rsatz[4] == "div."):
+         #_____________________________________________ Höhe des Meldegeldes (über Strecke ermittelt)
+         if(Rsatz[6] == "div."):
             Meldegeld = Athletik
          else:
             Meldegeld = Kanal
          #
          SH = ""
-         Kommentar = Bsatz[11]
+         Kommentar = Bsatz[13]
          if(Kommentar.find('achmeldung') > 0):
             Meldegeld = 2 * Meldegeld
             SH = "$^N$"
@@ -237,15 +239,15 @@ for Vsatz in Vcursor:
          #
          # ===========================================================================================
          nPers   = 0
-         sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot) 
+         sql = "SELECT * FROM r2boot  WHERE bootid = '" + Boot + "'"
          Qcursor.execute(sql)
          iR = 0
          for RudInd in Qcursor:
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[2])
+            sql = "SELECT * FROM ruderer WHERE id = '" + RudInd[2] + "'"
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
             #
-            if(Rd[7] == Vsatz[1]):
+            if(Rd[7] == Vsatz[2]):
                nPers = nPers + 1
             if(iR == 0):
                # Name = "\\textbf{" + Rd[0] + " } " + Rd[1]
@@ -254,7 +256,7 @@ for Vsatz in Vcursor:
                # Name = Name + ", \\textbf{ " + Rd[0] + " } " + Rd[1]
                Name = "(" + Name + ", " + Rd[1] + " " + Rd[2] + ")"
             #               
-            if(Vsatz[1] != Rd[7]):
+            if(Vsatz[2] != Rd[7]):
                # Name = Name + " \\textcolor{gray}{\\scriptsize (" + Rd[6] + ")}"
                Name = Name + "$ ^{(" + Rd[7] + ")}$"
             #
@@ -280,7 +282,7 @@ for Vsatz in Vcursor:
                #
                if(SH == "$^N$"):
                   NACH = NACH + 1
-                  print("Nachmeldung #" + str(Boot) + " - " + str(NACH)  + " (" + Vsatz[1] + ")")
+                  print("Nachmeldung #" + str(Boot) + " - " + str(NACH)  + " (" + Vsatz[2] + ")")
                #
             # ===========================================================================================
             elif(Abmeldung > 1):  # verspätet abgemeldet
@@ -298,20 +300,20 @@ for Vsatz in Vcursor:
                #____________________________ Nachmeldung
                if(SH == "$^N$"):
                   NACH = NACH + 1
-                  print("Nachmeldung #" + str(Boot) + " - " + str(NACH) + " (" + Vsatz[1] + ")")
+                  print("Nachmeldung #" + str(Boot) + " - " + str(NACH) + " (" + Vsatz[2] + ")")
              #
-            if(StNr in fehlende_Bugnummern):
+            if(StNr in fehlende_Bugnummern and Meldegeld == Kanal):
                TXTB = TXTB +  "	(" + str(StNr) + ") " + Name + "\\newline"
                EURB = EURB + 10
          #_______________________________________________________________________________________
          #
       #_______________________________________________________________________________________
-
+   
    #_______________________________________________________________________________________
    #if(Vrennen > 0):
    #   TXT = TXT + "%\\n\\\\end{tabular}\\\\\\\\\\n%\\n%\\n"
    # Korrektur des 'ß' - sz:
- 
+   
    if(EURO > 0):
       euronen = "%6.2f"% (EURO)
       TXT = TXT + TXTM + "\n\\newline}	& " + euronen + " \\\\\n"
@@ -340,7 +342,7 @@ for Vsatz in Vcursor:
    #
    Count_Verein  = Count_Verein  + 1
    #                  #
-   sql = "UPDATE verein SET rechnung = " + str(EURO + EURA + EURB) + " WHERE kurz = '" + Vsatz[1] + "' "
+   sql = "UPDATE verein SET rechnung = " + str(EURO + EURA + EURB) + " WHERE kurz = '" + Vsatz[2] + "' "
    cursor.execute(sql)
    connection.commit()
    #
@@ -354,7 +356,7 @@ for Vsatz in Vcursor:
       TXT = TXT + "{\\scriptsize$^N$: Nachmeldungen sind deutlich verspätet eingegangen, daher jeweils doppeltes Meldegeld.}\\\\\n"
    
    TXT = TXT + "{\\scriptsize Die Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer nach \\textsection19 UStG.\\vspace{5pt}\\\\}\n"
-   TXT = TXT + "Bitte benutzen Sie bei der Überweisung das Kennwort:\n\\\\ '\\textbf{Meldegebühr Langstreckentest " + Vsatz[1] + "'} \\vspace{1.2cm}\\\\\n"
+   TXT = TXT + "Bitte benutzen Sie bei der Überweisung das Kennwort:\n\\\\ '\\textbf{Meldegebühr Langstreckentest " + Vsatz[2] + "'} \\vspace{1.2cm}\\\\\n"
    #TXT = TXT + "\\vspace{5pt}\\\\\nMit rudersportlichen Grü{\ss}en,\\vspace{-10pt}\\\\\n\\includegraphics[height=1.71cm,width=4.13cm]{UlfMeerwald.png}"
    TXT = TXT + "Vielen Dank im voraus, \\\\mit rudersportlichen Grü{\ss}en \\vspace{-2.1cm}\\\\ \\color{white}{.}\\hspace{7cm}\\color{white}{.}\n"
    TXT = TXT + "\\includegraphics[height=2.55cm,width=6.2cm]{UlfMeerwald.png}\n"
@@ -362,14 +364,18 @@ for Vsatz in Vcursor:
    TXT = TXT + "\n\\end{letter}\n\\end{document}\n"
    #
    TXT = TXT.replace('ß', '{\\ss}')
-   fp = open("LaTeX/Rechnung_" + Vsatz[1] + ".tex","w")
+   # Dateiname ohne Leerzeichen:
+   VtexName = Vsatz[2].replace(" ", "_")
+   print("pdflatex Rechnung_" + VtexName + ".tex")
+   fp = open("LaTeX/Rechnung_" + VtexName + ".tex","w")
    fp.write(TXT)
    fp.close()
-   ws['A'+str(wsNr)] = Vsatz[0]
-   ws['B'+str(wsNr)] = Vsatz[1]
-   ws['C'+str(wsNr)] = str(EURO + EURA + EURB)
+   ws['A'+str(wsNr)] = Vsatz[1]
+   ws['B'+str(wsNr)] = Vsatz[2]
+   # ws['C'+str(wsNr)] = str(EURO + EURA + EURB)
+   ws['C'+str(wsNr)] = (EURO + EURA + EURB)
    #
-   sql = "SELECT * FROM betreuer WHERE verein = '" + Vsatz[1] + "' "
+   sql = "SELECT * FROM betreuer WHERE verein = '" + Vsatz[2] + "' "
    Bcursor.execute(sql)
    Betreuer = " - "
    nB = 0

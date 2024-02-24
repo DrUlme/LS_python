@@ -178,34 +178,34 @@ cursor_R.execute(sql)
 for dsatz in cursor_R:
    Rennen = dsatz[0]
    ReStr  = str(Rennen)
-   ReBez  = dsatz[1]
-   Meter  = str(dsatz[4])
-   Gender = dsatz[2]
+   ReBez  = dsatz[3]
+   Meter  = str(dsatz[6])
+   Gender = dsatz[4]
    # zeile = zeile + 1
    
    # SQL-Abfrage
-   sql = "SELECT * FROM boote WHERE rennen = " + ReStr + " and abgemeldet = 0  ORDER BY zeit, zeit3000, secstart, planstart "
+   sql = "SELECT * FROM boote WHERE rennen = " + ReStr + " and abgemeldet = 0  ORDER BY zeit, zeit3000, tStart, planstart "
    # Empfang des Ergebnisses
    cursor.execute(sql)
    
-
+   print("Rennen " + ReStr)
    # indRe  = 'A' - indPos = 'B' - indSNr = 'C' - indStT = 'D' - indVor = 'E' - indNam = 'F' - indJah = 'G' - indEV  = 'H'- indCom = 'I'- indBot = 'J'
    Platz = 0
    Anz   = 0
    Last  = 0
    for ds in cursor:
       Boot   = ds[0]
-      StNr   = ds[1]
+      StNr   = ds[2]
       #
       if(Anz == 0):
          NR = NR + 1
       LNR = LNR + 1
       #______________________________ Anzahl der Ruderer und ihre Nummern in der Datenbank
-      sql = "SELECT rudererNr FROM r2boot  WHERE bootNr = " + str(Boot) 
+      sql = "SELECT rudererid FROM r2boot  WHERE bootid = '" + Boot + "'" 
       RBcursor.execute(sql)
       #
       for RudInd in RBcursor: # for iR in range(0, (len(RudInd) - 2)):         
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[0])
+         sql = "SELECT * FROM ruderer WHERE id = '" + RudInd[0] + "'"
          Pcursor.execute(sql)
          Rd = Pcursor.fetchone()
          #
@@ -232,12 +232,12 @@ for dsatz in cursor_R:
          ws[indGEN + str(zeile)].font = Font(name='arial', sz=11, b=True, i=False, color='4444dd')
          #
          # StartNr
-         ws[indSNr + str(zeile)] = ds[1]
+         ws[indSNr + str(zeile)] = ds[2]
          ws[indSNr + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
          #_______________________________________________________________________________________________________ Zeiten
          #
          ws[indEZt + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-         ws[indEZt + str(zeile)] = strftime("%M:%S", gmtime(ds[9]))
+         ws[indEZt + str(zeile)] = ds[10] # strftime("%M:%S", gmtime(ds[9]))
          # ds 11 => 9
          ws[indEZt + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
          ws[indEZt + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
@@ -293,7 +293,7 @@ for dsatz in cursor_R:
          # Empfang des Ergebnisses
          cursor_V.execute(sql)
          Vp = cursor_V.fetchone()
-         ws[indEV  + str(zeile)] =  Vp[0]
+         ws[indEV  + str(zeile)] =  Vp[1]
          ws[indEV  + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='222222')
          # ws[indVN  + str(zeile)] =  Vp[0] # Vereins-Nummer
          zeile = zeile + 1

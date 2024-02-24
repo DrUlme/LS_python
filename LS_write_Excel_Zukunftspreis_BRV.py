@@ -148,24 +148,24 @@ lNR   = 0
 sql = "SELECT * FROM verein "
 cursor_V.execute(sql)
 for dsatz in cursor_V:
-   print(dsatz[0] + ": start nach Zeile " + str(zeile + lNR))
+   print(dsatz[1] + ": start nach Zeile " + str(zeile + lNR))
    v_Athlet = 0
    # suche nach Ruderern
-   sql = "SELECT * FROM ruderer WHERE verein = '" + dsatz[1] +"' and jahrgang > " + str(BisZuJahr) + " "
+   sql = "SELECT * FROM ruderer WHERE verein = '" + dsatz[2] +"' and jahrgang > " + str(BisZuJahr) + " "
    cursor_R.execute(sql)
    #
    for ds in cursor_R:
       # ______________________________ suche nach den Booten pro Ruderer
-      sql = "SELECT * FROM r2boot  WHERE rudererNr = " + str(ds[0]) 
+      sql = "SELECT * FROM r2boot  WHERE rudererid = '" + ds[0] + "'"
       RBcursor.execute(sql)
       #
       for RudInd in RBcursor:   # for iR in range(0, (len(RudInd) - 2)):   
          # print(RudInd)
-         sql = "SELECT * FROM boote WHERE nummer = " + str(RudInd[1]) + "  "
+         sql = "SELECT * FROM boote WHERE id = '" + RudInd[1] + "'  "
          cursor.execute(sql)
          Rd = cursor.fetchone()
          # check - nicht abgemeldet:
-         if(Rd[10] == 0):
+         if(Rd != None and Rd[11] == 0):
                v_Athlet = v_Athlet + 1
                lNR = lNR + 1
                if(lNR == 1):
@@ -175,7 +175,7 @@ for dsatz in cursor_V:
                ws['C' + str(zeile + lNR)] = ds[1]
                ws['D' + str(zeile + lNR)] = ds[2]
                ws['E' + str(zeile + lNR)] = str(ds[4])
-               ws['F' + str(zeile + lNR)] = dsatz[0]
+               ws['F' + str(zeile + lNR)] = dsatz[1]
                ws['G' + str(zeile + lNR)] = '2'
                # ws['F' + str(zeile)].font = Font(name='arial', sz=11, b=True, i=False, color='222222')
       

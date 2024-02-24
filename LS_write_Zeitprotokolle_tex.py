@@ -33,7 +33,25 @@ elif(Meter == 3000):
    POSITION = "3000 m"
 elif(Meter == 6000):
    POSITION = " Z I E L "
+
    
+# --------------------------------------------------------------------------------------------------------------- Spätstarter
+# sql = "SELECT * FROM rennen WHERE name LIKE 'Spätstarter%'"
+sql = "SELECT wert FROM meta WHERE name = 'Spätstarter'"
+Rcursor.execute(sql)
+Rd = Rcursor.fetchone()
+Spätstart = Rd[0]
+Spät = int(Spätstart)
+
+# --------------------------------------------------------------------------------------------------------------- Frühstarter
+# hole Renn-Nummern für Früh und Spät-Starter
+sql = "SELECT wert FROM meta WHERE name = 'Frühstarter'"
+Rcursor.execute(sql)
+Rd = Rcursor.fetchone()
+Frühstart = Rd[0]
+Früh = int(Frühstart)
+
+# --------------------------------------------------------------------------------------------------------------- Header
 TXT = "\\documentclass[a4paper]{article}\n\\usepackage[ngerman]{babel}\n\\usepackage{colortbl,array,booktabs}\n\
 \\usepackage[table]{xcolor}\n\\usepackage{tabularx}\n\\usepackage{fancyhdr}\n\\usepackage{graphicx}\n\
 \\usepackage{multirow}\n\\usepackage[left=2.5cm, right=2.5cm, top=2.25cm, bottom=2.5cm]{geometry}\n\
@@ -67,14 +85,18 @@ for Rsatz in Rcursor:
    #
    NoBoote = 0
    Ngray = 0
-   sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY planstart, startnummer "
+   if(Rennen == Früh or Rennen == Spät):
+      sql = "SELECT * FROM boote  WHERE alternativ = " + str(Rennen) + " ORDER BY planstart, startnummer "
+   else:
+      sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY planstart, startnummer "
    Bcursor.execute(sql)
    for Bsatz in Bcursor:
       Boot   = Bsatz[0]
-      StNr   = Bsatz[1]
-      VBoot  = Bsatz[3]
+      StNr   = Bsatz[2]
+      VBoot  = Bsatz[4]
+      LGW    = Bsatz[9]
       #
-      Abmeldung = Bsatz[10]
+      Abmeldung = Bsatz[11]
       if(Abmeldung == 0):
          # _______________________________________________________________________________________________________________
          if(NoBoote == 0):
@@ -92,14 +114,14 @@ for Rsatz in Rcursor:
          JGNGstr = ['-']
          #
          # ===========================================================================================
-         sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot) 
+         sql = "SELECT * FROM r2boot  WHERE bootid = '" + str(Boot) + "'"
          Qcursor.execute(sql)
          nPers   = 0
          iR = 0
          #
          for RBind in Qcursor:
             # rudererNr = 3 (4. Eintrag)
-            sql = "SELECT * FROM ruderer WHERE nummer = " + str(RBind[2])
+            sql = "SELECT * FROM ruderer WHERE id = '" + RBind[2] + "'"
             Pcursor.execute(sql)
             Rd = Pcursor.fetchone()
             #
@@ -121,21 +143,15 @@ for Rsatz in Rcursor:
                JGNGstr.insert(iR, str(Rd[4]))      
             # print(Name[0] + ", '" + Name[1] + "' =>" + Rd[2] )
          #---------------------------------------------------------------------
-         Btime = Bsatz[3]
+         Btime = Bsatz[4]
          # print(Name[0] + " - " + str(len(RudInd)))
          #
-         if(Btime == 0):
+         if(len(Btime) < 8):
             StrStNr = "tbd."
             StrZeit = "tbd."
          else:
             StrStNr = str(StNr)
-            if(isinstance(Btime, str)):
-               StrZeit = Btime
-            else:
-               BtimH = math.floor(Btime/3600)
-               BtimM = math.floor(Btime/60 - BtimH*60 )
-               #StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "^{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}$"
-               StrZeit = "$" + str(BtimH) + "$:$" + str(BtimM).rjust(2, '0') + "$:\\small{\\textcolor{gray}{" + str(Btime - 3600*BtimH - 60*BtimM).rjust(2, '0') + "}}"
+            StrZeit = Btime
          #
          if(Ngray == 1):
             TXT = TXT + "\\rowcolor[gray]{.9}"

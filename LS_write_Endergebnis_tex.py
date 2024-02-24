@@ -87,22 +87,22 @@ sql = "SELECT * FROM rennen WHERE strecke LIKE '%000 m' "
 Rcursor.execute(sql)
 for Rsatz in Rcursor:
    Rennen       = Rsatz[0]
-   RennenString = Rsatz[1]
-   Bootstyp     = Rsatz[3]
+   RennenString = Rsatz[2]
+   Bootstyp     = Rsatz[5]
    # definiere das Durchschnittsgewicht / max.-Gewicht für das Rennen ---------
-   Gewicht      = Rsatz[7]
+   Gewicht      = Rsatz[8]
    if(Gewicht > 0):
       maxGewicht = Gewicht
    else:
-      Gewicht      = -Rsatz[7]
-      if(Rsatz[3] == "1x"):
+      Gewicht      = -Rsatz[8]
+      if(Rsatz[5] == "1x"):
          maxGewicht = Gewicht
       elif(Gewicht == 57.0):
          maxGewicht = 59.0
       else:
          maxGewicht = Gewicht + 2.5
    #---------------------------------------------------------------------------
-   Strecke      = int(Rsatz[4][0:4])
+   Strecke      = int(Rsatz[6][0:4])
    #
    NoBoote = 0
    Platz = 0
@@ -112,7 +112,7 @@ for Rsatz in Rcursor:
    Bcursor.execute(sql)
    for Bsatz in Bcursor:
       Boot    = Bsatz[0]
-      StNr    = Bsatz[1]
+      StNr    = Bsatz[2]
       StrStNr = str(StNr)
       #
       # _______________________________________________________________________________________________________________
@@ -134,11 +134,11 @@ for Rsatz in Rcursor:
       maxGewicht = 0
       MdA = 0
       #
-      sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(Boot) 
+      sql = "SELECT * FROM r2boot  WHERE bootid = '" + Boot + "'" 
       Qcursor.execute(sql)
       iR = 0
       for RudInd in Qcursor:         
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[2])
+         sql = "SELECT * FROM ruderer WHERE id = '" + RudInd[2] + "'"
          Pcursor.execute(sql)
          Rd = Pcursor.fetchone()
          #
@@ -215,33 +215,36 @@ for Rsatz in Rcursor:
       # Ergänze die Bootsklasse - Rsatz kann unbekannt sein
       ReDefNew = ReDefNew + " " + Bootstyp
       RefV = DRV_velo.get( ReDefNew )
+      # print(str(StNr) + ": '" + ReDefNew + "' -> " + str(RefV) )
       # ______________________________________________________________________________       # Zeiten: 
       # --------------------------------    Startzeit: Bsatz[6]
-      Stime = Bsatz[4]
-      StimH = math.floor(Stime/3600)
-      StimM = math.floor(Stime/60 - StimH*60 )
-      StZeit = "$" + str(StimH) + "$:$" + str(StimM).rjust(2, '0') + "$:" + str(Stime - 3600*StimH - 60*StimM).rjust(2, '0') + "}"
+      # Stime = Bsatz[4]
+      # StimH = math.floor(Stime/3600)
+      # StimM = math.floor(Stime/60 - StimH*60 )
+      # StZeit = "$" + str(StimH) + "$:$" + str(StimM).rjust(2, '0') + "$:" + str(Stime - 3600*StimH - 60*StimM).rjust(2, '0') + "}"
+      StZeit = Bsatz[5] + "}"
       # ---------------------------------------------------------------------
       #         3000 m     Bsatz[9]
       #         6000 m     Bsatz[10]
       #         Endzeit    Bsatz[11]
       # ---------------------------------------------------------------------
-      Btime = Bsatz[9]   
-      BtimM = math.floor(Btime/60)
-      EZeit = "\\textbf{ " + str(BtimM) + ":" + str(Btime - 60*BtimM).rjust(2, '0') + "}" 
+      # Btime = Bsatz[9]   
+      # BtimM = math.floor(Btime/60)
+      # EZeit = "\\textbf{ " + str(BtimM) + ":" + str(Btime - 60*BtimM).rjust(2, '0') + "}" 
+      EZeit = "\\textbf{ " + Bsatz[10] + "}"
+      # Zeit in sec.
+      Btime = 60 * float(Bsatz[10][0:2]) + float(Bsatz[10][3:5])
+      #
       if(RefV is not None and RefV > 0):
          Percent = "%4.1f"% (100 * Strecke / Btime / RefV)
          EZeit = EZeit + "$^{\\textrm{ }" + Percent + "\\%}$"
+         # check in einem Rennen
+         if(Rennen == 4):
+            print("#" + StrStNr + ": " + ReDefNew + " => " + str(RefV) + "[m/s], " + str(Btime) + "s = " + Percent )
       #
-      Time6 = Bsatz[8]
-      if(Time6 > 0):
-         Time6m = math.floor(Time6/60)
-         Time3  = Bsatz[7]
-         Time3m = math.floor(Time3/60)
-         #
-         EZeit = EZeit + "\\\\ \\tiny{  " + str(Time3m) + ":" + str(Time3 - 60*Time3m).rjust(2, '0') \
-         + ",  " + str(Time6m) + ":" + str(Time6 - 60*Time6m).rjust(2, '0') + "}"
-
+      Time6 = Bsatz[9]
+      if(len(Time6) == 5):
+         EZeit = EZeit + "\\\\ \\tiny{  " + Bsatz[8] + ",  " + Bsatz[9] + "}"
       # ______________________________________________________________________________ 
       if(Ngray == 1):
          TXT = TXT + "\\rowcolor[gray]{.9}"

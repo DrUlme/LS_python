@@ -174,8 +174,8 @@ for dsatz in cursor_R:
    #   ws[indStT + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='ffffff')
    ws[indStT + str(zeile)].fill = (grayFill)
    #   ws[indStT + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
-   if(dsatz[7] > 0):
-      ws[indGew + str(zeile)] = str(dsatz[7])
+   if(dsatz[9] > 0):
+      ws[indGew + str(zeile)] = str(dsatz[9])
       ws[indGew + str(zeile)].font = Font(name='arial', sz=10, b=False, i=True, color='ffffff')
       ws[indGew + str(zeile)].alignment = Alignment(horizontal='center', vertical='center')
 
@@ -186,13 +186,13 @@ for dsatz in cursor_R:
    
    # Renn-Bezeichnung
    #ws.merge_cells(indVor + str(zeile) + ':' + indJah + str(zeile))
-   ws[indVor + str(zeile)] = dsatz[1]
+   ws[indVor + str(zeile)] = dsatz[3]
    ws[indVor + str(zeile)].fill = (grayFill)
    ws[indVor + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
    
    # Streckenlänge
    #ws.merge_cells(indEV + str(zeile) + ':' + indCom + str(zeile))
-   ws[indEV + str(zeile)] = dsatz[4]
+   ws[indEV + str(zeile)] = dsatz[6]
    ws[indEV + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
    
    ws[indBot + str(zeile)] = 0
@@ -211,7 +211,7 @@ for dsatz in cursor_R:
    Last  = 0
    #
    # SQL-Abfrage
-   sql = "SELECT * FROM boote WHERE rennen = " + ReStr + " and abgemeldet = 0  ORDER BY zeit, zeit3000, secstart, planstart "
+   sql = "SELECT * FROM boote WHERE rennen = " + ReStr + " and abgemeldet = 0  ORDER BY zeit, zeit3000, tStart, planstart "
    # Empfang des Ergebnisses
    cursor.execute(sql)
    for ds in cursor:
@@ -221,33 +221,34 @@ for dsatz in cursor_R:
       ws[indRe + str(zeile)].font = Font(name='arial', sz=8, b=False, i=False, color='0000ff')
       ws[indRe + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       # StartNr
-      ws[indSNr + str(zeile)] = ds[1]
+      ws[indSNr + str(zeile)] = ds[2]
       ws[indSNr + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='222222')
       ws[indSNr + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #_______________________________________________________________________________________________________ Zeiten
+      # Startzeit
       ws[indStT + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indStT + str(zeile)] = strftime("%H:%M:%S", gmtime(ds[4]))
+      ws[indStT + str(zeile)] = ds[5] # strftime("%H:%M:%S", gmtime(ds[4]))
       ws[indStT + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #
       ws[indEZt + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indEZt + str(zeile)] = strftime("%M:%S", gmtime(ds[9]))
+      ws[indEZt + str(zeile)] = ds[10] # strftime("%M:%S", gmtime(ds[9]))
       ws[indEZt + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
       ws[indEZt + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #
       ws[indZ03 + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indZ03 + str(zeile)] = strftime("%M:%S", gmtime(ds[7]))
+      ws[indZ03 + str(zeile)] = ds[8] # strftime("%M:%S", gmtime(ds[7]))
       ws[indZ03 + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #
       ws[indZ36 + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indZ36 + str(zeile)] = strftime("%M:%S", gmtime(ds[8]))
+      ws[indZ36 + str(zeile)] = ds[9] # strftime("%M:%S", gmtime(ds[8]))
       ws[indZ36 + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       #
-      if(ds[9] == Last):
+      if(ds[10] == Last):
          Anz = Anz + 1
       else:
          Anz = Anz + 1
          Platz = Anz
-         Last  = ds[9]
+         Last  = ds[10]
       # 
       ws[indPos + str(zeile)] = Platz
       # ws[indPos + str(zeile)].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
@@ -256,20 +257,21 @@ for dsatz in cursor_R:
       #
       
       #Bemerkung
-      ws[indCom + str(zeile)] = ds[11]
+      ws[indCom + str(zeile)] = ds[13]
       ws[indCom + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
       
       # 
       ws[indBot + str(zeile)] = ds[0]
       ws[indBot + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
       
-      sql = "SELECT * FROM r2boot  WHERE bootNr = " + str(ds[0]) 
+      sql = "SELECT * FROM r2boot  WHERE bootid = '" + ds[0] + "'" 
       Qcursor.execute(sql)
       iP = 0
       for RudInd in Qcursor:         
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(RudInd[3])
+         sql = "SELECT * FROM ruderer WHERE id = '" + RudInd[2] + "'"
          Pcursor.execute(sql)
-         Rd = Pcursor.fetchone()      
+         Rd = Pcursor.fetchone()
+        
          #
          if(iP == 0):
             # Vorname

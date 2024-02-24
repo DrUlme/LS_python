@@ -43,28 +43,32 @@ sql = "SELECT * FROM rennen WHERE nummer < 114"
 # Empfang des Ergebnisses
 cursor.execute(sql)
 
+# Rahmen festlegen
+thin_border = Border(left=Side(style='thin'), right=Side(style='thin'),top=Side(style='thin'),bottom=Side(style='thin'))
+
 # Ausgabe des Ergebnisses
 for dsatz in cursor:
    Rennen = dsatz[0]
    ws2['A' + str(Rennen)] = dsatz[0]
-   ws2['B' + str(Rennen)] = dsatz[1]
-   ws2['C' + str(Rennen)] = dsatz[2]
-   ws2['D' + str(Rennen)] = dsatz[3]
-   ws2['E' + str(Rennen)] = dsatz[4]
-   ws2['F' + str(Rennen)] = dsatz[7]
-   ws2['G' + str(Rennen)] = dsatz[8]
-   ws2['H' + str(Rennen)] = dsatz[9]
+   ws2['B' + str(Rennen)] = dsatz[3]
+   ws2['C' + str(Rennen)] = dsatz[4]
+   ws2['D' + str(Rennen)] = dsatz[5]
+   ws2['E' + str(Rennen)] = dsatz[6]
+   ws2['F' + str(Rennen)] = dsatz[9]
+   ws2['G' + str(Rennen)] = dsatz[10]
+   ws2['H' + str(Rennen)] = dsatz[11]
    
    ws['K' + str(Rennen + 1)] = dsatz[0]
-   ws['L' + str(Rennen + 1)] = dsatz[1]
-   ws['M' + str(Rennen + 1)] = dsatz[4]
-   ws['N' + str(Rennen + 1)] = dsatz[7]
-   ws['O' + str(Rennen + 1)] = dsatz[8]
-   ws['P' + str(Rennen + 1)] = dsatz[9]
-   if( dsatz[7] < 0 ):
+   ws['L' + str(Rennen + 1)] = dsatz[3]
+   ws['M' + str(Rennen + 1)] = dsatz[6]
+   ws['N' + str(Rennen + 1)] = dsatz[9]
+   ws['O' + str(Rennen + 1)] = dsatz[10]
+   ws['P' + str(Rennen + 1)] = dsatz[11]
+   # Abfrage Leichtgewicht:
+   if( dsatz[9] < 0 ):
       ws2['F' + str(Rennen)] = ""
       ws['N' + str(Rennen + 1)] = "ohne"
-   if( dsatz[3] == "all"):
+   if( dsatz[5] == "all"):
       ws2['D' + str(Rennen)] = "-"
    ws['K' + str(Rennen + 1)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
    ws['L' + str(Rennen + 1)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
@@ -93,8 +97,8 @@ ws.add_data_validation(dv)
 # ws2['K8'] = "4x+"
 
 
-print(dsatz[0], dsatz[1], dsatz[2],
-          dsatz[3], dsatz[4], dsatz[5])
+print(dsatz[0], dsatz[2], dsatz[3], dsatz[4],
+          dsatz[5], dsatz[6], dsatz[7])
 ws['K1'] = "Nr"
 ws['L1'] = "Rennen"
 ws['M1'] = "Strecke"
@@ -140,16 +144,19 @@ ws['A7'] = "Betreuer: Vorname"
 ws['A7'].font = Font(name='arial', sz=8, b=True, i=False, color='4444dd')
 ws.merge_cells('A8:B8')
 ws['A8'].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
+ws['A8'].border = thin_border
 
 ws['C7'] = "Nachname"
 ws['C7'].font = Font(name='arial', sz=8, b=True, i=False, color='4444dd')
 #ws.merge_cells('D8:D8')
 ws['C8'].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
+ws['C8'].border = thin_border
 
 ws['E7'] = "Telefon"
 ws['E7'].font = Font(name='arial', sz=8, b=True, i=False, color='4444dd')
 ws.merge_cells('E8:F8')
 ws['E8'].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
+ws['E8'] = '+49 – 177-xxx'
 
 ws['H7'] = "e-mail"
 ws['H7'].font = Font(name='arial', sz=8, b=True, i=False, color='4444dd')
@@ -287,5 +294,17 @@ logo.width = 210
 
 # ws.add_image(logo, "I1")
 ws.add_image(logo, "H1")
+
+# Add sample rowers:
+ws['C11'] = "Rudi"
+ws['D11'] = "Riemen"
+ws['E11'] = "2008"
+ws['I11'] = "Frühstart - teilt sich Boot mit Sabine"
+
+ws['B12'] = "15"
+ws['C12'] = "Sabine"
+ws['D12'] = "Skull"
+ws['E12'] = "2002"
+ws['I12'] = "Lgw. B"
 
 wb.save('Meldebogen_' + LSglobal.ZeitK + "_" + str(LSglobal.Jahr) + '.xlsx')

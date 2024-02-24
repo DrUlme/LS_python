@@ -32,111 +32,129 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 cursor  = connection.cursor()
 cursorR = connection.cursor()
 #
+# --------------------------------------------------------------------------------------------------------------- Frühstarter
+# hole Renn-Nummern für Früh und Spät-Starter
+sql = "SELECT wert FROM meta WHERE name = 'Frühstarter'"
+cursor.execute(sql)
+Rd = cursor.fetchone()
+Frühstart = Rd[0]
+
+sql = "SELECT wert FROM meta WHERE name = 'Spätstarter'"
+cursor.execute(sql)
+Rd = cursor.fetchone()
+Spätstart = Rd[0]
+
 #========================================================================
+zeile = 6
+
+indRe  = 'A'
+indFS  = 'B'
+indPos = 'C'
+indSNr = 'D'
+indStT = 'E'
+indVor = 'F'
+indNam = 'G'
+indJah = 'H'
+indKdr = 'I'
+indEV  = 'J'
+indCom = 'K'
+indLst = 'L'
+indBot = 'N'
+indHLP = 'M'
+
 #
 zeile = 7
 while zeile > 6:
    #________________________________________________________________
    # integer Werte
-   Rennen = ws['A' + str(zeile)].value 
-   Positi = ws['B' + str(zeile)].value 
-   StNr   = ws['C' + str(zeile)].value
-   Boot   = ws['K' + str(zeile)].value
+   Rennen = ws[indRe + str(zeile)].value      # Rennen - Nummer
+   FoderS = ws[indFS + str(zeile)].value      # 'F', 'S' oder '-'
+   Positi = ws[indPos + str(zeile)].value     # Position im Startblock
+   StNr   = ws[indSNr + str(zeile)].value     # vergebene Startnummer
+   Boot   = ws[indBot + str(zeile)].value     # Boots-ID
    # Zeit-String
-   bZeit  = str(ws['D' + str(zeile)].value)
+   sZeit  = str(ws[indStT + str(zeile)].value)
    #
-   #   if(Boot == None):
-   #      print(' - ')
-   #   elif(Boot < 1):
+   if(Boot == None):
+      isBoot = 0
+   elif( isinstance(Boot, int) ):
+      if(Boot > 0):
+         isBoot = 1
+         Boot = str(Boot)
+      else:
+         isBoot = 0
+   elif(len(Boot) > 0):
+      isBoot = 1
+   else:
+      isBoot = 0
    #      print('---')
    #   else:
-   if(Boot != None and Boot > 0):
-      myT = bZeit.split(":")
-      mySec = 3600*int(myT[0]) + 60*int(myT[1]) + int(myT[2])
+   if(isBoot > 0):
+      #
       print("Zeile " + str(zeile) + ": _____________")
       # 
-      Vornamen = ws['E' + str(zeile)].value
+      Vornamen = ws[indVor + str(zeile)].value
       Vorname  = Vornamen.split("\n")
       #
-      Namen    = ws['F' + str(zeile)].value
+      Namen    = ws[indNam + str(zeile)].value
       Name     = Namen.split("\n")
       #
-      Jahrgang = str(ws['G' + str(zeile)].value)
+      Jahrgang = str(ws[indJah + str(zeile)].value)
       Jahre    = Jahrgang.split("\n")
       #
-      Vereine  = ws['I' + str(zeile)].value
+      Vereine  = ws[indEV + str(zeile)].value
       Verein   = Vereine.split("\n")
       #
-      print("Rennen " + str(Rennen) + "." + str(Positi) + "= #" + str(StNr) + " (" + str(Boot) + ") :  " + str(mySec))      
+      print("Rennen " + str(Rennen) + "." + str(Positi) + "= #" + str(StNr) + " (" + Boot + ") :  " + sZeit)
+      # setze das aktuelle Rennen als gesetzt (2)
       sql = "UPDATE rennen SET status = 2  WHERE nummer = " + str(Rennen)
-      # print( sql )
       cursor.execute(sql)
       connection.commit()
-
+      #
       #
       # SQL-Abfrage
-      sql = "SELECT * FROM boote WHERE nummer = " + str(Boot)
+      sql = "SELECT * FROM boote WHERE id = '" + Boot + "'"
       #
       # Empfang des Ergebnisses
       cursor.execute(sql)
-      # _______________________________________________________________________ korrekte Ruderer ?
       # for dsatz in cursor:
       dsatz = cursor.fetchone()
       # print(dsatz)
       # print("Rennen " + str(Rennen) + " = " + str(dsatz[2]) )
       # print("Verein " + Verein[0] + " = " + dsatz[3])
-      ruderer = ()
-      # dsatz[4].split(',')
-      for iR in range(0, (len(ruderer) - 3)):
-         #
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(ruderer[iR + 1])
-         # Empfang des Ergebnisses
-         cursorR.execute(sql)
-         Rd = cursorR.fetchone()
-         # Vorname
-         sqlVorname = Rd[0]
-         # Nachname
-         sqlName = Rd[1]
-         # Jahrgang
-         sqlJahrgang = str( Rd[3] )
-         if( Vorname[iR] != sqlVorname or Name[iR] != sqlName ):
-            print(Vorname[iR] + " " + Name[iR] + " != " + sqlVorname + " " + sqlName)
-            # x = raw_input("Ändern? [Y/n]")
-            x = input("Ändern? [Y/n] > ")
-            if(x == "Y" or x== "y" or x == "j" or x == "J"):
-               sql = "UPDATE ruderer SET vorname = " + Vorname[iR] + ", name = " + Name[iR] + " WHERE nummer = " + str(ruderer[iR + 1])
-               # print( sql )
-               cursor.execute(sql)
-               connection.commit()
-               print("Würde jetzt ändern!")
-         if( Jahre[iR] != sqlJahrgang ):
-            print(Jahre[iR] + " != " + sqlJahrgang + "  (" + sqlVorname + " " + sqlName + ")")
-            x = input("Ändern? [Y/n] > ")
-            if(x == "Y" or x== "y" or x == "j" or x == "J"):
-               print("Würde jetzt ändern!")
-            # ToDo: Abfrage oder Änderung?
-      # ______________________________________________________________________________________
+      # _______________________________________________________________________ korrekte Ruderer ?
+      # _______________________________________________________________________ korrektes Rennen ?
       #
-      if( Rennen != dsatz[2] ):
-            print( "Boot " + str(Boot) + " mit Startnr " + str(StNr) + " von Rennen " + str(dsatz[2]) + " nach " + str(Rennen) + " ?!" )
+      if( Rennen != dsatz[3] ):
+            print( "Boot " + Boot + " mit Startnr " + str(StNr) + " von Rennen " + str(dsatz[3]) + " nach " + str(Rennen) + " ?!" )
             # x = raw_input("Ändern? [Y/n]")
             x = input("Ändern? [Y/n] > ")
             if(x == "Y" or x== "y" or x == "j" or x == "J"):
-               sql = "UPDATE boote SET rennen = " + str(Rennen) + " WHERE nummer = " + str(Boot)
+               sql = "UPDATE boote SET rennen = " + str(Rennen) + " WHERE id = '" + Boot + "'"
                # print( sql )
                cursor.execute(sql)
                connection.commit()
                print("... geändert !")
-         
+      if( FoderS == "F" ):
+         sql = "UPDATE boote SET alternativ = " + str(Frühstart) + " WHERE id = '" + Boot + "'"
+         # print( sql )
+         cursor.execute(sql)
+         connection.commit()
+      elif( FoderS == "S" ):
+         sql = "UPDATE boote SET alternativ = " + str(Spätstart) + " WHERE id = '" + Boot + "'"
+         # print( sql )
+         cursor.execute(sql)
+         connection.commit()
       # ______________________________________________________________________________________
       #
-      sql = "UPDATE boote SET startnummer = " + str(StNr) + ", planstart = " + str(mySec) + " WHERE nummer = " + str(Boot)
+      sql = "UPDATE boote SET startnummer = " + str(StNr) + ", planstart = '" + sZeit + "' WHERE id = '" + Boot + "' "
       # print( sql )
       cursor.execute(sql)
       connection.commit()
          # dto. mit StNr
    #
    zeile = zeile + 1
+   bZeit  = str(ws[indStT + str(zeile)].value)
    if(bZeit == None):
       zeile = 0
    if(len(bZeit) <= 5):

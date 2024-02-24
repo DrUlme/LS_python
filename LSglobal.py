@@ -6,9 +6,10 @@ Created on Mon Oct  5 14:57:53 2020
 @author: ulf
 """
 
-Tag     = 18
-Monat   =  3
-Jahr    = 2023
+Tag      = 21
+Monat    = 10
+MonatStr = 'Oktober'
+Jahr     = 2023
 
 if(Monat < 7):
    Zeit    = "Frühjahr" 
@@ -24,7 +25,7 @@ else:
 ZeitK  = Zeit[0]
 DBName = "LS" + str(Jahr) + ZeitK + ".db"
 
-
+JMBriemen = 0
 
 
 
@@ -34,6 +35,7 @@ DBName = "LS" + str(Jahr) + ZeitK + ".db"
 Datum        = str(Tag)    + "." + str(Monat) + "."
 Meldeschluss = str(Tag-10) + "." + str(Monat) + "."
 DoppeltGeld  = str(Tag-7)  + "." + str(Monat) + "."
+Setzdatum    = str(Tag-5)  + "." + str(Monat) + "."
 AbmeldungDD  = str(Tag-1)  + "." + str(Monat) + "."
 AbmeldungHH  = "14:00 Uhr"
 
@@ -49,12 +51,12 @@ SQLiteFile = DBName
 # _________________________________________________ Herbst 2020
 TrzDir    = "./Zeiten"
 
-TrzFiles  = ["Start.trz", "3000.trz", "Ziel.trz"]
+TrzFiles  = ["Start.trz", "3000m.trz", "Ziel.trz"]
 # TrzFiles  = ["Start.trz_gelesen", "3000.trz_gelesen", "Ziel.trz_gelesen"]
 
 
-TrzDBname = ["secstart",  "sec3000",  "sec6000", "zeit3000", "zeit6000", "zeit"]
-TrzDBpos  = [ 4,    5,   6]
+TrzDBname = ["tStart",  "t3000",  "t6000", "zeit3000", "zeit6000", "zeit"]
+TrzDBpos  = [ 5,    6,    7]
 Trz_m     = [ 0, 3000, 6000]
 
 # Zeit-Versatz in TRZ-Dateien ausgleichen:
@@ -66,6 +68,10 @@ if(ZeitK == "F"):
 else:
    Gewicht = 2.5
 
+Cost_1x = 15
+Cost_2x = 15
+
+Cost_Atletiktest = 5
 
 """
 ========================================================================

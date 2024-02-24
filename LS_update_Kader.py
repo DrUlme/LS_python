@@ -4,8 +4,13 @@
 Created on Sun Oct 10 12:59:46 2021
 
 @author: ulf
+
+Aktuelle Kader-Liste (Stichtage: 01.01. und 01.07.) unter
+<https://www.ruderverband.de/cms/home/leistungssport/kaderliste/Kader.xhtml>
+
 """
 import os, sys, sqlite3
+import time
 
 # Excel
 #========================================================================
@@ -50,6 +55,14 @@ else:
       "kader TEXT, " \
       "foerder TEXT)"
    cursorK.execute(sql)
+   # Add meta file for the creation date
+   sql = "CREATE TABLE meta( name TEXT, wert TEXT)"
+   cursorK.execute(sql)
+   KaderDB.commit()
+   
+   DateString = time.strftime('%d.%m.%Y - %H:%M')
+   sql = "INSERT INTO meta VALUES( 'creation', '" + DateString + "' )"
+   cursorK.execute(sql)
    KaderDB.commit()
    #
    LNR = 0
@@ -63,30 +76,32 @@ else:
    iL = 1
    while iL < 104:
       # print(iL)
-      # Nummer 
-      Nummer   = ws['B' + str(iL)].value
-      # Vorname
-      vorname  = ws['D' + str(iL)].value
-      # Nachname
-      name     = ws['C' + str(iL)].value
-      # Verein
-      verein   = ws['E' + str(iL)].value
       # Jahrgang
       jahrgang = ws['F' + str(iL)].value
-      # Kader
-      kader    = ws['G' + str(iL)].value
-      # Förderstatus
-      forder   = ws['H' + str(iL)].value
       
       if (jahrgang != None and isinstance(jahrgang, int)):
          LNR += 1
+         #
+         # Nummer 
+         Nummer   = ws['B' + str(iL)].value
+         # Vorname
+         vorname  = str.strip(ws['D' + str(iL)].value)
+         # Nachname
+         name     = str.strip(ws['C' + str(iL)].value)
+         # Verein
+         verein   = str.strip(ws['E' + str(iL)].value)
+         # Kader
+         kader    = str.strip(ws['G' + str(iL)].value)
+         # Förderstatus
+         forder   = str.strip(ws['H' + str(iL)].value)
+         #
          # print( str(Nummer) + ": " + vorname + " " + name + " " + str(jahrgang))
          sql = "INSERT INTO kader VALUES( " + str(LNR) + \
             ", '" + name + "', '" + vorname + "', '" + verein + "', " + str(jahrgang) + \
             ", '" + kader + "', '" + forder + "' )"
          cursorK.execute(sql)
          KaderDB.commit()
-      
+      #---
       iL += 1
 
 #========================================================================================== suche nun nach Spielern
@@ -111,15 +126,17 @@ for dsatz in cursorK:
       # Förderstatus
       forder   = dsatz[6]
       #
-      sql = "SELECT nummer FROM ruderer WHERE name='" + name + \
+      sql = "SELECT id FROM ruderer WHERE name='" + name + \
            "' and vorname='" + vorname + "' and jahrgang= " + str(jahrgang) 
       cursor.execute(sql)                
       RHelp= cursor.fetchone()
       if RHelp != None:
          # Ruderer[iP] = RHelp[0]
-         sql = "UPDATE ruderer SET kader = '" + kader + " (" + forder + ")' WHERE nummer = " + str(RHelp[0])
+         sql = "UPDATE ruderer SET kader = '" + kader + " (" + forder + ")' WHERE id = '" + RHelp[0] + "'"
          cursor.execute(sql)
          connection.commit()
+      else:
+         print( vorname + " " + name + " (" + str(jahrgang) + " / " + kader + ") " + verein + " - nicht gestartet ?" )
          
 connection.close()
 KaderDB.close()

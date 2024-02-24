@@ -95,10 +95,10 @@ for dsatz in cursor:
        listSize = listSize + 1
    if(listSize == 0):
       array1[0] = str( Rennen )
-      array1[1] = dsatz[1]
+      array1[1] = dsatz[3]
    else:    
        array1[iD][0] = str( Rennen )
-       array1[iD][1] = dsatz[1]
+       array1[iD][1] = dsatz[3]
    
 # Sammeln für 3000 m
 sql = "SELECT * FROM rennen WHERE strecke='3000 m'"
@@ -106,17 +106,17 @@ cursor.execute(sql)
 iD = -1
 for dsatz in cursor:
    Rennen = dsatz[0]
-   R_Name = dsatz[1]
+   R_Name = dsatz[3]
    iD = iD + 1
    if(iD > listSize):
        array1=np.vstack((array1, array2))
        listSize = listSize + 1
    if(listSize == 0):
        array1[iD][2] = dsatz[0]
-       array1[iD][3] = dsatz[1]
+       array1[iD][3] = dsatz[3]
    else:
        array1[iD][2] = dsatz[0]
-       array1[iD][3] = dsatz[1]
+       array1[iD][3] = dsatz[3]
    
 
 #document.add_paragraph()

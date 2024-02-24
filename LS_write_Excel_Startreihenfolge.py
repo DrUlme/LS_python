@@ -1,3 +1,27 @@
+# -*- coding: utf-8 -*-
+"""
+Schreibt die Meldungen in ein Excel-File, um damit einfachst die Startreihenfolge
+zu setzen.
+
+ToDo:
+    Anpassen an neues Datenbankformat
+    Schützen der Zellen, um Fehlbedienung zu vermeiden.
+    (https://openpyxl.readthedocs.io/en/latest/protection.html)
+    ws.protection.sheet = True
+    ws.protection.password = '...'
+    ws.protection.enable()      >>> ws.protection.disable()
+    ws.protection.enable()
+
+    ws.protection.sort = False
+    ws.protection.selectUnlockedCells = True
+    
+    ws.auto_filter.ref = "A1:C2"
+    ws.protection.autoFilter = False
+
+    Zellen in Position festsetzen:  c = ws['B2']   &   ws.freeze_panes = c
+
+"""
+
 import os, sys, sqlite3
 from time import strftime
 from time import gmtime
@@ -12,7 +36,8 @@ from openpyxl.styles.borders import Border, Side, BORDER_THIN
 from openpyxl.styles import Color, PatternFill, Font, Border
 from openpyxl.formatting.rule import ColorScaleRule, CellIsRule, FormulaRule, Rule
 from openpyxl.styles import numbers
-# from openpyxl.worksheet.datavalidation import DataValidation
+# 
+from openpyxl.worksheet.datavalidation import DataValidation
 # from openpyxl.worksheet.defined_name import DefinedName
 # image - using pillow?
 from openpyxl.drawing.image import Image
@@ -34,6 +59,20 @@ cursor_B = connection.cursor()
 cursorRB = connection.cursor()
 cursorRu = connection.cursor()
 
+# hole Renn-Nummern für Früh und Spät-Starter
+sql = "SELECT wert FROM meta WHERE name = 'Frühstarter'"
+cursor.execute(sql)
+Rd = cursor.fetchone()
+Frühstart = int(Rd[0])
+FrühStr = 'F'
+
+sql = "SELECT wert FROM meta WHERE name = 'Spätstarter'"
+cursor.execute(sql)
+Rd = cursor.fetchone()
+Spätstart = int(Rd[0])
+SpätStr = 'S'
+
+
 #======================================================================================
 FillCol = "44ff44"
 grayFill = PatternFill(start_color='666666',end_color='666666',fill_type='solid')
@@ -53,6 +92,9 @@ ws2.sheet_properties.tabColor = "1072BA"
 
 book = Workbook()
 sheet = book.active
+
+# Create a data-validation object with list validation
+dv = DataValidation(type="list", formula1='"F,S,-"', allow_blank=True)
 
 sheet['A1'] = 56
 sheet['A2'] = 43
@@ -74,7 +116,8 @@ wb.defined_names.append(new_range)
 
 # ============================================================================================================
 # SQL-Abfrage
-sql = "SELECT * FROM rennen WHERE nummer < 114"
+# sql = "SELECT * FROM rennen WHERE strecke != 'Athletik' and status > 0 ORDER BY nummer"
+sql = "SELECT * FROM rennen WHERE strecke != 'Athletik'  ORDER BY nummer"
 ws2['A1'] = "Nr."
 ws2['B1'] = "Bezeichnung"
 ws2['C1'] = "Boote"
@@ -100,7 +143,7 @@ for dsatz in cursor_R:
    wb.defined_names.append(new_range)
    
    # Summe der Meldungen pro Rennen (ändert sich mit Änderung auf der Hauptseite
-   ws2['C' + str(zeile)] = "=(SUMIF('Meldungen'!$A$7:$A$256,$A" + str(zeile) + " ) - $A"  + str(zeile) + ") / $A"  + str(zeile)
+   ws2['C' + str(zeile)] = "=(SUMIF('Meldungen'!$M$7:$M$256,$A" + str(zeile) + " ) - $A"  + str(zeile) + ") / $A"  + str(zeile)
    
    # zusätzlich 2 Boote pro Rennen - wählbar
    ws2['D' + str(zeile)] = 2
@@ -146,28 +189,36 @@ ws['H1'].alignment = Alignment(horizontal="center", vertical="bottom")
 zeile = 6
 
 indRe  = 'A'
-indPos = 'B'
-indSNr = 'C'
-indStT = 'D'
-indVor = 'E'
-indNam = 'F'
-indJah = 'G'
-indKdr = 'H'
-indEV  = 'I'
-indCom = 'J'
-indBot = 'K'
+indFS  = 'B'
+indPos = 'C'
+indSNr = 'D'
+indStT = 'E'
+indVor = 'F'
+indNam = 'G'
+indJah = 'H'
+indKdr = 'I'
+indEV  = 'J'
+indCom = 'K'
+indLst = 'L'
+indBot = 'N'
+indHLP = 'M'
 
 ws[indRe + str(zeile)] = "Rennen"
 ws[indRe + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
+
+ws[indFS + str(zeile)] = "F/S"
+ws[indFS + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
 ws[indPos + str(zeile)] = "Position"
 ws[indPos + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
 ws[indSNr + str(zeile)] = "Start-Nr"
 ws[indSNr + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
+ws[indSNr + str(zeile)].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
 
 ws[indStT + str(zeile)] = "Start-Zeit"
 ws[indStT + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
+ws[indStT + str(zeile)].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
 
 ws[indVor + str(zeile)] = "Vorname"
 ws[indVor + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
@@ -187,18 +238,25 @@ ws[indEV + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='
 ws[indCom + str(zeile)] = "Bemerkung"
 ws[indCom + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='4444dd')
 
+ws[indLst + str(zeile)] = "letzte Zeit"
+ws[indLst + str(zeile)].font = Font(name='arial', sz=6, b=False, i=False, color='4444dd')
+
 ws[indBot + str(zeile)] = "int.Bootnr."
-ws[indBot + str(zeile)].font = Font(name='arial', sz=6, b=False, i=False, color='ddddff')
+ws[indBot + str(zeile)].font = Font(name='arial', sz=6, b=False, i=False, color='4444dd')
+
+ws[indHLP + str(zeile)] = "Start in"
+ws[indHLP + str(zeile)].font = Font(name='arial', sz=6, b=False, i=False, color='4444dd')
 
 
 ws.column_dimensions["A"].alignment = Alignment(horizontal='center')
 ws.column_dimensions["B"].alignment = Alignment(horizontal='center')
 ws.column_dimensions["C"].alignment = Alignment(horizontal='center')
+ws.column_dimensions["D"].alignment = Alignment(horizontal='center')
 
-ws.column_dimensions["F"].alignment = Alignment(horizontal='center')
 ws.column_dimensions["G"].alignment = Alignment(horizontal='center')
+ws.column_dimensions["H"].alignment = Alignment(horizontal='center')
 
-ws.column_dimensions["J"].alignment = Alignment(horizontal='center')
+ws.column_dimensions["K"].alignment = Alignment(horizontal='center')
 
 
 StNr = 1
@@ -218,6 +276,9 @@ cursor_R.execute(sql)
 for dsatz in cursor_R:
    Rennen = dsatz[0]
    ReStr  = str(Rennen)
+   
+   RennBenamung = dsatz[3]
+   Strecke      = dsatz[6]
    zeile = zeile + 1
    
    
@@ -226,32 +287,37 @@ for dsatz in cursor_R:
    ws[indRe + str(zeile)].fill = (grayFill)
    ws[indRe + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
    
+   # Früh-/Spätstarter
+   ws[indFS + str(zeile)] = "-"
+   ws[indFS + str(zeile)].fill = (grayFill)
+   ws[indFS + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='666666')
+   
    # interne Nummer
    ws[indPos + str(zeile)] = "0"
    ws[indPos + str(zeile)].font = Font(name='arial', sz=9, b=True, i=False, color='666666')
    ws[indPos + str(zeile)].fill = (grayFill)
    
    # 1. Startnummer
-   ws[indSNr + str(zeile)] = "=StartNr_" + ReStr 
+   ws[indSNr + str(zeile)] = "=StartNr_" + ReStr + " - 1e-8"
    ws[indSNr  + str(zeile)].font = Font(name='arial', sz=9, b=True, i=False, color='666666')
    ws[indSNr  + str(zeile)].fill = (grayFill)
    
    # 1. Startzeit
    ws[indStT + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-   ws[indStT + str(zeile)] = "=Zeit_" + ReStr 
+   ws[indStT + str(zeile)] = "=Zeit_" + ReStr + " - 1e-16"
    ws[indStT + str(zeile)].font = Font(name='arial', sz=10, b=False, i=False, color='ffffff')
    ws[indStT + str(zeile)].fill = (grayFill)
    ws[indStT + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
    
    # Renn-Bezeichnung
    #ws.merge_cells(indVor + str(zeile) + ':' + indJah + str(zeile))
-   ws[indVor + str(zeile)] = dsatz[1]
+   ws[indVor + str(zeile)] = RennBenamung
    ws[indVor + str(zeile)].fill = (grayFill)
    ws[indVor + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
    
    # Streckenlänge
    #ws.merge_cells(indEV + str(zeile) + ':' + indCom + str(zeile))
-   ws[indEV + str(zeile)] = dsatz[4]
+   ws[indEV + str(zeile)] = Strecke
    ws[indEV + str(zeile)].fill = (grayFill)
    ws[indEV + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
    
@@ -263,6 +329,9 @@ for dsatz in cursor_R:
    ws[indNam + str(zeile)].fill = (grayFill)
    ws[indJah + str(zeile)].fill = (grayFill)
    ws[indCom + str(zeile)].fill = (grayFill)
+   ws[indLst + str(zeile)].fill = (grayFill)
+   ws[indBot + str(zeile)].fill = (grayFill)
+   ws[indHLP + str(zeile)].fill = (grayFill)
    
    # indRe  = 'A' - indPos = 'B' - indSNr = 'C' - indStT = 'D' - indVor = 'E' - indNam = 'F' - indJah = 'G' - indEV  = 'H'- indCom = 'I'- indBot = 'J'
    
@@ -273,23 +342,42 @@ for dsatz in cursor_R:
 
    for ds in cursor_B:
       zeile = zeile + 1
-      BootIdx = ds[0] 
+      BootIdx = ds[0]
+      Altern  = ds[12]
       #______________________________ Anzahl der Ruderer und ihre Nummern in der Datenbank
       
       
       ws[indRe + str(zeile)] = Rennen
       ws[indRe + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
       ws[indRe + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
-      # =INDIRECT("StartNr_"&($I26)) + $J26
-      ws[indSNr + str(zeile)] = "=INDIRECT(\"StartNr_\"& $A" + str(zeile) + ") - 1 + $B" + str(zeile)
+      
+      # print(str(Altern) + " == " + str(Frühstart) + " ?")
+      if(Altern == Frühstart):
+         ws[indFS + str(zeile)] = "F"
+      elif(Altern == Spätstart):
+         ws[indFS + str(zeile)] = "S"
+      else:
+         ws[indFS + str(zeile)] = "-"
+      # dv.add(ws[indFS + str(zeile)])
+      # in Excel: Daten => Gültigkeit => Zulassen:Liste => -\nF\nS
+      ws[indFS + str(zeile)].fill = (greenFill)
+      ws[indFS + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
+      ws[indFS + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
+      
+      # Startnummer und Zeit
+      # ws[indSNr + str(zeile)] = "=INDIRECT(\"StartNr_\"& $A" + str(zeile) + ") - 1 + $B" + str(zeile)
+      ws[indSNr + str(zeile)] = "=INDIRECT(\"StartNr_\"& $M" + str(zeile) + ") - 1 + $C" + str(zeile)
       ws[indSNr + str(zeile)].font = Font(name='arial', sz=12, b=True, i=False, color='0000ff')
       ws[indSNr + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       
+      # Zeit
       ws[indStT + str(zeile)].number_format = numbers.FORMAT_DATE_TIME4
-      ws[indStT + str(zeile)] = "=INDIRECT(\"Zeit_\"& $A" + str(zeile) + ") + ($B" + str(zeile) + " - 1)*Abstand"
+      # ws[indStT + str(zeile)] = "=INDIRECT(\"Zeit_\"& $A" + str(zeile) + ") + ($C" + str(zeile) + " - 1)*Abstand"
+      ws[indStT + str(zeile)] = "=INDIRECT(\"Zeit_\"& $M" + str(zeile) + ") + ($C" + str(zeile) + " - 1)*Abstand"
       ws[indStT + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
+      
       #Bemerkung
-      ws[indCom + str(zeile)] = ds[11]
+      ws[indCom + str(zeile)] = ds[13]
       ws[indCom + str(zeile)].alignment = Alignment(horizontal="left",vertical="center")
       
       # 
@@ -298,16 +386,21 @@ for dsatz in cursor_R:
       ws[indPos + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       # 
       ws[indBot + str(zeile)] = ds[0]
-      ws[indBot + str(zeile)].font = Font(name='arial', sz=14, b=True, i=False, color='ffffff')
+      ws[indBot + str(zeile)].font = Font(name='arial', sz=10, b=True, i=False, color='cccccc')
+      ws[indBot + str(zeile)].alignment = Alignment(horizontal="right",vertical="center")
+      
+      ws[indHLP + str(zeile)] = "=IF($B" + str(zeile) + "=\"F\", " + str(Frühstart) + ", IF($B" + str(zeile) + "=\"S\", " + str(Spätstart) + ", $A" + str(zeile) + "))"
+      ws[indHLP + str(zeile)].font = Font(name='arial', sz=10, b=True, i=False, color='999999')
+      ws[indHLP + str(zeile)].alignment = Alignment(horizontal="center",vertical="center")
       
       # suche nach Einträgen in r2boot for dieses Boot
-      sql = "SELECT * FROM r2boot WHERE bootNr = " + str(BootIdx)
+      sql = "SELECT * FROM r2boot WHERE bootid = " + str(BootIdx)
       cursorRB.execute(sql)
       # loop über alle Einträge
       iP = 0
       for rbs in cursorRB:
          # suche nach Einträgen in r2boot for dieses Boot
-         sql = "SELECT * FROM ruderer WHERE nummer = " + str(rbs[2])
+         sql = "SELECT * FROM ruderer WHERE id = " + str(rbs[2])
          cursorRu.execute(sql)
          Rd = cursorRu.fetchone()
          if(iP == 0):
@@ -379,24 +472,35 @@ ws['D3'].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type =
 # indRe  = 'A' - indPos = 'B' - indSNr = 'C' - indStT = 'D' - indVor = 'E' - indNam = 'F' - indJah = 'G' - indEV  = 'H'- indCom = 'I'- indBot = 'J'
 
 ws.column_dimensions[indRe].width  = "8"
+ws.column_dimensions[indFS].width  = "6"
 ws.column_dimensions[indPos].width = "8"
 ws.column_dimensions[indSNr].width = "8"
 ws.column_dimensions[indStT].width = "11"
 ws.column_dimensions[indVor].width = "14"
 ws.column_dimensions[indNam].width = "14"
 ws.column_dimensions[indJah].width = "10"
-ws.column_dimensions[indKdr].width  = "8"
+ws.column_dimensions[indKdr].width = "8"
 ws.column_dimensions[indEV].width  = "8"
 ws.column_dimensions[indCom].width = "26"
-ws.column_dimensions[indBot].width = "4"
+ws.column_dimensions[indHLP].width = "8"
+ws.column_dimensions[indBot].width = "8"
 
 # fixiere Tabelle:
 ws.freeze_panes = ws['A7']
 
 # erstelle Filter
 # maxCols = str( zeile + 10 ) auf 256 gesetzt
-ws.auto_filter.ref = "A6:K256"
+ws.auto_filter.ref = "A6:N256"
 
+# ================================================= Sortieren
+ws['D5'] = "hiermit sortieren"
+ws['D5'].font = Font(name='arial', sz=8, b=True, i=False, color='4444dd')
+ws.merge_cells('D5:E5')
+ws['D5'].fill = PatternFill(start_color=FillCol, end_color=FillCol,  fill_type = "solid")
+
+# data valudation
+ws.add_data_validation(dv)
+dv.add("B7:B256")
 
 # ______________________________________ set Logo
 logo = Image("RVE_BRV_Flag.png")
