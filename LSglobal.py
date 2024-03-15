@@ -6,10 +6,10 @@ Created on Mon Oct  5 14:57:53 2020
 @author: ulf
 """
 
-Tag      = 21
-Monat    = 10
-MonatStr = 'Oktober'
-Jahr     = 2023
+Tag      = 16
+Monat    = 3
+MonatStr = 'März'
+Jahr     = 2024
 
 if(Monat < 7):
    Zeit    = "Frühjahr" 
@@ -68,10 +68,10 @@ if(ZeitK == "F"):
 else:
    Gewicht = 2.5
 
-Cost_1x = 15
-Cost_2x = 15
+Cost_1x = 18
+Cost_2x = 18
 
-Cost_Atletiktest = 5
+Cost_Atletiktest = 6
 
 """
 ========================================================================

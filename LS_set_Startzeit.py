@@ -19,51 +19,63 @@ connection = sqlite3.connect( LSglobal.SQLiteFile )
 cursor  = connection.cursor()
 Bcursor = connection.cursor()
 #
-StartRennen = 2
-StartSec    = 3600*11  + 60*0 + 0
 
-SecDif = 60
+# Renn-Abstand in sec
+Abstand = 50
+#========================================================================
+Rennen = 19
+
+Startnummer = 90
+Erstes = "12:56:00"
 
 Test = 0
 
-#   [ 00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37 ]
-H = [ 11, 11, 11, 11, 11, 11, 11, 11, 12, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13 ]
-M = [ 00,  1,  2,  3, 25, 44, 45, 59,  2, 47, 52, 00,  7, 22, 15, 28, 28, 29, 37, 46, 50, 50, 52, 54, 54, 56, 58,  0,  0,  5,  9, 12, 13, 15, 21, 23, 23, 13 ]
-N = [  1,  2,  3,  3, 27, 52, 52, 56, 56, 56, 58, 68, 75, 78, 78,116,116,118,129,143,145,145,148,151,151,155,158,161,161,164,170,174,177,180,188,190,190,200 ]
+#========================================================================
+Hs = int(Erstes[0:2])
+Ms = int(Erstes[3:5])
+Ss = int(Erstes[6:8])
 
-# cursor.execute( "SELECT MAX(nummer) FROM rennen " )
-# RennenMax = cursor.fetchone()
+secStart = 3600*Hs  + 60*Ms + Ss
 
-# for iR in range(0, (len(RudInd) - 2)): 
-seconds = StartSec    
-for Rennen in range(1, 19): # (1, 37):
-    seconds = 3600*H[Rennen]  + 60*M[Rennen] + 0
-    print("Rennen " + str(Rennen) + " ------------- at " + "{:02d}".format(H[Rennen]) + ":" + "{:02d}".format(M[Rennen]))
-    #----------------------------------------------
-    # sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " AND startnummer >= " + str(N[Rennen]) "ORDER BY startnummer "
-    # sql = "SELECT * FROM boote  WHERE startnummer >= " + str(N[Rennen]) + " AND startnummer < " + str(N[Rennen+1]) + "  ORDER BY startnummer "
-    sql = "SELECT * FROM boote  WHERE startnummer >= " + str(N[Rennen]) + " AND startnummer < " + str(N[Rennen+1]) + " AND rennen < 20 ORDER BY startnummer "
-    Bcursor.execute(sql)
-    for Bsatz in Bcursor:
-      bootNr = Bsatz[0]
-      StNr   = Bsatz[1]
-      Abmeldung = Bsatz[10]
-      if(Abmeldung > 0):
-         sql = "UPDATE boote SET planstart = 0 WHERE startnummer = " + str(StNr) + " "
-      else:      
-         # sql = "UPDATE boote SET planstart = " + str( seconds ) + " WHERE startnummer = " + str(StNr) + " "
-         sql = "UPDATE boote SET planstart = " + str( seconds ) + " WHERE nummer = " + str(bootNr)
-         seconds = seconds + SecDif
+# Wenn Früh oder Spätstarter:
+sql = "SELECT * FROM boote  WHERE abgemeldet == 0 AND alternativ ==" + str(Rennen) + "  ORDER BY planstart, startnummer "
+
+# sonst
+# sql = "SELECT * FROM boote  WHERE abgemeldet == 0 AND Rennen ==" + str(Rennen) + " AND alternativ == 0  ORDER BY planstart, startnummer "
+
+Bcursor.execute(sql)
+n = 0
+for Bsatz in Bcursor:
+   bootNr = Bsatz[0]
+   StNr   = Bsatz[2]
+   #
+   seconds = secStart + n * Abstand
+   LastH = np.floor(seconds/3600)
+   LastM = np.floor((seconds-LastH*3600)/60)
+   LastS = np.floor((seconds-LastH*3600 - LastM*60))
+   Startzeit = str(int(LastH)).rjust(2, '0') + ":" + str(int(LastM)).rjust(2, '0') + ":" + str(int(LastS)).rjust(2, '0')
+   #
+   sql = "UPDATE boote SET planstart = '" + Startzeit + "' WHERE id = " + str(bootNr)
+   if(Test == 1):
+      print(sql)
+   else:
+      cursor.execute(sql)
+      connection.commit()
+      print("executed: " + sql)
+      #
+   if(Startnummer > 0):
+      # sql = "UPDATE boote SET planstart = '" + str(int(LastH)).rjust(2, '0') + ":" + str(int(LastM)).rjust(2, '0') + ":" + str(int(LastS)).rjust(2, '0') + "' AND SET startnummer = " + str(Startnummer) + " WHERE id = " + str(bootNr)
+      sql = "UPDATE boote SET startnummer = " + str(Startnummer) + " WHERE id = " + str(bootNr)
+      Startnummer = Startnummer + 1
+      #--
       if(Test == 1):
          print(sql)
       else:
          cursor.execute(sql)
          connection.commit()
          print("executed: " + sql)
-    #---
-    LastH = np.floor(seconds/3600)
-    LastM = np.floor((seconds-LastH*3600)/60)
-    LastS = np.floor((seconds-LastH*3600 - LastM*60))
-    print("next would be Rennen " + "{:.0f}".format(Rennen + 1) + " at " + "{:2.0f}".format(LastH) + ":" + "{:2.0f}".format(LastM) + ":" + "{:2.0f}".format(LastS))
-
+   #--|--
+   n = n + 1
+#---
+print("Rennen " + str(Rennen) + " OK,\n nächstes mit Startnummer " + str(Startnummer) + " und nach " + Startzeit)
 connection.close()

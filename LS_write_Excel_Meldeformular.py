@@ -298,13 +298,13 @@ ws.add_image(logo, "H1")
 # Add sample rowers:
 ws['C11'] = "Rudi"
 ws['D11'] = "Riemen"
-ws['E11'] = "2008"
+ws['E11'] = 2008
 ws['I11'] = "Frühstart - teilt sich Boot mit Sabine"
 
-ws['B12'] = "15"
+ws['B12'] = 15
 ws['C12'] = "Sabine"
 ws['D12'] = "Skull"
-ws['E12'] = "2002"
+ws['E12'] = 2002
 ws['I12'] = "Lgw. B"
 
 wb.save('Meldebogen_' + LSglobal.ZeitK + "_" + str(LSglobal.Jahr) + '.xlsx')

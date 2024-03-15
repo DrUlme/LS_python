@@ -166,7 +166,7 @@ sql = "SELECT * FROM rennen WHERE nummer > 20"
 cursor_R.execute(sql)
 #
 ##########################################
-SetStartnummern = 0
+SetStartnummern = 1
 StartNr = 0
 ##########################################
 for dsatz in cursor_R:
@@ -176,7 +176,7 @@ for dsatz in cursor_R:
    if(SetStartnummern > 0):
       sql = "SELECT * FROM boote WHERE rennen = " + str(Rennen) + " AND abgemeldet = 0"
    else:
-      sql = "SELECT * FROM boote WHERE rennen = " + str(Rennen) + " AND abgemeldet = 0  ORDER BY startnummer, nummer"
+      sql = "SELECT * FROM boote WHERE rennen = " + str(Rennen) + " AND abgemeldet = 0  ORDER BY startnummer, id"
    # Empfang des Ergebnisses
    cursor_B.execute(sql)
    Meldungen = len(cursor_B.fetchall())
@@ -314,12 +314,12 @@ for dsatz in cursor_R:
       if(SetStartnummern == 1 or ds[1] == 0):
          StartNr = StartNr + 1
          if(SetStartnummern == 1 ):
-            sql = "UPDATE boote SET startnummer = " + str(StartNr) + " WHERE nummer = " + str(ds[0])
+            sql = "UPDATE boote SET startnummer = " + str(StartNr) + " WHERE id = " + str(ds[0])
             cursor.execute(sql)
             connection.commit()
       elif(SetStartnummern == -1 ):
          StartNr = StartNr + 1
-         sql = "UPDATE boote SET startnummer = 0 WHERE nummer = " + str(ds[0])
+         sql = "UPDATE boote SET startnummer = 0 WHERE id = " + str(ds[0])
          cursor.execute(sql)
          connection.commit()
       else:
@@ -327,14 +327,14 @@ for dsatz in cursor_R:
       #
       #
       # suche nach Einträgen in r2boot for dieses Boot
-      sql = "SELECT * FROM r2boot WHERE bootNr = " + str(ds[0])
+      sql = "SELECT * FROM r2boot WHERE bootid = " + str(ds[0])
       cursorRB.execute(sql)
       # 
       rbs = cursorRB.fetchone()
       if(rbs == None):
          print("kein Eintrag in r2boot für Boot #" + str(ds[0]))
       # suche nach Einträgen in r2boot for dieses Boot
-      sql = "SELECT * FROM ruderer WHERE nummer = " + str(rbs[2])
+      sql = "SELECT * FROM ruderer WHERE id = " + str(rbs[2])
       cursor_A.execute(sql)
       Rd = cursor_A.fetchone()
       if(Rd == None):

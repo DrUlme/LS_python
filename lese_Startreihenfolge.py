@@ -151,7 +151,7 @@ while zeile > 6:
       # print( sql )
       cursor.execute(sql)
       connection.commit()
-         # dto. mit StNr
+      # dto. mit StNr
    #
    zeile = zeile + 1
    bZeit  = str(ws[indStT + str(zeile)].value)

@@ -6,7 +6,7 @@
 # has issues with SoftMaker Office !!! 
 # XML support:
 # from lxml import etree
-import os, sqlite3
+import os, sys, sqlite3
 import time
 from termcolor import colored
 
@@ -102,7 +102,7 @@ for filename in FILES:
          connection.commit()
       else:
          sql = "INSERT INTO verein VALUES(" \
-            "'unknown ID of " + Verein + "', '" \
+            "'unknown ID of " + Verein + "', " \
             "'" + Vereinsname + "', '" + Verein + "', '" \
             + Adresse_1 + "', '" + Adresse_2 + "', " \
             "0.0, 1, 1)"
@@ -231,6 +231,8 @@ for filename in FILES:
             #
             #____________________________________ Boot -> Anzahl Ruderer (NR)
             Boot  = record[5]
+            if Boot == 'all':
+               Boot = ws['H' + str(Position)].value
             #
             if   Boot == '1x':
                NR = 1
@@ -240,7 +242,11 @@ for filename in FILES:
                NR = 2
             elif Boot == '4x':
                NR = 4
+            elif Boot == '4-':
+               NR = 4
             elif Boot == '4x+':
+               NR = 5
+            elif Boot == '4+':
                NR = 5
             elif Boot == 'Athletik':
                NR = 1
@@ -278,7 +284,7 @@ for filename in FILES:
               # Test der Zeile für den Ruderer
               if( (Vorname == "Rudi" and Name == "Riemen" ) or (Vorname == "Sabine" and Name == "Skull")):
                  print("File '" + filename + "' noch mit Dummy-Namen ! bitte bearbeiten !")
-                 exit()
+                 sys.exit()
               if( Vorname == None): 
                 print( "in '" + filename + "' fehlt in Zeile " + str(Position) + " der Vorname")
                 exit()

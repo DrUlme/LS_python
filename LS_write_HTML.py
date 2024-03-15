@@ -357,6 +357,7 @@ HTXT = HTXT + "<br>\n" + HTMSel + "<br>\n"
 HTXT = HTXT + "Es starten aktuell <b>" + str(Count_Ruderer) + "</b> Ruderer in <b>" + str(Count_Boote) + "</b> Booten. <br>\n"
 HTXT = HTXT + "<br>\n<hr>\n<br>\n"
 #
+HTXT = HTXT + "\n  <p><br><a HREF=\"H2023_Endergebnis.pdf\">Ergebnis der Herbst-Langstrecke 2023</a></p>\n"
 HTXT = HTXT + "\n  <p><br><a HREF=\"F2023_Endergebnis.pdf\">Ergebnis der Fr&uuml;hjahrs-Langstrecke 2023</a></p>\n"
 HTXT = HTXT + "\n  <p><br><a HREF=\"H2022_Endergebnis.pdf\">Ergebnis der Herbst-Langstrecke 2022</a></p>\n"
 HTXT = HTXT + "\n  <p><br><a HREF=\"F2022_Endergebnis.pdf\">Ergebnis der Fr&uuml;hjahrs-Langstrecke 2022</a></p>\n"

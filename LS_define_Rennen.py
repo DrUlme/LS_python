@@ -346,28 +346,28 @@ else:
    Rennen = Rennen + 1
    sql = "INSERT INTO rennen VALUES(" \
       "21, 'ID-Jungen-Athletik', 'Jungen Athletiktest', 'Jungen Athletiktest', 'M', 'Athletik', 'div.', 0," \
-      " 0, -1.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 9) + ", " + str(LSglobal.Cost_1x) + " )"
+      " 0, -1.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 9) + ", " + str(LSglobal.Cost_Atletiktest) + " )"
    cursor.execute(sql)
    connection.commit()
    # 22	Jungen LG	Athletiktest 	KM 1x Lgw.
    Rennen = Rennen + 1
    sql = "INSERT INTO rennen VALUES(" \
       "22, 'ID-Jungen-Athletik-LG', 'Jungen LG Athletiktest', 'Jungen LG Athletiktest', 'M', 'Athletik', 'div.', 0," \
-      " 0, 55.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 9) + " )"
+      " 0, 55.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 9) + ", " + str(LSglobal.Cost_Atletiktest) + " )"
    cursor.execute(sql)
    connection.commit()
    # 23	Mädchen	Athletiktest 	KW 1x
    Rennen = Rennen + 1
    sql = "INSERT INTO rennen VALUES(" \
       "23, 'ID-Mädchen-Athletik', 'Mädchen Athletiktest', 'Mädchen Athletiktest', 'F', 'Athletik', 'div.', 0," \
-      " 0, -1.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 9) + " )"
+      " 0, -1.0, " + str(RefJahr - 14) + ", " + str(RefJahr - 9) + ", " + str(LSglobal.Cost_Atletiktest) + " )"
    cursor.execute(sql)
    connection.commit()
    # 24	Mädchen LG	Athletiktest 	KW 1x Lgw.
    Rennen = Rennen + 1
    sql = "INSERT INTO rennen VALUES(" \
       "24, 'ID-Mädchen-Athletik-LG', 'Mädchen LG Athletiktest', 'Mädchen LG Athletiktest', 'F', 'Athletik', 'div.', 0," \
-      " 0, 52.5, " + str(RefJahr - 14) + ", " + str(RefJahr - 9) + " )"
+      " 0, 52.5, " + str(RefJahr - 14) + ", " + str(RefJahr - 9) + ", " + str(LSglobal.Cost_Atletiktest) + " )"
    cursor.execute(sql)
    connection.commit()
    # 25	Ausser Konkurrenz	Athletiktest 	Athletik

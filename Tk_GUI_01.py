@@ -100,7 +100,7 @@ def searchID(event):
       if(nR == 1):
          rudererID = dsatz[0]
    elif(useNR > 0):
-      sql = "SELECT * FROM boote  WHERE startnummer = " + str(StartNr) 
+      sql = "SELECT * FROM boote  WHERE startnummer = " + str(StartNr) + " AND rennen < 20 "
       #if(LSglobal.ZeitK == "F"):
       #   sql = sql + " and rennen<21"
       Bcursor.execute(sql)

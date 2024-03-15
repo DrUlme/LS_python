@@ -107,12 +107,14 @@ ws['D3'].number_format = numbers.FORMAT_DATE_TIME4
 ws['A3'] = strftime("%H:%M:%S", gmtime(60*60*11))
 # ws['A3']  = "10:00"
 new_range = openpyxl.workbook.defined_name.DefinedName('Startzeit', attr_text='Meldungen!$A$3')
-wb.defined_names.append(new_range)   
+# wb.defined_names.append(new_range)   
+wb.defined_names.add(new_range)   
 
 #now = time.strftime(" %H:%M:%S", time.localtime(60))
 ws['D3']  = strftime("%H:%M:%S", gmtime(60))
 new_range = openpyxl.workbook.defined_name.DefinedName('Abstand', attr_text='Meldungen!$D$3')
-wb.defined_names.append(new_range)   
+wb.defined_names.add(new_range)
+# wb.defined_names.append(new_range)   
 
 # ============================================================================================================
 # SQL-Abfrage
@@ -140,7 +142,8 @@ for dsatz in cursor_R:
    ws2['B' + str(zeile)] = dsatz[1]
    #   
    new_range = openpyxl.workbook.defined_name.DefinedName('Boote_' + ReStr, attr_text='Rennen!$C$' + str(zeile))
-   wb.defined_names.append(new_range)
+   wb.defined_names.add(new_range)
+   # wb.defined_names.append(new_range)
    
    # Summe der Meldungen pro Rennen (ändert sich mit Änderung auf der Hauptseite
    ws2['C' + str(zeile)] = "=(SUMIF('Meldungen'!$M$7:$M$256,$A" + str(zeile) + " ) - $A"  + str(zeile) + ") / $A"  + str(zeile)
@@ -160,10 +163,12 @@ for dsatz in cursor_R:
       ws2['F' + str(zeile)] = "=$F" + str(zeile-1) + " + ($C" + str(zeile-1) + " + $D" + str(zeile-1) + ")*Abstand + $G" + str(zeile-1)
    ws2['G' + str(zeile)] = "=1/24/60 * 0"
    new_range = openpyxl.workbook.defined_name.DefinedName('StartNr_' + ReStr, attr_text='Rennen!$E$' + str(zeile))
-   wb.defined_names.append(new_range)
+   wb.defined_names.add(new_range)
+   # wb.defined_names.append(new_range)
    
    new_range = openpyxl.workbook.defined_name.DefinedName('Zeit_' + ReStr, attr_text='Rennen!$F$' + str(zeile))
-   wb.defined_names.append(new_range)   
+   wb.defined_names.add(new_range)
+   # wb.defined_names.append(new_range)   
 # -----------------------------------------
 ws2.column_dimensions['A'].width = "5"
 ws2.column_dimensions['B'].width = "30"
