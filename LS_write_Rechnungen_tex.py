@@ -71,7 +71,7 @@ TXT_1 = "\\documentclass[DIN,\n	fromalign=right,\n	fromurl=on,\n	fromemail=on,\n
 % Handle internationalization\n\\usepackage[utf8]{inputenc}\n\\usepackage[T1]{fontenc}\n\
 \\usepackage[right]{eurosym}\n\\usepackage[ngerman]{babel}\n\n% Handle graphics and tables\n\
 \\usepackage{graphicx}\n\\usepackage{booktabs}\n\\usepackage{multirow}\n%\n% Handle hyperlinks\n\
-\\usepackage[hidelinks]{hyperref}\n%\n% Use gray text for contact data\n\\usepackage{color}\n%\n"
+\\usepackage[hidelinks]{hyperref}\n%\n% Use gray text for contact data\n\\usepackage{color}\n%\n\\usepackage{eurosym}\n"
 #
 # mehr Platz nach unten:
 TXT_1 = TXT_1 + "%\n%\n\\setlength{\\textheight}{26cm}\n\\setlength{\\footskip}{0mm}\n\\setlength{\\footheight}{0mm}\n%\n"
@@ -163,17 +163,20 @@ Count_Boote   = 0
 Count_Ruderer = 0
 Count_Verein  = 0
 
+Summe_Boote = 0
+Summe_Kinder = 0
+
 EUR_total = 0
 sql = "SELECT * FROM verein WHERE kurz != 'RVE' AND dabei = 1"
 
 # Gebühren für:
-Kanal     = 15
-Athletik  = 6
+Kanal     = 18
+Athletik  = 7
 Bugnummer = 10
 # Deckelung noch aus alten Zeiten (€ 250) jetzt auf übertriebene 2.500 EUR
-Deckelung = 2500
+Deckelung = 25000
 
-fehlende_Bugnummern = [  ]
+fehlende_Bugnummern = [ 16 ]
 
 Vcursor.execute(sql)
 for Vsatz in Vcursor:
@@ -268,8 +271,14 @@ for Vsatz in Vcursor:
                NoBoote = NoBoote + 1
                if(iR == 2 and nPers == 1):
                   EURO = EURO + Meldegeld/2
+                  Summe_Boote  = Summe_Boote + Meldegeld/2
                else:
                   EURO = EURO + Meldegeld
+                  if(Rsatz[6] == "div."):
+                     Summe_Kinder = Summe_Kinder + Meldegeld
+                  else:
+                     Summe_Boote  = Summe_Boote + Meldegeld
+                  #---
                # TXT = TXT + VTXT
                Anzahl_Rennen = Anzahl_Rennen + 1
                #
@@ -355,7 +364,9 @@ for Vsatz in Vcursor:
    elif(NACH > 1):
       TXT = TXT + "{\\scriptsize$^N$: Nachmeldungen sind deutlich verspätet eingegangen, daher jeweils doppeltes Meldegeld.}\\\\\n"
    
-   TXT = TXT + "{\\scriptsize Die Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer nach \\textsection19 UStG.\\vspace{5pt}\\\\}\n"
+   # TXT = TXT + "{\\scriptsize Die Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer nach \\textsection19 UStG.\\vspace{5pt}\\\\}\n"
+   TXT = TXT + "{\\scriptsize Die Rechnungsstellung erfolgt ohne Ausweis der Umsatzsteuer nach \\textsection19 UStG. (pro Boot 18\\euro, Athletiktest 7\\euro)\\vspace{5pt}\\\\}\n"
+   #
    TXT = TXT + "Bitte benutzen Sie bei der Überweisung das Kennwort:\n\\\\ '\\textbf{Meldegebühr Langstreckentest " + Vsatz[2] + "'} \\vspace{1.2cm}\\\\\n"
    #TXT = TXT + "\\vspace{5pt}\\\\\nMit rudersportlichen Grü{\ss}en,\\vspace{-10pt}\\\\\n\\includegraphics[height=1.71cm,width=4.13cm]{UlfMeerwald.png}"
    TXT = TXT + "Vielen Dank im voraus, \\\\mit rudersportlichen Grü{\ss}en \\vspace{-2.1cm}\\\\ \\color{white}{.}\\hspace{7cm}\\color{white}{.}\n"
@@ -403,3 +414,4 @@ connection.close()
 wb.save('Rechnungen_' + LSglobal.Zeit + "_" + str(LSglobal.Jahr) + '.xlsx')
 
 print("Gemeldet haben " + str(Count_Verein) + " Vereine und wir stellen " + str(EUR_total) + " EUR in Rechnung")
+print("Für Boote: " + str(Summe_Boote) + " EUR und Athletik " + str(Summe_Kinder) + " EUR)")

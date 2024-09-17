@@ -96,3 +96,8 @@ Bereich der auftretenden Änderungen
 * Leichtgewicht => mit Änderung von Rennen
 * Kommentar bearbeiten
 * Boots-Doppelnutzung => Früh-/Spätstarter
+* Ummelden 2x/- auf 1x
+
+## Startnummern HAEST
+1x   1-100
+3x 101-200 

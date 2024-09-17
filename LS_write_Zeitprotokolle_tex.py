@@ -25,7 +25,7 @@ Vcursor  = connection.cursor()
 
 t1 = time.localtime()
 
-Meter = 6000
+Meter = 00
 
 if(Meter == 0):
    POSITION = "S T A R T"

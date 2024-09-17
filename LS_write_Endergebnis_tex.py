@@ -159,6 +159,7 @@ for Rsatz in Rcursor:
             bootGewicht = bootGewicht + Rd[6]
             if(maxGewicht < Rd[6]):
                maxGewicht = Rd[6]
+         iR = iR + 1
          #_____________________________________________
       # Check Altersklasse:
       MdA = MdA / nPers
