@@ -6,7 +6,7 @@ import LSglobal
 #========================================================================
 # Existenz feststellen
 if os.path.exists( LSglobal.SQLiteFile ):
-    print("Datei bereits vorhanden")
+    print("Datei '" + LSglobal.SQLiteFile + "' ist bereits vorhanden")
     sys.exit(0)
 
 # Verbindung zur Datenbank erzeugen

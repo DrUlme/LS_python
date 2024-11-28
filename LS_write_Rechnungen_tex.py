@@ -114,7 +114,7 @@ TXT_3 = "% Begin header\n\
   \\begin{tabular}[t]{r l}\n\
 	\\textbf{\\usekomavar{ausrichter}} & \\multirow{5}{*}{\\usekomavar{fromlogo}} \\\\\n\
 	Dr. Ulf Meerwald & \\\\\n\
-	2.Vorsitzender &\\\\\n\
+	Regattaleitung &\\\\\n\
   \\usekomavar{fromaddress} & \\\\\n\
   \\end{tabular}\n\
   \\footnotesize{\\usekomavar{fromemail}}\\\\\n\
@@ -176,7 +176,7 @@ Bugnummer = 10
 # Deckelung noch aus alten Zeiten (€ 250) jetzt auf übertriebene 2.500 EUR
 Deckelung = 25000
 
-fehlende_Bugnummern = [ 16 ]
+fehlende_Bugnummern = [ 33 ]
 
 Vcursor.execute(sql)
 for Vsatz in Vcursor:
@@ -291,7 +291,7 @@ for Vsatz in Vcursor:
                #
                if(SH == "$^N$"):
                   NACH = NACH + 1
-                  print("Nachmeldung #" + str(Boot) + " - " + str(NACH)  + " (" + Vsatz[2] + ")")
+                  print("=> Nachmeldung #" + str(Boot) + " - " + str(NACH)  + " (" + Vsatz[2] + ")")
                #
             # ===========================================================================================
             elif(Abmeldung > 1):  # verspätet abgemeldet
@@ -309,7 +309,7 @@ for Vsatz in Vcursor:
                #____________________________ Nachmeldung
                if(SH == "$^N$"):
                   NACH = NACH + 1
-                  print("Nachmeldung #" + str(Boot) + " - " + str(NACH) + " (" + Vsatz[2] + ")")
+                  print("=> Nachmeldung #" + str(Boot) + " - " + str(NACH) + " (" + Vsatz[2] + ") - verspätet abgemeldet")
              #
             if(StNr in fehlende_Bugnummern and Meldegeld == Kanal):
                TXTB = TXTB +  "	(" + str(StNr) + ") " + Name + "\\newline"
@@ -377,7 +377,14 @@ for Vsatz in Vcursor:
    TXT = TXT.replace('ß', '{\\ss}')
    # Dateiname ohne Leerzeichen:
    VtexName = Vsatz[2].replace(" ", "_")
-   print("pdflatex Rechnung_" + VtexName + ".tex")
+   if(EURB > 0 and EURA > 0):
+      print("pdflatex Rechnung_" + VtexName + ".tex : " + str(EURO) + " + " + str(EURA) + " spät abgemeldet + " + str(EURB) + " für Bugnr." )
+   elif(EURB > 0):
+      print("pdflatex Rechnung_" + VtexName + ".tex : " + str(EURO) + " + " + str(EURB) + " für Bugnr." )
+   elif(EURA > 0):
+      print("pdflatex Rechnung_" + VtexName + ".tex : " + str(EURO) + " + " + str(EURA) + " spät abgemeldet " )
+   else:
+      print("pdflatex Rechnung_" + VtexName + ".tex : " + str(EURO)  )
    fp = open("LaTeX/Rechnung_" + VtexName + ".tex","w")
    fp.write(TXT)
    fp.close()
@@ -414,4 +421,4 @@ connection.close()
 wb.save('Rechnungen_' + LSglobal.Zeit + "_" + str(LSglobal.Jahr) + '.xlsx')
 
 print("Gemeldet haben " + str(Count_Verein) + " Vereine und wir stellen " + str(EUR_total) + " EUR in Rechnung")
-print("Für Boote: " + str(Summe_Boote) + " EUR und Athletik " + str(Summe_Kinder) + " EUR)")
+print("(Für gestartete Boote: " + str(Summe_Boote) + ", Bugnummern: " + str(Bugnummer * len(fehlende_Bugnummern)) + " EUR  und Athletik " + str(Summe_Kinder) + " EUR)")

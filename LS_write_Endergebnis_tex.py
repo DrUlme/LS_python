@@ -176,13 +176,13 @@ for Rsatz in Rcursor:
       else:
          ReDefNew = "Jungen"
       #__________________________________ ToDo: Großboot
-      if(StNr == 1):
-         ReDefNew = "SF B"
-         Bootstyp = "2x"
-      elif(StNr == 2):
-         ReDefNew = "JM B"
-         Bootstyp = "2x"
-         
+      #if(StNr == 1):
+      #   ReDefNew = "SF B"
+      #   Bootstyp = "2x"
+      #elif(StNr == 2):
+      #   ReDefNew = "JM B"
+      #   Bootstyp = "2x"
+      
       # ' hole Gewichtslimit pro Rennen'
       RennenMaxGewicht = Gewichtsgrenzen.get(ReDefNew)
       RennenGewichtsKlasse = Gewichtsklassen.get(ReDefNew)
@@ -216,7 +216,8 @@ for Rsatz in Rcursor:
       # Ergänze die Bootsklasse - Rsatz kann unbekannt sein
       ReDefNew = ReDefNew + " " + Bootstyp
       RefV = DRV_velo.get( ReDefNew )
-      # print(str(StNr) + ": '" + ReDefNew + "' -> " + str(RefV) )
+      #if(StNr == 4):
+      #   print(str(StNr) + ": '" + ReDefNew + "' -> " + str(RefV) )
       # ______________________________________________________________________________       # Zeiten: 
       # --------------------------------    Startzeit: Bsatz[6]
       # Stime = Bsatz[4]

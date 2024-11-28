@@ -25,7 +25,7 @@ Vcursor  = connection.cursor()
 
 t1 = time.localtime()
 
-Meter = 00
+Meter = 000
 
 if(Meter == 0):
    POSITION = "S T A R T"
@@ -88,7 +88,8 @@ for Rsatz in Rcursor:
    if(Rennen == Früh or Rennen == Spät):
       sql = "SELECT * FROM boote  WHERE alternativ = " + str(Rennen) + " ORDER BY planstart, startnummer "
    else:
-      sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY planstart, startnummer "
+      # sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " ORDER BY planstart, startnummer "
+      sql = "SELECT * FROM boote  WHERE rennen = " + str(Rennen) + " AND alternativ = 0 ORDER BY planstart, startnummer "
    Bcursor.execute(sql)
    for Bsatz in Bcursor:
       Boot   = Bsatz[0]

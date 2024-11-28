@@ -72,6 +72,7 @@ Rd = cursor.fetchone()
 Spätstart = int(Rd[0])
 SpätStr = 'S'
 
+print("'alternativ' für Frühstart = " + str(Frühstart) + "   und Spätstart = " + str(Spätstart))
 
 #======================================================================================
 FillCol = "44ff44"

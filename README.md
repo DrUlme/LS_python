@@ -1,4 +1,36 @@
 # -*- coding: utf-8 -*-
+# Langstrecken-Regatta
+organisatorisches
+
+## Lange vor der Regatta
+Die wichtigen Genehmigungen einholen
+
+### Wasser -und Schiffahrtsamt - WSA
+
+### Hallen-Miete für Kinder-Athletiktests im Frühjahr
+
+### DLRG - Dechsendorf
+
+### Aufsetzen der Regatta auf BRV-Seite (ggf. DRV?)
+* Absprache Rennen - Änderungen
+* DRV-Gebühren ? übernimmt der BRV ?
+* Meldegebühren - aktuell EUR 18 / Boot - anpassen?
+* Rechner und Modems (Handy) für Start/3000m/6000m
+* Video, etc.
+* Sonderwünsche - immer neu...
+
+* BRV-Kader-Liste einholen
+* DRV-Vergleichsliste einholen
+
+### Startnummern
+* Bugnummern überprüfen und ggf. ersetzen [180 x 180 x 2 mm]
+* Startnummern bestellen 1-150/200/300
+* Sicherheitsnadeln ausreichend vorhanden ?
+* 
+## Vor der Regatta
+
+=============================================================================================
+# Das Programm uns seine Teile
 # LS_python
 Python Programm zur Durchführung des Erlanger Ruder-Langstrecken-Tests
 basierend auf sqlite3, openpyxl und TriaZeit (ein einfachs ASCII-format)
@@ -19,7 +51,7 @@ Erstellt Melde-Ergebnis und Endergebnis mit LaTeX als pdf.
 ### Erstellen der Datenbank
 **LS_sqlite_erzeugen.py** erzeugt die Datenbank ohne Daten
 **LS_define_Rennen.py**   definiert die Rennen
-**LS_add_Vereine.py**     fügt bekannte Vereine hinzu
+**LS_add_Vereine.py**     fügt bekannte Vereine hinzu - Liste anpassen/ergänzen
 
 ### Vorbereiten der Ausschreibung
 **LS_write_Excel_Meldeformular.py** schreibt das Meldeformular
@@ -31,6 +63,7 @@ Erstellt Melde-Ergebnis und Endergebnis mit LaTeX als pdf.
 **LS_update.py**         Setzen des Status für die Rennen
 **LS_write_HTML.py**     Schreiben der HTML Seite
 **LS_write_HTML_V.py**   Schreiben der HTML-Vereins-Seiten
+**Vor_und_Nachnamen_Tausch.py** 
 
 **LS_update_Kader.py**   mit Einlesen aus Excel-File in Kader-Tabelle
 **LS_write_Excel_Startreihenfolge.py**

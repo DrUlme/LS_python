@@ -76,7 +76,7 @@ HTXT = HTXT + "   select {\n     font-size: 1.9rem;\n     padding: 2px 5px;\n   
 HTXT = HTXT + " </style>\n</head>\n\n<body>\n\n"
 # 
 #------------------------------------------------------------------------------------
-HTXT = HTXT + '<p style="font-size:20px; color:blue">Herbst-Langstrecke <b>2023 </b>\n<br>\n'
+HTXT = HTXT + '<p style="font-size:20px; color:blue">' + LSglobal.Zeit + '-Langstrecke <b>' + str(LSglobal.Jahr) + '</b>\n<br>\n'
 HTXT = HTXT + '<img height="10%" width="10%" src="RVE-Flag.png">\n<br>\n<br>\n</p>\n\n'
 
 HTXT = HTXT + '<p style="font-size:18px; color:blue">\nDie Langstrecke wird am <b> '
@@ -85,26 +85,26 @@ HTXT = HTXT + ' <p style="font-size:18px; color:red">\n<br>Hier ist der <a HREF=
 HTXT = HTXT + ' <p style="font-size:15px; color:blue">Jetzt auch mit Beispiel für die Eingabe (Daten bitte überschreiben).</p>\n'
 
 # ToDO: Ausschreibung
-HTXT = HTXT + ' <p style="font-size:18px; color:blue"><br>Die offizielle <a HREF="2023_09_25_BRV_HLS_Ausschreibung.pdf"> Ausschreibung </a> mit weiteren Daten.<br>\nDas wichtigste hier direkt:</p>\n\n'
+HTXT = HTXT + ' <p style="font-size:18px; color:blue"><br>Die offizielle <a HREF="' + 'BRV_HLS_BRJ_Leistungstest_2024_Aussschreibung.pdf' + '"> Ausschreibung </a> mit weiteren Daten.<br>\nDas wichtigste hier direkt:</p>\n\n'
 
 HTXT = HTXT + '<p style="font-size:15px; color:blue">\n<br>\n<br>\n'
 HTXT = HTXT + ' <b>Meldeschluss: </b> Mittwoch, den <b> ' + LSglobal.Meldeschluss + ' </b>' + str(LSglobal.Jahr) + ', 22:00 Uhr<br>\n'
 HTXT = HTXT + ' Meldungen an: <a href="mailto:langstrecke@ruderverein-erlangen.de"><i>langstrecke@ruderverein-erlangen.de</i></a><br>\n<br>\n'
-HTXT = HTXT + ' Die Startreihenfolge wird am Montag ' + LSglobal.Setzdatum + str(LSglobal.Jahr) + ' festgelegt.<br>\n<br>\n'
+# HTXT = HTXT + ' Die Startreihenfolge wird am Montag ' + LSglobal.Setzdatum + str(LSglobal.Jahr) + ' festgelegt.<br>\n<br>\n'
 HTXT = HTXT + ' Bei Meldungen nach Samstag den <b>' + LSglobal.DoppeltGeld + str(LSglobal.Jahr) + '</b> ist das doppelte Meldegeld zu zahlen!<br>\n<br>\n'
 HTXT = HTXT + ' Um- und Abmeldungen sind nur bis Freitag den ' + LSglobal.AbmeldungDD + ' bis ' + LSglobal.AbmeldungHH + ' Uhr möglich<br> - danach wird das Meldegeld in Rechnung gestellt. <br>\n<br>\n<br>\n'
 if(LSglobal.ZeitK == 'H'):
    HTXT = HTXT + ' Die Junioren B m&uuml;ssen f&uuml;r die DOSB Bewertungen mindestens einmal während der Saison im 1x einen Test &ge; 5 km absolvieren.<br>\n'
    HTXT = HTXT + ' Die entsprechenden Riemen-Zweier sind daher aus dem Programm für den Herbst gestrichen worden.<br>\n<br>\n'
    HTXT = HTXT + ' Die Altersgrenzen für 2024 gelten bereits für diesen Langstreckentest. <br>\n<br>\n'
-   HTXT = HTXT + ' <b>Kinder, die dadurch als Junioren-B starten, </b>\nm&uuml;ssen jetzt bereits das &auml;rztlichen Attest f&uuml;r ' + str(LSglobal.RefJahr) + ' vorweisen - <br>\n<b>bitte einen Termin beim Arzt zwischen dem 1. und 20. Oktober ausmachen!</b>\n\n'
+   # HTXT = HTXT + ' <b>Kinder, die dadurch als Junioren-B starten, </b>\nm&uuml;ssen jetzt bereits das &auml;rztlichen Attest f&uuml;r ' + str(LSglobal.RefJahr) + ' vorweisen - <br>\n<b>bitte einen Termin beim Arzt zwischen dem 1. und 20. Oktober ausmachen!</b>\n\n'
 
 HTXT = HTXT + ' <br><br>\n</p>\n\n<hr>\n'
 HTXT = HTXT + '\n<p style="font-size:19px; color:blue"><a href="Hinweise_Fahrordnung_Ruderstrecke.pdf">Hinweise zur Fahrordnung auf der Ruderstrecke währen der Regatta</a>.\n<br>\n</p>\n'
 
 
 #-------------------------------------------------------------------
-HTXT = HTXT + "<br><font size=\"4\"><a href=\"Meldungen.pdf\" >aktuelles Melde-PDF</a></font><br>\n\n<p>\n"
+HTXT = HTXT + "<br><font size=\"4\"><a href=\"Meldungen.pdf\" >aktuelles Melde-Ergebnis als PDF</a></font><br>\n\n<p>\n"
 #
 #HTXT = HTXT + "<font size=\"4\"><a href=\"aktuell.html\" target=\"iframe_a\">Aktuell</a></font> \n"
 #HTXT = HTXT + " <font size=\"3\" color=\"gray\"> aktuell laufende Rennen</font><br>\n<br>--------<br>\n<br>\n"
@@ -135,7 +135,9 @@ HTMLsel_V = HTMLsel_V + '   <option value="index.html">HOME </option>\n'
 sql = "SELECT * FROM verein WHERE dabei > 0 "
 Rcursor.execute(sql)
 for Rsatz in Rcursor:
-   HTMLsel_V = HTMLsel_V + '   <option value="' + Rsatz[2] + '.html">' + Rsatz[1] + '   (' + Rsatz[2] + ')</option>\n'
+   VereinOL = str(Rsatz[2])
+   VereinOL.replace(' ', '')
+   HTMLsel_V = HTMLsel_V + '   <option value="' + VereinOL + '.html">' + Rsatz[1] + '   (' + Rsatz[2] + ')</option>\n'
 HTMLsel_V = HTMLsel_V + ' </select>'
 #   
 #   
@@ -357,6 +359,13 @@ HTXT = HTXT + "<br>\n" + HTMSel + "<br>\n"
 HTXT = HTXT + "Es starten aktuell <b>" + str(Count_Ruderer) + "</b> Ruderer in <b>" + str(Count_Boote) + "</b> Booten. <br>\n"
 HTXT = HTXT + "<br>\n<hr>\n<br>\n"
 #
+#
+HTXT = HTXT + "<font color=\"red\"><b> A N R E I S E </b></font>\n<br>\n"
+HTXT = HTXT + "<b>A3 aus Westen: </b> Abfahrt Erlangen Nord / Dechsendorf  ist wieder frei.\n<br>\n"
+HTXT = HTXT + "<b>Alle anderen Richtungen: </b> Nutzt die A77 - Ausfahrt 33-Erlangen-Bruck (aus Norden 31-Erlangen-Nord).\n<br><br>\n"
+HTXT = HTXT + "<font color=\"blue\"><i>Gute Fahrt !</i></font>\n<br>\n<hr>\n<br>\n"
+#
+HTXT = HTXT + "\n  <p><br><a HREF=\"F2024_Endergebnis.pdf\">Ergebnis der Fr&uuml;hjahrs-Langstrecke 2024</a></p>\n"
 HTXT = HTXT + "\n  <p><br><a HREF=\"H2023_Endergebnis.pdf\">Ergebnis der Herbst-Langstrecke 2023</a></p>\n"
 HTXT = HTXT + "\n  <p><br><a HREF=\"F2023_Endergebnis.pdf\">Ergebnis der Fr&uuml;hjahrs-Langstrecke 2023</a></p>\n"
 HTXT = HTXT + "\n  <p><br><a HREF=\"H2022_Endergebnis.pdf\">Ergebnis der Herbst-Langstrecke 2022</a></p>\n"

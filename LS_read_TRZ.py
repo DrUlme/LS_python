@@ -50,7 +50,10 @@ for iFile in range(0, len(LSglobal.TrzFiles) ):
       # seconds = 3600 * int(PARTS[1]) + 60 * int(PARTS[2]) + int(PARTS[3]) + LSglobal.Trz_dSec[iFile]
       #
       # get values from SQL:
-      sql = "SELECT * FROM boote WHERE startnummer = " + (PARTS[0]) + "  AND rennen < 20"
+      if(LSglobal.Zeit ==  "Frühjahr" ):
+         sql = "SELECT * FROM boote WHERE startnummer = " + (PARTS[0]) + "  AND rennen < 20"
+      else:
+         sql = "SELECT * FROM boote WHERE startnummer = " + (PARTS[0]) + " "
       cursor.execute(sql)
       Bt = cursor.fetchone()
       if(Bt == None):

@@ -8,7 +8,7 @@ import  sqlite3
 # import modules
 import tkinter as tk
 #
-# from datetime import datetime
+from datetime import datetime
 
 
 # globale Parameter
@@ -24,6 +24,16 @@ Bcursor = connection.cursor()
 
 rudererID = 0
 bootNr=0
+
+#========================================================================
+myTime = datetime.now()
+critTime = datetime( LSglobal.Jahr, int(LSglobal.AbmeldungDD[3:5]), int(LSglobal.AbmeldungDD[0:2]), int(LSglobal.AbmeldungHH[0:2]) + 2)
+HOURcrit = int(LSglobal.AbmeldungHH[0:2]) + 2
+if(myTime > critTime):
+   print("14:00 Uhr - Abmeldung kommt zu spät")
+   AbMeldeNr = "2"
+else:
+   AbMeldeNr = "1"
 
 #========================================================================
 def searchID(event):
@@ -86,7 +96,7 @@ def searchID(event):
             #
             LTEXT = LTEXT + "#" + Boot[0] + ": StNr." + str(Boot[2]) + " in Rennen " + str(Boot[3]) + "\n" 
             BTEXT = BTEXT + "#" + Boot[0] + ": StNr." + str(Boot[2]) + " in Rennen " + str(Boot[3]) 
-            if(Boot[11] == 1):
+            if(Boot[11] > 0):
                BTEXT = BTEXT + " - abgemeldet\n"
             else:
                BTEXT = BTEXT + " - ok\n"
@@ -94,7 +104,7 @@ def searchID(event):
             if(useNR and int(StartNr) == int(Boot[2])):
                STEXT = "'" + dsatz[1] + "' '" + dsatz[2] + "':  Boot #" + str(Boot[0]) + ": StNr. " + str(Boot[2]) + " in Rennen " + str(Boot[3])
                #
-               if(Boot[11] == 1):
+               if(Boot[11] > 0):
                   STEXT = STEXT + " - abgemeldet"
          #  #  #
       if(nR == 1):
@@ -107,7 +117,7 @@ def searchID(event):
       Boot = Bcursor.fetchone()
       #
       BTEXT = BTEXT + "#" + str(Boot[0]) + ": StNr." + str(Boot[2]) + " in Rennen " + str(Boot[3]) 
-      if(Boot[11] == 1):
+      if(Boot[11] > 0):
          BTEXT = BTEXT + " - abgemeldet\n"
       else:
          BTEXT = BTEXT + " - ok\n"
@@ -145,10 +155,11 @@ def searchID(event):
 #========================================================================
 def submit():
    global rudererID
-   Gewicht  = myKG.get()
-   if(len(Gewicht) > 0):
+   GewichtStr  = str(myKG.get())
+   if(len(GewichtStr) > 0):
+      Gewicht = GewichtStr.replace(',', '.')
       if(rudererID == 0):
-         print("submit " + str(Gewicht) + " kg - with no defined rower ?!")
+         print("submit " + Gewicht + " kg - with no defined rower ?!")
       else:
          sql = "SELECT * FROM ruderer WHERE id = '" + rudererID + "' "
          Bcursor.execute(sql)
@@ -157,8 +168,8 @@ def submit():
             LGWstr = "Lgw."
          else:
             LGWstr = " ? "
-         print("'" + Ruderer[1] + "' '" + Ruderer[2] + "' (" + LGWstr + ") = " + str(Gewicht) + " kg" )
-         sql = "UPDATE ruderer SET gewicht = " + str(Gewicht) + " WHERE id = '" + rudererID + "' "
+         print("'" + Ruderer[1] + "' '" + Ruderer[2] + "' (" + LGWstr + ") = " + Gewicht + " kg" )
+         sql = "UPDATE ruderer SET gewicht = " + Gewicht + " WHERE id = '" + rudererID + "' "
          cursor.execute(sql)
          connection.commit()
    return
@@ -171,10 +182,10 @@ def abmelden():
       sql = "SELECT * FROM boote WHERE id = '" + bootNr + "'"
       Bcursor.execute(sql)
       Boot = Bcursor.fetchone()
-      if(Boot[11] == 1):
+      if(Boot[11] > 0):
          abmeldung = "0"
       else:
-         abmeldung = "1"
+         abmeldung = AbMeldeNr
       # 
       sql = "UPDATE boote SET abgemeldet = " + abmeldung + " WHERE id = '" + bootNr + "'"
       cursor.execute(sql)

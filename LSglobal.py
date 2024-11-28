@@ -6,9 +6,9 @@ Created on Mon Oct  5 14:57:53 2020
 @author: ulf
 """
 
-Tag      = 16
-Monat    = 3
-MonatStr = 'März'
+Tag      = 26
+Monat    = 10
+MonatStr = 'Oktober'
 Jahr     = 2024
 
 if(Monat < 7):
